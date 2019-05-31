@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <PackageProjectUrl>https://github.com/stevenkuhn/inrule-contrib-git/</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <Authors>Steven Kuhn</Authors>
+    <Company>Steven Kuhn</Company>
+    <Copyright>Copyright © Steven Kuhn 2019</Copyright>
+    <RepositoryUrl>https://github.com/stevenkuhn/inrule-contrib-git.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Repository.Storage.Git is a library for storing rule applications in a Git repository.</Description>
+    <Product>Repository.Storage.Git</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersionTask" Version="5.0.0-beta3-29">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{284C1BA6-ECE2-414A-BAA2-3205AB117A34}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A6EEE27C-EB02-4AFE-A4A7-7B6D9B0AE606}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InRuleContrib.Repository.Storage.Git", "src\InRuleContrib.Repository.Storage.Git\InRuleContrib.Repository.Storage.Git.csproj", "{D45A8705-1162-489A-BBEC-33A8DAEBE7BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InRuleContrib.Authoring.Extensions.Git", "src\InRuleContrib.Authoring.Extensions.Git\InRuleContrib.Authoring.Extensions.Git.csproj", "{E93D442A-DBB7-4A51-B850-3398CBC35B70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InRuleContrib.Repository.Storage.Git.Tests", "test\InRuleContrib.Repository.Storage.Git.Tests\InRuleContrib.Repository.Storage.Git.Tests.csproj", "{DDE83B4E-42CC-4715-85C2-BBD6DAA860E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D45A8705-1162-489A-BBEC-33A8DAEBE7BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D45A8705-1162-489A-BBEC-33A8DAEBE7BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D45A8705-1162-489A-BBEC-33A8DAEBE7BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D45A8705-1162-489A-BBEC-33A8DAEBE7BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E93D442A-DBB7-4A51-B850-3398CBC35B70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E93D442A-DBB7-4A51-B850-3398CBC35B70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E93D442A-DBB7-4A51-B850-3398CBC35B70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E93D442A-DBB7-4A51-B850-3398CBC35B70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDE83B4E-42CC-4715-85C2-BBD6DAA860E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDE83B4E-42CC-4715-85C2-BBD6DAA860E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDE83B4E-42CC-4715-85C2-BBD6DAA860E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDE83B4E-42CC-4715-85C2-BBD6DAA860E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D45A8705-1162-489A-BBEC-33A8DAEBE7BB} = {284C1BA6-ECE2-414A-BAA2-3205AB117A34}
+		{E93D442A-DBB7-4A51-B850-3398CBC35B70} = {284C1BA6-ECE2-414A-BAA2-3205AB117A34}
+		{DDE83B4E-42CC-4715-85C2-BBD6DAA860E4} = {A6EEE27C-EB02-4AFE-A4A7-7B6D9B0AE606}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6DC5C11-FB5F-4E5C-B2AE-0116660F8DAC}
+	EndGlobalSection
+EndGlobal
