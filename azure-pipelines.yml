@@ -1,0 +1,13 @@
+name: $(Build.DefinitionName)_$(GitVersion_InformationalVersion)
+pool: Default
+
+steps:
+- task: gittools.gitversion.gitversion-task.GitVersion@4
+  displayName: Calculate GitVersion
+
+- task: Cake@0
+  displayName: Run Cake build script
+  inputs:
+    script: 'build.cake'
+    target: 'Default'
+    verbosity: 'Verbose'
