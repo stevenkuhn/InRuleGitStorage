@@ -1,4 +1,4 @@
-name: $(Build.DefinitionName)_$(GitVersion_InformationalVersion)
+name: $(Build.DefinitionName)_$(GitVersion_FullSemVer)
 pool: Default
 
 steps:
