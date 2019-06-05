@@ -127,21 +127,29 @@ Task("Test")
   .IsDependentOn("Clean-TestResults")
   .IsDependentOn("Build")
   .Does(() => {
-    var settings = new DotNetCoreTestSettings
-    {
-      Configuration = configuration,
-      NoBuild = true,
-      NoRestore = true,
-      Logger = "trx;LogFileName=TestResult.trx"
-    };
-
     var projectFiles = GetFiles("./test/**/*.csproj");
     foreach (var file in projectFiles)
     {
       // Ignore any temporary nCrunch projects that might be running when this build runs
       if (file.FullPath.IndexOf("nCrunch", StringComparison.OrdinalIgnoreCase) >= 0) continue;
 
-      DotNetCoreTest(file.FullPath, settings);
+      DotNetCoreTest(file.FullPath, new DotNetCoreTestSettings
+      {
+        Configuration = configuration,
+        Framework = "netcoreapp2.2",
+        NoBuild = true,
+        NoRestore = true,
+        Logger = "trx;LogFileName=./netcoreapp2.2/TestResult.trx",
+      });
+
+      DotNetCoreTest(file.FullPath, new DotNetCoreTestSettings
+      {
+        Configuration = configuration,
+        Framework = "net461",
+        NoBuild = true,
+        NoRestore = true,
+        Logger = "trx;LogFileName=./net461/TestResult.trx"
+      });
     }
   });
 
