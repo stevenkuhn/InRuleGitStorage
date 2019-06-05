@@ -132,7 +132,7 @@ Task("Test")
       Configuration = configuration,
       NoBuild = true,
       NoRestore = true,
-      Logger = "trx;LogFileName=TestResult.xml"
+      Logger = "trx;LogFileName=TestResult.trx"
     };
 
     var projectFiles = GetFiles("./test/**/*.csproj");

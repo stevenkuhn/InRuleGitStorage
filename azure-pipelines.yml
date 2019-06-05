@@ -16,6 +16,6 @@ steps:
   displayName: Publish Test Results
   inputs:
     testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TestResults/TestResult_*.xml'
-    mergeTestResults: true
+    testResultsFiles: '**/TestResults/TestResult_*.trx'
+    mergeTestResults: false
     failTaskOnFailedTests: true
