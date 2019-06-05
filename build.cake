@@ -153,6 +153,13 @@ Task("Test")
     }
   });
 
+Task("PublishToFolder")
+  .IsDependentOn("Clean-Artifacts")
+  .IsDependentOn("Build")
+  .Does(() => {
+
+  });
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
@@ -161,7 +168,8 @@ Task("Default")
   .IsDependentOn("Clean")
   .IsDependentOn("Restore")
   .IsDependentOn("Build")
-  .IsDependentOn("Test");
+  .IsDependentOn("Test")
+  .IsDependentOn("PublishToFolder");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
