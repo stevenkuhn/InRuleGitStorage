@@ -11,3 +11,11 @@ steps:
     script: 'build.cake'
     target: 'Default'
     verbosity: 'Verbose'
+
+- task: PublishTestResults@2
+  displayName: Publish Test Results
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '**/TestResults/TestResult_*.xml'
+    mergeTestResults: true
+    failTaskOnFailedTests: true

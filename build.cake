@@ -85,6 +85,16 @@ Task("Clean-Artifacts")
     }
   });
 
+Task("Clean-TestResults")
+  .Does(() => 
+  {
+    var directories = GetDirectories("./test/**/TestResults");
+    foreach (var directory in directories)
+    {
+      DeleteDirectory(directory, new DeleteDirectorySettings { Force = true, Recursive = true });
+    }
+  });
+
 Task("Restore")
   .Does(() => 
   {
@@ -114,13 +124,15 @@ Task("Build")
   });
 
 Task("Test")
+  .IsDependentOn("Clean-TestResults")
   .IsDependentOn("Build")
   .Does(() => {
     var settings = new DotNetCoreTestSettings
     {
       Configuration = configuration,
       NoBuild = true,
-      NoRestore = true
+      NoRestore = true,
+      Logger = "trx;LogFileName=TestResult.xml"
     };
 
     var projectFiles = GetFiles("./test/**/*.csproj");
