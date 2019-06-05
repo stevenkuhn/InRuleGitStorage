@@ -2,7 +2,7 @@ name: $(GitVersion_FullSemVer)
 pool: Default
 
 steps:
-- task: gittools.gitversion.gitversion-task.GitVersion@4
+- task: GitVersion@4
   displayName: Calculate GitVersion
 
 - task: Cake@0
