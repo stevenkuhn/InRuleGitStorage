@@ -13,9 +13,19 @@ steps:
     verbosity: 'Verbose'
 
 - task: PublishTestResults@2
-  displayName: Publish Test Results
+  displayName: Publish Test Results [netcoreapp2.2]
   inputs:
     testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TestResults/TestResult_*.xml'
+    testResultsFiles: '**/TestResults/netcoreapp2.2/TestResult_*.trx'
+    testRunTitle: netcoreapp2.2
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+
+- task: PublishTestResults@2
+  displayName: Publish Test Results [net461]
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '**/TestResults/net461/TestResult_*.trx'
+    testRunTitle: net461
     mergeTestResults: true
     failTaskOnFailedTests: true
