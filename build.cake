@@ -3,7 +3,7 @@
 #addin nuget:?package=Cake.OctoDeploy&version=3.2.0
 
 // Install tools.
-#tool nuget:?package=GitVersion.CommandLine&version=5.0.0-beta3-26
+#tool nuget:?package=GitVersion.CommandLine&version=5.0.0-beta3-31
 
 //////////////////////////////////////////////////////////////////////
 // PARAMETERS
