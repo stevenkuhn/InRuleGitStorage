@@ -117,8 +117,7 @@ Task("Build")
     {
       MSBuild(file.FullPath, new MSBuildSettings
       {
-        Configuration = configuration, 
-        Restore = false
+        Configuration = configuration
       });
     }
 
@@ -126,8 +125,7 @@ Task("Build")
     {
       DotNetCoreBuild(file.FullPath, new DotNetCoreBuildSettings
       {
-        Configuration = configuration, 
-        NoRestore = true
+        Configuration = configuration
       });
     }
   });

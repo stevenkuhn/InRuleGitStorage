@@ -5,11 +5,10 @@
     <LangVersion>latest</LangVersion>
     
     <IsPackable>false</IsPackable>
-
-    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(NCrunch)' == '1'">
+    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
     <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
     <GetVersion>false</GetVersion>
   </PropertyGroup>

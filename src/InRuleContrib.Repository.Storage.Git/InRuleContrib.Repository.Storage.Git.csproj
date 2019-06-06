@@ -14,11 +14,10 @@
     <Description>Repository.Storage.Git is a library for storing rule applications in a Git repository.</Description>
     <Product>Repository.Storage.Git</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-
-    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(NCrunch)' == '1'">
+    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
     <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
     <GetVersion>false</GetVersion>
   </PropertyGroup>
