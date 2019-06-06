@@ -17,7 +17,7 @@ steps:
   displayName: Publish Test Results [netcoreapp2.2]
   inputs:
     testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TestResults/netcoreapp2.2/TestResult_*.trx'
+    testResultsFiles: '**/TestResults/netcoreapp2.2/TestResult*.trx'
     testRunTitle: netcoreapp2.2
     mergeTestResults: true
     failTaskOnFailedTests: true
@@ -26,7 +26,7 @@ steps:
   displayName: Publish Test Results [net461]
   inputs:
     testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TestResults/net461/TestResult_*.trx'
+    testResultsFiles: '**/TestResults/net461/TestResult*.trx'
     testRunTitle: net461
     mergeTestResults: true
     failTaskOnFailedTests: true

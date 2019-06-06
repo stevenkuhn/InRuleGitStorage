@@ -60,12 +60,6 @@ Teardown(context =>
 Task("Clean")
   .Does(() => 
   {
-    // DotNetCoreMSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new DotNetCoreMSBuildSettings
-    // {
-    //   ArgumentCustomization = args => args.Append($"/t:Clean")
-    //                                       .Append($"/p:Configuration={configuration}")
-    // });
-
     MSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new MSBuildSettings 
     { 
       Configuration = configuration,
@@ -119,13 +113,6 @@ Task("Build")
       Configuration = configuration,
       NoRestore = true
     });
-
-    // DotNetCoreMSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new DotNetCoreMSBuildSettings
-    // {
-    //   ArgumentCustomization = args => args.Append($"/t:Build")
-    //                                       .Append($"/p:Configuration={configuration}")
-    //                                       .Append($"/p:Restore=false")
-    // });
 
     MSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new MSBuildSettings
     {
