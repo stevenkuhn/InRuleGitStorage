@@ -13,6 +13,12 @@
     <GetVersion>false</GetVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
+    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
+    <GetVersion>false</GetVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="TestResults\**" />
   </ItemGroup>

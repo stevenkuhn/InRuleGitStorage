@@ -9,8 +9,9 @@ steps:
   displayName: Run Cake build script
   inputs:
     script: 'build.cake'
-    target: 'Default'
+    target: 'CI'
     verbosity: 'Verbose'
+    arguments: '-configuration Release -ScriptArgs '''''
 
 - task: PublishTestResults@2
   displayName: Publish Test Results [netcoreapp2.2]
