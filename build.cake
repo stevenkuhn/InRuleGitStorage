@@ -60,10 +60,17 @@ Teardown(context =>
 Task("Clean")
   .Does(() => 
   {
+    // DotNetCoreMSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new DotNetCoreMSBuildSettings
+    // {
+    //   ArgumentCustomization = args => args.Append($"/t:Clean")
+    //                                       .Append($"/p:Configuration={configuration}")
+    // });
+
     MSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new MSBuildSettings 
     { 
       Configuration = configuration,
-      Targets = { "Clean" }
+      Targets = { "Clean" },
+      ToolVersion = MSBuildToolVersion.VS2019
     });
 
     DotNetCoreClean(solutionFolder, new DotNetCoreCleanSettings { Configuration = configuration });
@@ -113,10 +120,18 @@ Task("Build")
       NoRestore = true
     });
 
+    // DotNetCoreMSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new DotNetCoreMSBuildSettings
+    // {
+    //   ArgumentCustomization = args => args.Append($"/t:Build")
+    //                                       .Append($"/p:Configuration={configuration}")
+    //                                       .Append($"/p:Restore=false")
+    // });
+
     MSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new MSBuildSettings
     {
       Configuration = configuration,
-      Restore = false
+      Restore = false,
+      ToolVersion = MSBuildToolVersion.VS2019
     });
   });
 
