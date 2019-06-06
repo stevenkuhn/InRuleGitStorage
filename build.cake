@@ -100,7 +100,7 @@ Task("Restore")
   {
     foreach (var file in dotnetFrameworkProjects)
     {
-      NuGetRestore(file.FullPath,  new NuGetRestoreSettings { PackagesDirectory = "../../packages" });
+      NuGetRestore(file.FullPath,  new NuGetRestoreSettings { PackagesDirectory = "./packages" });
     }
 
     foreach (var file in dotnetCoreProjects)
@@ -117,7 +117,8 @@ Task("Build")
     {
       MSBuild(file.FullPath, new MSBuildSettings
       {
-        Configuration = configuration
+        Configuration = configuration,
+        Restore = false
       });
     }
 
@@ -125,7 +126,8 @@ Task("Build")
     {
       DotNetCoreBuild(file.FullPath, new DotNetCoreBuildSettings
       {
-        Configuration = configuration
+        Configuration = configuration,
+        NoRestore = true
       });
     }
   });
