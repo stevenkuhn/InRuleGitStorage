@@ -24,7 +24,7 @@ FilePath[] dotnetFrameworkProjects = new FilePath[]
 FilePath[] dotnetCoreProjects = GetFiles("./**/*.csproj")
                                   .Where(x => dotnetFrameworkProjects
                                   .All(y => y.FullPath != x.FullPath))
-                                  .ToArray();                    
+                                  .ToArray();      
 
 //////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -37,7 +37,7 @@ Setup(context =>
   GitVersion gitVersion = GitVersion(new GitVersionSettings
   {
     NoFetch = true,
-    UpdateAssemblyInfo = false,
+    UpdateAssemblyInfo = false
   });
 
   context.Information("Result:\n{0}", gitVersion.Dump());
@@ -98,19 +98,27 @@ Task("Clean-TestResults")
 Task("Restore")
   .Does(() => 
   {
-    DotNetCoreRestore(solutionFile, new DotNetCoreRestoreSettings { });
+    foreach (var file in dotnetFrameworkProjects)
+    {
+      NuGetRestore(file.FullPath,  new NuGetRestoreSettings { PackagesDirectory = "../../packages" });
+    }
 
-    NuGetRestore(solutionFile, new NuGetRestoreSettings { });
+    foreach (var file in dotnetCoreProjects)
+    {
+      DotNetCoreRestore(file.FullPath, new DotNetCoreRestoreSettings { });
+    }
   });
 
 Task("Build")
+  .IsDependentOn("Restore")
   .Does(() => 
   {
     foreach (var file in dotnetFrameworkProjects)
     {
       MSBuild(file.FullPath, new MSBuildSettings
       {
-        Configuration = configuration
+        Configuration = configuration, 
+        Restore = false
       });
     }
 
@@ -118,7 +126,8 @@ Task("Build")
     {
       DotNetCoreBuild(file.FullPath, new DotNetCoreBuildSettings
       {
-        Configuration = configuration
+        Configuration = configuration, 
+        NoRestore = true
       });
     }
   });

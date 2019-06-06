@@ -13,8 +13,16 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Repository.Storage.Git is a library for storing rule applications in a Git repository.</Description>
     <Product>Repository.Storage.Git</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(NCrunch)' == '1'">
+    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
+    <GetVersion>false</GetVersion>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.0-beta3-31">
       <PrivateAssets>all</PrivateAssets>

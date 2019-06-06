@@ -5,7 +5,18 @@
     <LangVersion>latest</LangVersion>
     
     <IsPackable>false</IsPackable>
+
+    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(NCrunch)' == '1'">
+    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
+    <GetVersion>false</GetVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="TestResults\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.0-beta3-31">
