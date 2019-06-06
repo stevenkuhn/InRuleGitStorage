@@ -11,7 +11,7 @@ steps:
     script: 'build.cake'
     target: 'CI'
     verbosity: 'Verbose'
-    arguments: '-configuration Release -ScriptArgs '''''
+    arguments: '-configuration="Release" -githubAccessToken="" -nugetPublishSource=""'
 
 - task: PublishTestResults@2
   displayName: Publish Test Results [netcoreapp2.2]
