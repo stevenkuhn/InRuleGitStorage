@@ -2,18 +2,9 @@ name: $(GitVersion_FullSemVer)
 pool: Default
 
 trigger:
-  batch: true
-  branches:
-    include:
-    - '*'
   tags:
     include:
     - v*
-
-pr:
-  branches:
-    include:
-    - '*'
 
 variables:
   buildTarget: CI
