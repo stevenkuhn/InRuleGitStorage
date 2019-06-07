@@ -19,6 +19,7 @@ variables:
   buildTarget: CI
 
 steps:
+
 - script: |
     echo '##vso[task.setvariable variable=buildTarget]Release'
   displayName: Setting build target if triggered by tag
@@ -34,9 +35,9 @@ steps:
     target: $(buildTarget)
     verbosity: 'Verbose'
     arguments: '-configuration="Release"'
-    env:
-      GitHub_Access_Token: $(gitHubAccessToken)
-      NuGet_Publish_Source: $(mygetApiKey)
+  env:
+    GitHub_Access_Token: $(gitHubAccessToken)
+    NuGet_Publish_Source: $(mygetApiKey)
 
 - task: PublishTestResults@2
   displayName: Publish Test Results [netcoreapp2.2]
