@@ -158,8 +158,8 @@ Task("Publish-To-Folder")
   {
     if (!DirectoryExists(artifactsFolder)) { CreateDirectory(artifactsFolder); }
     
-    CopyFiles($"./src/**/{configuration}/**/*.{gitVersion.NuGetVersion}.nupkg", artifactsFolder);
-    CopyFiles($"./src/**/{configuration}/**/*.{gitVersion.NuGetVersion}.symbols.nupkg", artifactsFolder);
+    CopyFiles($"./src/**/{configuration}/**/*.{gitVersion.SemVer}.nupkg", artifactsFolder);
+    CopyFiles($"./src/**/{configuration}/**/*.{gitVersion.SemVer}.symbols.nupkg", artifactsFolder);
 
     if (!DirectoryExists($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git")) { CreateDirectory($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git"); }
     if (!DirectoryExists($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git/lib")) { CreateDirectory($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git/lib"); }
@@ -172,7 +172,7 @@ Task("Publish-To-Folder")
     CopyFiles($"./src/InRuleContrib.Authoring.Extensions.Git/bin/{configuration}/lib/win32/**/*", $"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git/lib/win32/");
     DeleteFiles($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git/**/*.xml");
     
-    Zip($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git/", $"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git.{gitVersion.NuGetVersion}.zip");
+    Zip($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git/", $"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git.{gitVersion.SemVer}.zip");
     
     DeleteDirectory($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git/", new DeleteDirectorySettings
     {
@@ -229,17 +229,17 @@ Task("Publish-To-MyGet-Feed")
   .IsDependentOn("Publish-To-Folder")
   .Does(() =>
   {
-    if (string.IsNullOrWhiteSpace(nugetPublishSource))
-    {
-      throw new InvalidOperationException("Cannot publish NuGet package(s) to the MyGet feed. You must provide a NuGet publish url via the 'nugetPublishSource' command-line argument or the 'NuGet_Publish_Source' environment variable.");
-    }
+    // if (string.IsNullOrWhiteSpace(nugetPublishSource))
+    // {
+    //   throw new InvalidOperationException("Cannot publish NuGet package(s) to the MyGet feed. You must provide a NuGet publish url via the 'nugetPublishSource' command-line argument or the 'NuGet_Publish_Source' environment variable.");
+    // }
 
-    Func<IFileSystemInfo, bool> excludeSymbolPackages =
-      fileSystemInfo => !fileSystemInfo.Path.FullPath.EndsWith(".symbols.nupkg", StringComparison.OrdinalIgnoreCase);
+    // Func<IFileSystemInfo, bool> excludeSymbolPackages =
+    //   fileSystemInfo => !fileSystemInfo.Path.FullPath.EndsWith(".symbols.nupkg", StringComparison.OrdinalIgnoreCase);
 
-    NuGetPush(GetFiles("./artifacts/**/*.nupkg", excludeSymbolPackages), new NuGetPushSettings {
-      Source = nugetPublishSource,
-    });
+    // NuGetPush(GetFiles("./artifacts/**/*.nupkg", excludeSymbolPackages), new NuGetPushSettings {
+    //   Source = nugetPublishSource,
+    // });
   });
 
 //////////////////////////////////////////////////////////////////////

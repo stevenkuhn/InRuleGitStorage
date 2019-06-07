@@ -16,6 +16,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
+    <NoWarn>1701;1702;NU5105</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(NCrunch)' == '1' ">
