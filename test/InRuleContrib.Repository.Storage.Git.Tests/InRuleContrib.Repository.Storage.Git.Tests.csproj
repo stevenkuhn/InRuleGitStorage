@@ -24,11 +24,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="RuleApps\*.ruleappx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.0-beta3-33">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="LibGit2Sharp" Version="0.26.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="Moq" Version="4.11.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
