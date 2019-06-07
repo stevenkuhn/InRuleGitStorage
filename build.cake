@@ -104,14 +104,12 @@ Task("Build")
   {
     DotNetCoreBuild("./src/InRuleContrib.Repository.Storage.Git/InRuleContrib.Repository.Storage.Git.csproj", new DotNetCoreBuildSettings
     {
-      Configuration = configuration,
-      NoRestore = true
+      Configuration = configuration
     });
 
     DotNetCoreBuild("./test/InRuleContrib.Repository.Storage.Git.Tests/InRuleContrib.Repository.Storage.Git.Tests.csproj", new DotNetCoreBuildSettings
     {
-      Configuration = configuration,
-      NoRestore = true
+      Configuration = configuration
     });
 
     MSBuild("./src/InRuleContrib.Authoring.Extensions.Git/InRuleContrib.Authoring.Extensions.Git.csproj", new MSBuildSettings
