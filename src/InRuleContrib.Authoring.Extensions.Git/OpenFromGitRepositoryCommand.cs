@@ -39,7 +39,7 @@ namespace InRuleContrib.Authoring.Extensions.Git
 
         public override void Execute()
         {
-            throw new NotImplementedException();
+            RuleApplicationService.OpenFromFile("git://");
         }
     }
 }

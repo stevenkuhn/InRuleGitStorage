@@ -127,7 +127,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests
             Assert.Equal(parentCommit, commit.Parents.ElementAt(0));
         }
 
-        [Fact]
+        [Fact(Skip = "Not sure what to do here...")]
         public void WithParentThatIsYoungerThanCommit_ShouldDoWhat()
         {
             // Arrange

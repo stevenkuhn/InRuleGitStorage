@@ -41,6 +41,39 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ActiproSoftware.Docking.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Docking.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Editors.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Editors.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Navigation.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Navigation.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.PropertyGrid.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.PropertyGrid.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Ribbon.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Ribbon.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Shared.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Shared.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.SyntaxEditor.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.SyntaxEditor.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Text.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Text.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Themes.Metro.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Themes.Metro.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Themes.Office.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Themes.Office.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiproSoftware.Wizard.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\ActiproSoftware.Wizard.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="InRule.Authoring, Version=5.4.0.191, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
       <HintPath>..\..\packages\InRule.Authoring.Core.5.4.0\lib\net461\InRule.Authoring.dll</HintPath>
     </Reference>
@@ -62,6 +95,9 @@
     <Reference Include="InRule.Runtime, Version=5.4.0.191, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
       <HintPath>..\..\packages\InRule.Runtime.5.4.0\lib\net461\InRule.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="InRule.Runtime.Testing, Version=5.4.0.191, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\InRule.Authoring.SDK.5.4.0\lib\net461\InRule.Runtime.Testing.dll</HintPath>
+    </Reference>
     <Reference Include="LibGit2Sharp, Version=0.26.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
       <HintPath>..\..\packages\LibGit2Sharp.0.26.0\lib\net46\LibGit2Sharp.dll</HintPath>
     </Reference>
@@ -73,6 +109,7 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -87,7 +124,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\GitRepositoryOptionControl.xaml.cs">
+      <DependentUpon>GitRepositoryOptionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extension.cs" />
+    <Compile Include="GitPersistenceInfo.cs" />
+    <Compile Include="GitRuleApplicationServiceImpl.cs" />
     <Compile Include="OpenFromGitRepositoryCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -102,7 +144,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="RuleApplicationServiceWrapper.cs" />
     <Compile Include="SaveToGitRepositoryCommand.cs" />
+    <Compile Include="ViewModels\GitRepositoryOptionControlViewModel.cs" />
+    <Compile Include="ViewModels\GitRepositoryOptionViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -125,6 +170,19 @@
     <Resource Include="Images\OpenFromGit32.png" />
     <Resource Include="Images\SaveToGit16.png" />
     <Resource Include="Images\SaveToGit32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Git16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Git32.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Controls\GitRepositoryOptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

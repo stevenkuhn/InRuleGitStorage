@@ -10,6 +10,22 @@ using System.Text;
 namespace InRuleContrib.Repository.Storage.Git
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public class RuleApplicationSummary
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTimeOffset LastModifiedOn { get; set; }
+    }
+
+    /// <summary>
     /// Represents the primary interface for storing and managing InRule rule
     /// applications in a git repository.
     /// </summary>
@@ -81,6 +97,17 @@ namespace InRuleContrib.Repository.Storage.Git
                 _repository.Refs.Add(_repository.Refs.Head.TargetIdentifier, commit.Sha);
             }
 
+            var notes = new StringBuilder();
+            foreach (var treeEntry in commit.Tree)
+            {
+                var logEntry = _repository.Commits.QueryBy(treeEntry.Name, new CommitFilter() { FirstParentOnly = true }).First();
+                notes.AppendFormat("{0},{1}\n", treeEntry.Name, logEntry.Commit.Committer.When.ToUniversalTime());
+            }
+
+            notes.Remove(notes.Length - 1, 1);
+
+            _repository.Notes.Add(commit.Id, notes.ToString(), author, committer, "inrule/git");
+
             return commit;
         }
 
@@ -139,6 +166,49 @@ namespace InRuleContrib.Repository.Storage.Git
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RuleApplicationSummary> GetRuleApplicationSummaries()
+        {
+            var headTarget = _repository.Refs.Head.ResolveToDirectReference();
+
+            if (headTarget == null)
+            {
+                throw new NotImplementedException();
+            }
+
+            var commit = _repository.Lookup<Commit>(headTarget.TargetIdentifier);
+            var note = commit.Notes.FirstOrDefault(n => n.Namespace == "inrule/git");
+
+            if (note == null)
+            {
+                return Enumerable.Empty<RuleApplicationSummary>();
+            }
+
+            var reader = new StringReader(note.Message);
+
+            var summaries = new List<RuleApplicationSummary>();
+
+            while (true)
+            {
+                var line = reader.ReadLine();
+                if (line == null)
+                {
+                    break;
+                }
+
+                var values = line.Split(',');
+                var name = values[0];
+                var lastModifiedOn = DateTimeOffset.Parse(values[1]);
+
+                summaries.Add(new RuleApplicationSummary { Name = name, LastModifiedOn = lastModifiedOn });
+            }
+
+            return summaries;
+        }
+
+        /// <summary>
         /// Remove an existing branch.
         /// </summary>
         /// <param name="branchName">The branch name to remove.</param>
@@ -163,12 +233,24 @@ namespace InRuleContrib.Repository.Storage.Git
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourceUrl"></param>
+        /// <param name="destinationPath"></param>
+        /// <returns></returns>
+        public static string Clone(string sourceUrl, string destinationPath)
+        {
+            return Clone(sourceUrl, destinationPath, null);
+        }
+
+        /// <summary>
         /// Clone a remote InRule git repository to a new local repository.
         /// </summary>
         /// <param name="sourceUrl">The URI for the remote repository.</param>
         /// <param name="destinationPath">The local destination path to clone into.</param>
+        /// <param name="options"></param>
         /// <returns>The path to the created repository.</returns>
-        public static string Clone(string sourceUrl, string destinationPath)
+        public static string Clone(string sourceUrl, string destinationPath, CloneOptions options)
         {
             if (sourceUrl == null) throw new ArgumentNullException(nameof(sourceUrl));
             if (string.IsNullOrWhiteSpace(sourceUrl)) throw new ArgumentException("Specified source URL cannot be null or whitespace.", nameof(sourceUrl));
@@ -198,11 +280,22 @@ namespace InRuleContrib.Repository.Storage.Git
             }
 
             // TODO: What if the sourceUrl is not a valid Git repo or a valid InRule Git repo?
+            options = options ?? new CloneOptions();
 
-            return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new CloneOptions
+            options.IsBare = true;
+            options.Checkout = false;
+
+            return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, options);
+
+/*return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new CloneOptions
             {
-                IsBare = true
-            });
+                IsBare = true,
+                CredentialsProvider = (url, usernameFromUrl, types) => new UsernamePasswordCredentials
+                {
+                    Username = username,
+                    Password = password
+                }
+            });*/
         }
 
         /// <summary>

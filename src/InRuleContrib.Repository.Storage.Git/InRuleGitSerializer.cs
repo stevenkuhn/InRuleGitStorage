@@ -322,7 +322,7 @@ namespace InRuleContrib.Repository.Storage.Git
 
             }*/
 
-            var blob =objectDatabase.CreateBlob(def);
+            var blob = objectDatabase.CreateBlob(def);
             treeDefinition.Add($"{def.Name}.xml", blob, Mode.NonExecutableFile);
 
             return objectDatabase.CreateTree(treeDefinition);

@@ -3,5 +3,6 @@
     <HiddenComponentWarnings>
       <Value>PostBuildEventDisabled</Value>
     </HiddenComponentWarnings>
+    <IgnoreThisComponentCompletely>True</IgnoreThisComponentCompletely>
   </Settings>
 </ProjectConfiguration>

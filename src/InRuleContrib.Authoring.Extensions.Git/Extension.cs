@@ -1,11 +1,18 @@
 ﻿using InRule.Authoring.Extensions;
+using InRule.Authoring.Media;
+using InRule.Authoring.Services;
 using InRule.Authoring.Windows;
 using InRule.Authoring.Windows.Controls;
+using InRule.Common.Utilities;
+using InRule.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace InRuleContrib.Authoring.Extensions.Git
 {
@@ -16,6 +23,7 @@ namespace InRuleContrib.Authoring.Extensions.Git
         private IRibbonMenuButton _fileSaveAsMenu;
         private IRibbonButton _openFromGitRepoButton;
         private IRibbonButton _saveToGitRepoButton;
+        private StatusBarItem _gitRepositoryStatusBarItem;
 
         public Extension() : base(
             name: "InRuleContrib.Authoring.Extensions.Git",
@@ -28,6 +36,12 @@ namespace InRuleContrib.Authoring.Extensions.Git
 
         public override void Enable()
         {
+            var originalRuleApplicationServiceImpl = RuleApplicationService.Implementation;
+            var gitRuleApplicationServiceImpl = ServiceManager.Compose<GitRuleApplicationServiceImpl>(originalRuleApplicationServiceImpl);
+            RuleApplicationService.Implementation = gitRuleApplicationServiceImpl;
+
+            RuleApplicationService.RuleApplicationDefChanged += WhenRuleApplicationDefChanged;
+
             //_tab = IrAuthorShell.Ribbon.AddTab("Git");
 
             var applicationMenu = IrAuthorShell.Ribbon.ApplicationMenu.Items
@@ -49,6 +63,41 @@ namespace InRuleContrib.Authoring.Extensions.Git
                 "Save the rule application to a Git repository");
 
             //var group = _tab.AddGroup("Actions", null, "");
+        }
+
+        private void WhenRuleApplicationDefChanged(object sender, EventArgs<RuleApplicationDef> e)
+        {
+            IrAuthorShell.StatusBar.Items.Remove(_gitRepositoryStatusBarItem);
+
+            var ruleAppDef = RuleApplicationService.RuleApplicationDef;
+
+            if (ruleAppDef == null)
+            {
+                return;
+            }
+
+            var persistenceInfo = RuleApplicationService.PersistenceInfo;
+
+            if (!persistenceInfo.IsGitRepository())
+            {
+                return;
+            }
+
+            var statusImage = new Image { Source = ImageFactory.GetImageThisAssembly("Images\\Git16.png"), Height = 16, Width = 16, VerticalAlignment = VerticalAlignment.Center };
+            var statusTextBox = new TextBlock { Text = "InRule Git Repository", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(5, 0, 0, 0), TextTrimming = TextTrimming.WordEllipsis };
+
+            var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            stackPanel.Children.Add(statusImage);
+            stackPanel.Children.Add(statusTextBox);
+            stackPanel.Children.Add(new Separator { Margin = new Thickness(5, 0, 0, 0) });
+
+            _gitRepositoryStatusBarItem = new StatusBarItem { Content = stackPanel, VerticalAlignment = VerticalAlignment.Center };
+
+            var firstItem = IrAuthorShell.StatusBar.Items[0];
+
+            IrAuthorShell.StatusBar.Items.Clear();
+            IrAuthorShell.StatusBar.Items.Add(firstItem);
+            IrAuthorShell.StatusBar.Items.Add(_gitRepositoryStatusBarItem);
         }
 
         public override void Disable()
