@@ -1,6 +1,7 @@
 ﻿using InRule.Repository;
 using InRuleContrib.Repository.Storage.Git.Extensions;
 using LibGit2Sharp;
+using LibGit2Sharp.Handlers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,22 +10,6 @@ using System.Text;
 
 namespace InRuleContrib.Repository.Storage.Git
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class RuleApplicationSummary
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public DateTimeOffset LastModifiedOn { get; set; }
-    }
-
     /// <summary>
     /// Represents the primary interface for storing and managing InRule rule
     /// applications in a git repository.
@@ -97,16 +82,15 @@ namespace InRuleContrib.Repository.Storage.Git
                 _repository.Refs.Add(_repository.Refs.Head.TargetIdentifier, commit.Sha);
             }
 
-            var notes = new StringBuilder();
+            /*var notes = new StringBuilder();
             foreach (var treeEntry in commit.Tree)
             {
+                //_repository.Lookup<Commit>(ObjectId.TryParse())
                 var logEntry = _repository.Commits.QueryBy(treeEntry.Name, new CommitFilter() { FirstParentOnly = true }).First();
                 notes.AppendFormat("{0},{1}\n", treeEntry.Name, logEntry.Commit.Committer.When.ToUniversalTime());
             }
-
             notes.Remove(notes.Length - 1, 1);
-
-            _repository.Notes.Add(commit.Id, notes.ToString(), author, committer, "inrule/git");
+            _repository.Notes.Add(commit.Id, notes.ToString(), author, committer, "inrule/git");*/
 
             return commit;
         }
@@ -142,6 +126,11 @@ namespace InRuleContrib.Repository.Storage.Git
             _repository.Dispose();
         }
 
+        public void Fetch()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Get a rule application from the current branch.
         /// </summary>
@@ -165,7 +154,12 @@ namespace InRuleContrib.Repository.Storage.Git
             return commit.GetRuleApplication(ruleApplicationName);
         }
 
-        /// <summary>
+        public RuleApplicationGitInfo[] GetRuleApplications()
+        {
+            throw new NotImplementedException();
+        }
+
+        /*/// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
@@ -206,6 +200,21 @@ namespace InRuleContrib.Repository.Storage.Git
             }
 
             return summaries;
+        }*/
+
+        public MergeResult Merge(string branchName, Signature merger)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MergeResult Pull(Signature merger)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Push(string branchName)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -248,9 +257,9 @@ namespace InRuleContrib.Repository.Storage.Git
         /// </summary>
         /// <param name="sourceUrl">The URI for the remote repository.</param>
         /// <param name="destinationPath">The local destination path to clone into.</param>
-        /// <param name="options"></param>
+        /// <param name="credentialsProvider"></param>
         /// <returns>The path to the created repository.</returns>
-        public static string Clone(string sourceUrl, string destinationPath, CloneOptions options)
+        public static string Clone(string sourceUrl, string destinationPath, CredentialsHandler credentialsProvider)
         {
             if (sourceUrl == null) throw new ArgumentNullException(nameof(sourceUrl));
             if (string.IsNullOrWhiteSpace(sourceUrl)) throw new ArgumentException("Specified source URL cannot be null or whitespace.", nameof(sourceUrl));
@@ -280,22 +289,19 @@ namespace InRuleContrib.Repository.Storage.Git
             }
 
             // TODO: What if the sourceUrl is not a valid Git repo or a valid InRule Git repo?
-            options = options ?? new CloneOptions();
 
-            options.IsBare = true;
-            options.Checkout = false;
-
-            return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, options);
-
-/*return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new CloneOptions
+            return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new CloneOptions
             {
+                Checkout = false,
+                CredentialsProvider = credentialsProvider,
                 IsBare = true,
-                CredentialsProvider = (url, usernameFromUrl, types) => new UsernamePasswordCredentials
-                {
-                    Username = username,
-                    Password = password
-                }
-            });*/
+            });
+
+            /*(url, usernameFromUrl, types) => new UsernamePasswordCredentials
+            {
+                Username = username,
+                Password = password
+            }*/
         }
 
         /// <summary>

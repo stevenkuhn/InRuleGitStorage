@@ -181,14 +181,15 @@ namespace InRuleContrib.Authoring.Extensions.Git
                     }
                     else
                     {
-                        var path = InRuleGitRepository.Clone(selectedOptionViewModel.SourceUrl, selectedOptionViewModel.Model.WorkingDirectory, new CloneOptions
-                        {
-                            CredentialsProvider = (url, usernameFromUrl, types) => new UsernamePasswordCredentials
+                        var path = InRuleGitRepository.Clone(
+                            sourceUrl: selectedOptionViewModel.SourceUrl, 
+                            destinationPath: selectedOptionViewModel.Model.WorkingDirectory,
+                            credentialsProvider:  (url, usernameFromUrl, types) => new UsernamePasswordCredentials
                             {
                                 Username = selectedOptionViewModel.Username,
                                 Password = selectedOptionViewModel.Password
                             }
-                        });
+                        );
                         var isValid = InRuleGitRepository.IsValid(path);
                     }
 
@@ -255,7 +256,7 @@ namespace InRuleContrib.Authoring.Extensions.Git
 
                 using (var repository = InRuleGitRepository.Open(selectedOption.WorkingDirectory))
                 {
-                    var ruleApplications = repository.GetRuleApplicationSummaries();
+                    //var ruleApplications = repository.GetRuleApplicationSummaries();
                     //ruleAppDef = repository.GetRuleApplication("NewRuleApplication");
                 }
             };

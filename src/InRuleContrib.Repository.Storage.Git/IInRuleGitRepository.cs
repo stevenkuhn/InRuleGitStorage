@@ -1,5 +1,6 @@
 ﻿using InRule.Repository;
 using LibGit2Sharp;
+using LibGit2Sharp.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -39,6 +40,8 @@ namespace InRuleContrib.Repository.Storage.Git
         /// <returns>The created branch.</returns>
         Branch CreateBranch(string branchName);
 
+        void Fetch();
+
         /// <summary>
         /// Get a rule application from the current branch.
         /// </summary>
@@ -46,6 +49,14 @@ namespace InRuleContrib.Repository.Storage.Git
         /// <returns>A rule application found in the current branch that has the specified
         /// name; null otherwise.</returns>
         RuleApplicationDef GetRuleApplication(string ruleApplicationName);
+
+        RuleApplicationGitInfo[] GetRuleApplications();
+
+        MergeResult Merge(string branchName, Signature merger);
+
+        MergeResult Pull(Signature merger);
+
+        void Push(string branchName);
 
         /// <summary>
         /// Remove an existing branch.

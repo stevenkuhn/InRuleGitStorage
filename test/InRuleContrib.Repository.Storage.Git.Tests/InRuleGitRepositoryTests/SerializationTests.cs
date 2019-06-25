@@ -48,7 +48,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests
             repository.Commit(ruleApp, "This is a test commit", signature, signature);
             var result = repository.GetRuleApplication(ruleAppName);
 
-            var test = repository.GetRuleApplicationSummaries();
+            //var test = repository.GetRuleApplicationSummaries();
 
             // Assert
             var expectedXml = RuleRepositoryDefBase.GetXml(ruleApp);
