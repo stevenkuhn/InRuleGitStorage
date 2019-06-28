@@ -40,6 +40,19 @@ namespace InRuleContrib.Repository.Storage.Git
         Branch CreateBranch(string branchName);
 
         /// <summary>
+        /// Fetch all of the latest changes from a remote InRule git repository.
+        /// </summary>
+        /// <param name="options">The parameters that control the fetch behavior.</param>
+        void Fetch(FetchOptions options);
+
+        /// <summary>
+        /// Fetch all of the latest changes from a remote InRule git repository.
+        /// </summary>
+        /// <param name="remote">The name or URI for the remote repository.</param>
+        /// <param name="options">The parameters that control the fetch behavior.></param>
+        void Fetch(string remote, FetchOptions options);
+
+        /// <summary>
         /// Get a rule application from the current branch.
         /// </summary>
         /// <param name="ruleApplicationName">The case-insensitive rule application name.</param>

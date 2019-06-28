@@ -25,7 +25,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests.St
         public void WithNullSourceUrl_ShouldThrowException()
         {
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => InRuleGitRepository.Clone(null, "destinationPath"));
+            Assert.Throws<ArgumentNullException>(() => InRuleGitRepository.Clone(null, "destinationPath", new CloneOptions()));
         }
 
         [Theory]
@@ -34,14 +34,14 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests.St
         public void WithWhiteSpaceSourceUrl_ShouldThrowException(string sourceUrl)
         {
             // Act/Assert
-            Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone(sourceUrl, "destinationPath"));
+            Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone(sourceUrl, "destinationPath", new CloneOptions()));
         }
 
         [Fact]
         public void WithNullDestinationPath_ShouldThrowException()
         {
             // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => InRuleGitRepository.Clone("sourceUrl", null));
+            Assert.Throws<ArgumentNullException>(() => InRuleGitRepository.Clone("sourceUrl", null, new CloneOptions()));
         }
 
         [Theory]
@@ -50,7 +50,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests.St
         public void WithWhiteSpaceDestinationPath_ShouldThrowException(string destinationPath)
         {
             // Act/Assert
-            Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone("sourceUrl", destinationPath));
+            Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone("sourceUrl", destinationPath, new CloneOptions()));
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests.St
             try
             {
                 // Act
-                var clonedPath = InRuleGitRepository.Clone(_fixture.Repository.Info.Path, path);
+                var clonedPath = InRuleGitRepository.Clone(_fixture.Repository.Info.Path, path, new CloneOptions());
 
                 // Assert
                 Assert.NotNull(clonedPath);
@@ -87,7 +87,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests.St
             try
             {
                 // Act/Assert
-                Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone(_fixture.Repository.Info.Path, path));
+                Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone(_fixture.Repository.Info.Path, path, new CloneOptions()));
             }
             finally
             {
@@ -106,7 +106,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests.St
                 LibGit2Sharp.Repository.Init(path);
 
                 // Act
-                Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone(_fixture.Repository.Info.Path, path));
+                Assert.Throws<ArgumentException>(() => InRuleGitRepository.Clone(_fixture.Repository.Info.Path, path, new CloneOptions()));
             }
             finally
             {
