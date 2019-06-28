@@ -18,6 +18,10 @@
     <IncludeSymbols>true</IncludeSymbols>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <NoWarn>1701;1702;NU5105</NoWarn>
+
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(NCrunch)' == '1' ">
@@ -26,18 +30,12 @@
     <GetVersion>false</GetVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WriteVersionInfoToBuildLog>false</WriteVersionInfoToBuildLog>
-    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
-    <GetVersion>false</GetVersion>
-  </PropertyGroup>
- 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.0.0-beta3-33">
+    <PackageReference Include="GitVersionTask" Version="5.0.0-beta4-8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="InRule.Repository" Version="5.4.0" />
+    <PackageReference Include="InRule.Repository" Version="5.2.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.0" />
   </ItemGroup>
 

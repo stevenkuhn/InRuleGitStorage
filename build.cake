@@ -190,7 +190,7 @@ Task("Deploy-To-irAuthor")
     if (DirectoryExists(extensionFolder)) { DeleteDirectory(extensionFolder, new DeleteDirectorySettings { Force = true, Recursive = true }); }
     CreateDirectory(extensionFolder);
 
-    Unzip($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git.{gitVersion.NuGetVersion}.zip", extensionFolder);
+    Unzip($"{artifactsFolder}/InRuleContrib.Authoring.Extensions.Git.{gitVersion.SemVer}.zip", extensionFolder);
   });
 
 Task("Publish-To-GitHub")
