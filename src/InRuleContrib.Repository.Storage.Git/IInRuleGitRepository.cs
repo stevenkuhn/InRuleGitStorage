@@ -61,6 +61,11 @@ namespace InRuleContrib.Repository.Storage.Git
         RuleApplicationDef GetRuleApplication(string ruleApplicationName);
 
         /// <summary>
+        /// Lookup and manage remotes in the repository.
+        /// </summary>
+        RemoteCollection Remotes { get; }
+
+        /// <summary>
         /// Remove an existing branch.
         /// </summary>
         /// <param name="branchName">The branch name to remove.</param>

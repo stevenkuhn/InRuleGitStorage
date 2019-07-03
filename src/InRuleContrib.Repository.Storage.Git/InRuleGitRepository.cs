@@ -146,7 +146,7 @@ namespace InRuleContrib.Repository.Storage.Git
 
             options = options ?? new FetchOptions();
 
-            _repository.Network.Fetch(remoteObj.Url, fetchRefSpecs, new LibGit2Sharp.FetchOptions
+            _repository.Network.Fetch(remoteObj.Name, fetchRefSpecs, new LibGit2Sharp.FetchOptions
             {
                 CertificateCheck = options.CertificateCheck,
                 CredentialsProvider = options.CredentialsProvider
@@ -175,6 +175,11 @@ namespace InRuleContrib.Repository.Storage.Git
 
             return commit.GetRuleApplication(ruleApplicationName);
         }
+
+        /// <summary>
+        /// Lookup and manage remotes in the repository.
+        /// </summary>
+        public RemoteCollection Remotes => _repository.Network.Remotes;
 
         /// <summary>
         /// Remove an existing branch.

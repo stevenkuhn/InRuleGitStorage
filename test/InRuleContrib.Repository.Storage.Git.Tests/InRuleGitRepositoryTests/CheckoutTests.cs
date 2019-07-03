@@ -1,7 +1,9 @@
-﻿using InRuleContrib.Repository.Storage.Git.Tests.Fixtures;
+﻿using InRule.Repository;
+using InRuleContrib.Repository.Storage.Git.Tests.Fixtures;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -9,6 +11,76 @@ using Xunit;
 
 namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests
 {
+    public class FetchTests : IDisposable
+    {
+        private readonly GitRepositoryFixture _localFixture;
+        private readonly GitRepositoryFixture _remoteFixture;
+
+        public FetchTests()
+        {
+            _localFixture = new GitRepositoryFixture();
+            _remoteFixture = new GitRepositoryFixture();
+        }
+
+        public void Dispose()
+        {
+            _localFixture.Dispose();
+            _remoteFixture.Dispose();
+        }
+
+        [Fact]
+        public void Playground()
+        {
+            var ruleAppDef = new RuleApplicationDef("InvoiceSample");
+
+            var remoteRepository = new InRuleGitRepository(_remoteFixture.Repository);
+            var message = "This is a test commit";
+
+            var identity = new Identity("Peter Quill", "starlord@gotg.org");
+            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+
+            remoteRepository.Commit(ruleAppDef, message, signature, signature);
+
+            var localRepository = new InRuleGitRepository(_localFixture.Repository);
+            localRepository.Remotes.Add("origin", _remoteFixture.Repository.Info.Path);
+
+            localRepository.Fetch(new FetchOptions());
+
+            localRepository.Checkout("origin/master");
+
+            var test = localRepository.GetRuleApplication("InvoiceSample");
+
+            Assert.NotNull(test);
+
+            /*var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(path);
+            Assert.True(Directory.Exists(path));
+
+            try
+            {
+                var ruleAppDef = new RuleApplicationDef("InvoiceSample");
+
+                var repository = new InRuleGitRepository(_fixture.Repository);
+                var message = "This is a test commit";
+
+                var identity = new Identity("Peter Quill", "starlord@gotg.org");
+                var signature = new Signature(identity, DateTimeOffset.UtcNow);
+
+                repository.Commit(ruleAppDef, message, signature, signature);
+
+                //InRuleGitRepository.Clone(_fixture.Repository.Info.Path, path, new CloneOptions());
+                //var localRepo = 
+
+                repository.Dispose();
+                //Thread.Sleep(5000);
+            }
+            finally
+            {
+                Directory.Delete(path, true);
+            }*/
+        }
+    }
+
     public class CheckoutTests : IDisposable
     {
         private readonly GitRepositoryFixture _fixture;
