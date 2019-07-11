@@ -181,13 +181,18 @@ namespace InRuleContrib.Authoring.Extensions.Git
                     }
                     else
                     {
+                        
+
                         var path = InRuleGitRepository.Clone(
                             sourceUrl: selectedOptionViewModel.SourceUrl, 
                             destinationPath: selectedOptionViewModel.Model.WorkingDirectory,
-                            credentialsProvider:  (url, usernameFromUrl, types) => new UsernamePasswordCredentials
+                            options: new InRuleContrib.Repository.Storage.Git.CloneOptions
                             {
-                                Username = selectedOptionViewModel.Username,
-                                Password = selectedOptionViewModel.Password
+                                CredentialsProvider = (url, usernameFromUrl, types) => new UsernamePasswordCredentials
+                                {
+                                    Username = selectedOptionViewModel.Username,
+                                    Password = selectedOptionViewModel.Password
+                                }
                             }
                         );
                         var isValid = InRuleGitRepository.IsValid(path);

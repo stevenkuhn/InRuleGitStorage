@@ -1,7 +1,9 @@
-﻿using InRuleContrib.Repository.Storage.Git.Tests.Fixtures;
+﻿using InRule.Repository;
+using InRuleContrib.Repository.Storage.Git.Tests.Fixtures;
 using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
