@@ -134,6 +134,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\BranchCommand.cs" />
+    <Compile Include="Commands\CommitCommand.cs" />
+    <Compile Include="Commands\DiscardCommand.cs" />
+    <Compile Include="Commands\LogoutCommand.cs" />
+    <Compile Include="Commands\MaintainCommand.cs" />
+    <Compile Include="Commands\MergeCommand.cs" />
+    <Compile Include="Commands\PullCommand.cs" />
+    <Compile Include="Commands\PushCommand.cs" />
     <Compile Include="Controls\GitRepositoryOptionControl.xaml.cs">
       <DependentUpon>GitRepositoryOptionControl.xaml</DependentUpon>
     </Compile>

@@ -79,7 +79,7 @@ namespace InRuleContrib.Authoring.Extensions.Git
             var mergeCommand = ServiceManager.Compose<MergeCommand>();
             group.AddButton(mergeCommand);
 
-            group = _tab.AddGroup("Remotes", null, "");
+            group = _tab.AddGroup("Repository", null, "");
 
             var pullCommand = ServiceManager.Compose<PullCommand>();
             group.AddButton(pullCommand);
