@@ -9,13 +9,18 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.Fixtures
         private readonly string _repositoryPath;
         public IRepository Repository { get; }
 
-        public GitRepositoryFixture()
+        public GitRepositoryFixture() : this(true)
+        {
+            
+        }
+
+        public GitRepositoryFixture(bool isBare)
         {
             try
             {
                 _repositoryPath = Path.Combine(Environment.CurrentDirectory, "Data", $"repo-{Guid.NewGuid().ToString("N")}");
                 Directory.CreateDirectory(_repositoryPath);
-                LibGit2Sharp.Repository.Init(_repositoryPath);
+                LibGit2Sharp.Repository.Init(_repositoryPath, isBare);
                 Repository = new LibGit2Sharp.Repository(_repositoryPath);
             }
             catch

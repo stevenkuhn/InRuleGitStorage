@@ -63,11 +63,15 @@ namespace InRuleContrib.Repository.Storage.Git
 
         RuleApplicationGitInfo[] GetRuleApplications();
 
-        MergeResult Merge(string branchName, Signature merger);
+        MergeTreeResult Merge(string branchName, Signature merger, MergeOptions options);
 
-        MergeResult Pull(Signature merger);
+        MergeTreeResult Pull(Signature merger, PullOptions options);
 
-        void Push(string branchName);
+        MergeTreeResult Pull(string remote, Signature merger, PullOptions options);
+
+        void Push(PushOptions options);
+
+        void Push(string remote, PushOptions options);
 
         /// <summary>
         /// Lookup and manage remotes in the repository.

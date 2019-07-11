@@ -1,4 +1,5 @@
 ﻿using InRuleContrib.Repository.Storage.Git.Tests.Fixtures;
+using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
 using System.IO;

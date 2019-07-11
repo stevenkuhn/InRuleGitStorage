@@ -1,8 +1,6 @@
 ﻿using LibGit2Sharp.Handlers;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("InRuleContrib.Repository.Storage.Git.Tests")]
-
 namespace InRuleContrib.Repository.Storage.Git
 {
     /// <summary>

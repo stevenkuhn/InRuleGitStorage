@@ -1,12 +1,12 @@
 ﻿using InRule.Repository;
 using InRuleContrib.Repository.Storage.Git.Extensions;
 using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 
 namespace InRuleContrib.Repository.Storage.Git
 {
@@ -234,11 +234,9 @@ namespace InRuleContrib.Repository.Storage.Git
             return summaries;
         }*/
 
-        public MergeResult Merge(string branchName, Signature merger)
+        public MergeTreeResult Merge(string branchName, Signature merger, MergeOptions options)
         {
-            throw new NotImplementedException();
-
-            /*if (branchName == null) throw new ArgumentNullException(nameof(branchName));
+            if (branchName == null) throw new ArgumentNullException(nameof(branchName));
             if (string.IsNullOrWhiteSpace(branchName)) throw new ArgumentException("Specified branch name cannot be null or whitespace.", nameof(branchName));
             if (merger == null) throw new ArgumentNullException(nameof(merger));
 
@@ -249,80 +247,94 @@ namespace InRuleContrib.Repository.Storage.Git
                 throw new ArgumentException("Specified branch name does not exist; cannot merge.", nameof(branchName));
             }
 
-            var currentBranchCommit = _repository.Lookup<Commit>(_repository.Refs.Head.TargetIdentifier);
-            var branchCommit = _repository.Lookup<Commit>(targetRef.TargetIdentifier);
+            return MergeFromReference(targetRef, merger, options);
+        }
 
-            if (_repository.ObjectDatabase.CanMergeWithoutConflict(currentBranchCommit, branchCommit))
+        private MergeTreeResult MergeFromReference(Reference reference, Signature merger, MergeOptions options)
+        {
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
+            if (merger == null) throw new ArgumentNullException(nameof(merger));
+
+            // TODO: what if head doesn't exist?
+            
+            var baseCommit = _repository.Lookup<Commit>(_repository.Refs.Head.TargetIdentifier);
+            var headCommit = _repository.Lookup<Commit>(reference.TargetIdentifier);
+
+            if (!_repository.ObjectDatabase.CanMergeWithoutConflict(one: baseCommit, another: headCommit))
             {
-                var mergeTreeResult = _repository.ObjectDatabase.MergeCommits(currentBranchCommit, branchCommit, new MergeTreeOptions
-                {
-                    
-                });
-
-                var mergeCommit = _repository.ObjectDatabase.CreateCommit(
-                    merger, 
-                    merger, 
-                    $"Merge branch '{targetRef.CanonicalName.Replace("refs/heads/", "")}' into {_repository.Refs.Head.TargetIdentifier.Replace("refs/heads/", "")}", 
-                    mergeTreeResult.Tree,
-                    new [] { currentBranchCommit, branchCommit }, true);
-
-                _repository.Refs.UpdateTarget(_repository.Refs.Head.TargetIdentifier, mergeCommit.Sha);
-
-                return mergeTreeResult;
+                throw new NotImplementedException("Merge conflicts have been detected and support for merge conflicts are not supported yet; cannot merge.");
             }
 
-            throw new NotImplementedException("Merge conflicts have been detected and support for merge conflicts are not supported yet; cannot merge.");*/
+            // TODO: Set MergeTreeOptions
+            var mergeTreeResult = _repository.ObjectDatabase.MergeCommits(
+                ours: baseCommit, 
+                theirs: headCommit, 
+                options: new MergeTreeOptions
+                {
+                });
+
+            // TODO: fix message when pulling from remote
+            var mergeCommit = _repository.ObjectDatabase.CreateCommit(
+                author: merger,
+                committer: merger,
+                message: $"Merge branch '{reference.CanonicalName.Replace("refs/heads/", "")}' into {_repository.Refs.Head.TargetIdentifier.Replace("refs/heads/", "")}",
+                tree: mergeTreeResult.Tree,
+                parents: new[] { baseCommit, headCommit },
+                prettifyMessage: true);
+
+            _repository.Refs.UpdateTarget(_repository.Refs.Head.TargetIdentifier, mergeCommit.Sha);
+
+            return mergeTreeResult;
         }
 
-        public MergeResult Pull(Signature merger)
+        public MergeTreeResult Pull(Signature merger, PullOptions options)
         {
-            throw new NotImplementedException();
-
-            /*
-            var pullOptions = new PullOptions
-            {
-                FetchOptions = new FetchOptions
-                {
-                    CredentialsProvider = null
-                },
-                MergeOptions = new MergeOptions
-                {
-                    
-                }
-            };
-
-            var mergeResult = Commands.Pull((LibGit2Sharp.Repository)_repository, merger, pullOptions);
-
-            return mergeResult;
-
-            /* Credential information to fetch
-    LibGit2Sharp.PullOptions options = new LibGit2Sharp.PullOptions();
-    options.FetchOptions = new FetchOptions();
-    options.FetchOptions.CredentialsProvider = new CredentialsHandler(
-        (url, usernameFromUrl, types) =>
-            new UsernamePasswordCredentials()
-            {
-                Username = USERNAME,
-                Password = PASSWORD
-            });
-
-    // User information to create a merge commit
-    var signature = new LibGit2Sharp.Signature(
-        new Identity("MERGE_USER_NAME", "MERGE_USER_EMAIL"), DateTimeOffset.Now);
-
-    // Pull
-    Commands.Pull(repo, signature, options);*/
+            return Pull("origin", merger, options);
         }
 
-        public void Push(string branchName)
+        public MergeTreeResult Pull(string remote, Signature merger, PullOptions options)
         {
-            throw new NotImplementedException();
+            // TODO: Add PullOptions
 
-            /*	Remote remote = repo.Network.Remotes["origin"];
-	var options = new PushOptions();
-	options.CredentialsProvider = (_url, _user, _cred) => 
-		new UsernamePasswordCredentials { Username = "USERNAME", Password = "PASSWORD" };
-	repo.Network.Push(remote, @"refs/heads/master", options);*/
+            if (remote == null) throw new ArgumentNullException(nameof(remote));
+            if (string.IsNullOrWhiteSpace(remote)) throw new ArgumentException("Specified remote cannot be null or whitespace.", nameof(remote));
+            if (merger == null) throw new ArgumentNullException(nameof(merger));
+
+            // TODO: Set Fetch options
+            Fetch(remote, new FetchOptions());
+
+            // TODO: What if this doesn't resolve?
+            var referenceName = _repository.Refs.Head.ResolveToDirectReference().CanonicalName.Replace("refs/heads/", $"refs/remotes/{remote}/");
+            var reference = _repository.Refs[referenceName];
+
+            return MergeFromReference(reference, merger, new MergeOptions());
+        }
+
+        public void Push(PushOptions options)
+        {
+            Push("origin", options);
+        }
+
+        public void Push(string remote, PushOptions options)
+        {
+            if (remote == null) throw new ArgumentNullException(nameof(remote));
+            if (string.IsNullOrWhiteSpace(remote)) throw new ArgumentException("Specified remote cannot be null or whitespace.", nameof(remote));
+
+            var remoteObj = _repository.Network.Remotes[remote];
+
+            if (remoteObj == null)
+            {
+                throw new ArgumentException("Specified remote name does not exist; cannot fetch.", nameof(remote));
+            }
+
+            options = options ?? new PushOptions();
+
+            _repository.Network.Push(
+                remote: remoteObj,
+                pushRefSpec: _repository.Refs.Head.ResolveToDirectReference().CanonicalName,
+                pushOptions: new LibGit2Sharp.PushOptions
+                {
+                });
         }
 
         /// <summary>
