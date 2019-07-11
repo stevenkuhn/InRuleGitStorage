@@ -139,7 +139,7 @@ namespace InRuleContrib.Repository.Storage.Git
 
             if (remoteObj == null)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Specified remote name does not exist; cannot fetch.", nameof(remote));
             }
 
             var fetchRefSpecs = remoteObj.FetchRefSpecs.Select(x => x.Specification);
