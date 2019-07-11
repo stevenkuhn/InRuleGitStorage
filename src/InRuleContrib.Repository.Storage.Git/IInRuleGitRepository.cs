@@ -40,8 +40,6 @@ namespace InRuleContrib.Repository.Storage.Git
         /// <returns>The created branch.</returns>
         Branch CreateBranch(string branchName);
 
-        void Fetch();
-
         /// <summary>
         /// Fetch all of the latest changes from a remote InRule git repository.
         /// </summary>

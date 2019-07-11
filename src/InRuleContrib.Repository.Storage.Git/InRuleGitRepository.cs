@@ -126,22 +126,6 @@ namespace InRuleContrib.Repository.Storage.Git
             _repository.Dispose();
         }
 
-        public void Fetch()
-        {
-            throw new NotImplementedException();
-
-            /*
-            var remote = _repository.Network.Remotes["origin"];
-            var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-            var fetchOptions = new FetchOptions
-            {
-                CredentialsProvider = null
-            };
-            var logMessage = "";
-
-            Commands.Fetch((LibGit2Sharp.Repository)_repository, remote.Name, refSpecs, fetchOptions, logMessage);*/
-        }
-
         /// <summary>
         /// Fetch all of the latest changes from a remote InRule git repository.
         /// </summary>
