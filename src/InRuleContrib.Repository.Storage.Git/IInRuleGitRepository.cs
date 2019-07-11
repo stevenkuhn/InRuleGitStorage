@@ -60,6 +60,10 @@ namespace InRuleContrib.Repository.Storage.Git
         /// name; null otherwise.</returns>
         RuleApplicationDef GetRuleApplication(string ruleApplicationName);
 
+        MergeResult Pull(Signature merger, PullOptions options);
+
+        MergeResult Pull(string remote, Signature merger, PullOptions options);
+
         /// <summary>
         /// Lookup and manage remotes in the repository.
         /// </summary>

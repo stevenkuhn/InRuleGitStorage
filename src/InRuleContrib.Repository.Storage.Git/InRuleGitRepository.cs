@@ -176,6 +176,120 @@ namespace InRuleContrib.Repository.Storage.Git
             return commit.GetRuleApplication(ruleApplicationName);
         }
 
+        public MergeResult Pull(Signature merger, PullOptions options)
+        {
+            return Pull("origin", merger, options);
+        }
+
+        public MergeResult Pull(string remote, Signature merger, PullOptions options)
+        {
+            if(remote == null) throw new ArgumentNullException(nameof(remote));
+            if (string.IsNullOrWhiteSpace(remote)) throw new ArgumentException("Specified remote cannot be null or whitespace.", nameof(remote));
+            if (merger == null) throw new ArgumentNullException(nameof(merger));
+
+            Fetch(remote, new FetchOptions());
+
+            //var headTarget = _repository.Refs.Head.ResolveToDirectReference();
+
+            //var currentBranchCommit = _repository.Lookup<Commit>(_repository.Refs.Head.TargetIdentifier);
+
+            throw new NotImplementedException();
+        }
+
+
+        //       public MergeResult Merge(string branchName, Signature merger)
+        //       {
+        //           throw new NotImplementedException();
+
+        //           /*if (branchName == null) throw new ArgumentNullException(nameof(branchName));
+        //           if (string.IsNullOrWhiteSpace(branchName)) throw new ArgumentException("Specified branch name cannot be null or whitespace.", nameof(branchName));
+        //           if (merger == null) throw new ArgumentNullException(nameof(merger));
+
+        //           var targetRef = _repository.Refs[$"refs/heads/{branchName}"];
+
+        //           if (targetRef == null)
+        //           {
+        //               throw new ArgumentException("Specified branch name does not exist; cannot merge.", nameof(branchName));
+        //           }
+
+        //           var currentBranchCommit = _repository.Lookup<Commit>(_repository.Refs.Head.TargetIdentifier);
+        //           var branchCommit = _repository.Lookup<Commit>(targetRef.TargetIdentifier);
+
+        //           if (_repository.ObjectDatabase.CanMergeWithoutConflict(currentBranchCommit, branchCommit))
+        //           {
+        //               var mergeTreeResult = _repository.ObjectDatabase.MergeCommits(currentBranchCommit, branchCommit, new MergeTreeOptions
+        //               {
+
+        //               });
+
+        //               var mergeCommit = _repository.ObjectDatabase.CreateCommit(
+        //                   merger, 
+        //                   merger, 
+        //                   $"Merge branch '{targetRef.CanonicalName.Replace("refs/heads/", "")}' into {_repository.Refs.Head.TargetIdentifier.Replace("refs/heads/", "")}", 
+        //                   mergeTreeResult.Tree,
+        //                   new [] { currentBranchCommit, branchCommit }, true);
+
+        //               _repository.Refs.UpdateTarget(_repository.Refs.Head.TargetIdentifier, mergeCommit.Sha);
+
+        //               return mergeTreeResult;
+        //           }
+
+        //           throw new NotImplementedException("Merge conflicts have been detected and support for merge conflicts are not supported yet; cannot merge.");*/
+        //       }*/
+
+
+
+        //       public MergeResult Pull(Signature merger)
+        //       {
+        //           throw new NotImplementedException();
+
+        //           /*
+        //           var pullOptions = new PullOptions
+        //           {
+        //               FetchOptions = new FetchOptions
+        //               {
+        //                   CredentialsProvider = null
+        //               },
+        //               MergeOptions = new MergeOptions
+        //               {
+
+        //               }
+        //           };
+
+        //           var mergeResult = Commands.Pull((LibGit2Sharp.Repository)_repository, merger, pullOptions);
+
+        //           return mergeResult;
+
+        //           /* Credential information to fetch
+        //   LibGit2Sharp.PullOptions options = new LibGit2Sharp.PullOptions();
+        //   options.FetchOptions = new FetchOptions();
+        //   options.FetchOptions.CredentialsProvider = new CredentialsHandler(
+        //       (url, usernameFromUrl, types) =>
+        //           new UsernamePasswordCredentials()
+        //           {
+        //               Username = USERNAME,
+        //               Password = PASSWORD
+        //           });
+
+        //   // User information to create a merge commit
+        //   var signature = new LibGit2Sharp.Signature(
+        //       new Identity("MERGE_USER_NAME", "MERGE_USER_EMAIL"), DateTimeOffset.Now);
+
+        //   // Pull
+        //   Commands.Pull(repo, signature, options);*/
+        //       }
+
+        //       public void Push(string branchName)
+        //       {
+        //           throw new NotImplementedException();
+
+        //           /*	Remote remote = repo.Network.Remotes["origin"];
+        //var options = new PushOptions();
+        //options.CredentialsProvider = (_url, _user, _cred) => 
+        //	new UsernamePasswordCredentials { Username = "USERNAME", Password = "PASSWORD" };
+        //repo.Network.Push(remote, @"refs/heads/master", options);*/
+        //       }
+
         /// <summary>
         /// Lookup and manage remotes in the repository.
         /// </summary>

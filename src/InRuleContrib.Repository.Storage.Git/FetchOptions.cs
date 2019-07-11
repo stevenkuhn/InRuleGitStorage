@@ -28,4 +28,9 @@ namespace InRuleContrib.Repository.Storage.Git
             set;
         }
     }
+
+    public class PullOptions
+    {
+
+    }
 }
