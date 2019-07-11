@@ -1,6 +1,7 @@
 ﻿using InRule.Repository;
 using InRuleContrib.Repository.Storage.Git.Extensions;
 using LibGit2Sharp;
+using LibGit2Sharp.Handlers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -116,6 +117,43 @@ namespace InRuleContrib.Repository.Storage.Git
         }
 
         /// <summary>
+        /// Fetch all of the latest changes from a remote InRule git repository.
+        /// </summary>
+        /// <param name="options">The parameters that control the fetch behavior.</param>
+        public void Fetch(FetchOptions options)
+        {
+            Fetch("origin", options);
+        }
+
+        /// <summary>
+        /// Fetch all of the latest changes from a remote InRule git repository.
+        /// </summary>
+        /// <param name="remote">The name or URI for the remote repository.</param>
+        /// <param name="options">The parameters that control the fetch behavior.></param>
+        public void Fetch(string remote, FetchOptions options)
+        {
+            if (remote == null) throw new ArgumentNullException(nameof(remote));
+            if (string.IsNullOrWhiteSpace(remote)) throw new ArgumentException("Specified remote cannot be null or whitespace.", nameof(remote));
+
+            var remoteObj = _repository.Network.Remotes[remote];
+
+            if (remoteObj == null)
+            {
+                throw new ArgumentException("Specified remote name does not exist; cannot fetch.", nameof(remote));
+            }
+
+            var fetchRefSpecs = remoteObj.FetchRefSpecs.Select(x => x.Specification);
+
+            options = options ?? new FetchOptions();
+
+            _repository.Network.Fetch(remoteObj.Name, fetchRefSpecs, new LibGit2Sharp.FetchOptions
+            {
+                CertificateCheck = options.CertificateCheck,
+                CredentialsProvider = options.CredentialsProvider
+            });
+        }
+
+        /// <summary>
         /// Get a rule application from the current branch.
         /// </summary>
         /// <param name="ruleApplicationName">The case-insensitive rule application name.</param>
@@ -137,6 +175,11 @@ namespace InRuleContrib.Repository.Storage.Git
 
             return commit.GetRuleApplication(ruleApplicationName);
         }
+
+        /// <summary>
+        /// Lookup and manage remotes in the repository.
+        /// </summary>
+        public RemoteCollection Remotes => _repository.Network.Remotes;
 
         /// <summary>
         /// Remove an existing branch.
@@ -167,8 +210,9 @@ namespace InRuleContrib.Repository.Storage.Git
         /// </summary>
         /// <param name="sourceUrl">The URI for the remote repository.</param>
         /// <param name="destinationPath">The local destination path to clone into.</param>
+        /// <param name="options">The parameters that control the clone behavior.</param>
         /// <returns>The path to the created repository.</returns>
-        public static string Clone(string sourceUrl, string destinationPath)
+        public static string Clone(string sourceUrl, string destinationPath, CloneOptions options)
         {
             if (sourceUrl == null) throw new ArgumentNullException(nameof(sourceUrl));
             if (string.IsNullOrWhiteSpace(sourceUrl)) throw new ArgumentException("Specified source URL cannot be null or whitespace.", nameof(sourceUrl));
@@ -199,8 +243,12 @@ namespace InRuleContrib.Repository.Storage.Git
 
             // TODO: What if the sourceUrl is not a valid Git repo or a valid InRule Git repo?
 
-            return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new CloneOptions
+            options = options ?? new CloneOptions();
+
+            return LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new LibGit2Sharp.CloneOptions
             {
+                CertificateCheck = options.CertificateCheck,
+                CredentialsProvider = options.CredentialsProvider,
                 IsBare = true
             });
         }
