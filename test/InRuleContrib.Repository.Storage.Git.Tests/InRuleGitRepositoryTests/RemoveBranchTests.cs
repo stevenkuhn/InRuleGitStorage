@@ -11,7 +11,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests
 
         public RemoveBranchTests()
         {
-            _fixture = new GitRepositoryFixture();
+            _fixture = new GitRepositoryFixture(isBare: false);
         }
 
         public void Dispose()

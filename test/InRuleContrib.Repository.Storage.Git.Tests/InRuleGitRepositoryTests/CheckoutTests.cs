@@ -17,7 +17,7 @@ namespace InRuleContrib.Repository.Storage.Git.Tests.InRuleGitRepositoryTests
 
         public CheckoutTests()
         {
-            _fixture = new GitRepositoryFixture();
+            _fixture = new GitRepositoryFixture(isBare: false);
         }
 
         public void Dispose()
