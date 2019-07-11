@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InRuleContrib.Authoring.Extensions.Git
+namespace InRuleContrib.Authoring.Extensions.Git.Commands
 {
     public class SaveToGitRepositoryCommand : VisualCommandBase
     {

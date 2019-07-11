@@ -139,8 +139,10 @@
     </Compile>
     <Compile Include="Extension.cs" />
     <Compile Include="GitPersistenceInfo.cs" />
+    <Compile Include="GitRepositoryOption.cs" />
+    <Compile Include="GitRepositorySettings.cs" />
     <Compile Include="GitRuleApplicationServiceImpl.cs" />
-    <Compile Include="OpenFromGitRepositoryCommand.cs" />
+    <Compile Include="Commands\OpenFromGitRepositoryCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -155,7 +157,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="RuleApplicationServiceWrapper.cs" />
-    <Compile Include="SaveToGitRepositoryCommand.cs" />
+    <Compile Include="Commands\SaveToGitRepositoryCommand.cs" />
     <Compile Include="ViewModels\GitRepositoryOptionControlViewModel.cs" />
     <Compile Include="ViewModels\GitRepositoryOptionViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -187,12 +189,33 @@
   <ItemGroup>
     <Resource Include="Images\Git32.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Page Include="Controls\GitRepositoryOptionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GitPull16.png" />
+    <Resource Include="Images\GitPull32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GitPush16.png" />
+    <Resource Include="Images\GitPush32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GitBranch16.png" />
+    <Resource Include="Images\GitBranch32.png" />
+    <Resource Include="Images\GitMerge16.png" />
+    <Resource Include="Images\GitMerge32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GitCommit16.png" />
+    <Resource Include="Images\GitCommit32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GitDiscard16.png" />
+    <Resource Include="Images\GitDiscard32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

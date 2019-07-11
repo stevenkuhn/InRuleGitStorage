@@ -5,6 +5,7 @@ using InRule.Authoring.Windows;
 using InRule.Authoring.Windows.Controls;
 using InRule.Common.Utilities;
 using InRule.Repository;
+using InRuleContrib.Authoring.Extensions.Git.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace InRuleContrib.Authoring.Extensions.Git
 {
     public class Extension : ExtensionBase
     {
-        //private IRibbonTab _tab;
+        private IRibbonTab _tab;
         private IRibbonMenuButton _fileOpenMenu;
         private IRibbonMenuButton _fileSaveAsMenu;
         private IRibbonButton _openFromGitRepoButton;
@@ -42,7 +43,7 @@ namespace InRuleContrib.Authoring.Extensions.Git
 
             RuleApplicationService.RuleApplicationDefChanged += WhenRuleApplicationDefChanged;
 
-            //_tab = IrAuthorShell.Ribbon.AddTab("Git");
+            _tab = IrAuthorShell.Ribbon.AddTab("Git");
 
             var applicationMenu = IrAuthorShell.Ribbon.ApplicationMenu.Items
                 .AsGeneric<object>()
@@ -62,7 +63,37 @@ namespace InRuleContrib.Authoring.Extensions.Git
                 saveToGitRepoCommand,
                 "Save the rule application to a Git repository");
 
-            //var group = _tab.AddGroup("Actions", null, "");
+            var group = _tab.AddGroup("Rule Application", null, "");
+
+            var commitCommand = ServiceManager.Compose<CommitCommand>();
+            group.AddButton(commitCommand);
+
+            var discardCommand = ServiceManager.Compose<DiscardCommand>();
+            group.AddButton(discardCommand);
+
+            group = _tab.AddGroup("Branches", null, "");
+
+            var branchCommand = ServiceManager.Compose<BranchCommand>();
+            group.AddButton(branchCommand);
+
+            var mergeCommand = ServiceManager.Compose<MergeCommand>();
+            group.AddButton(mergeCommand);
+
+            group = _tab.AddGroup("Remotes", null, "");
+
+            var pullCommand = ServiceManager.Compose<PullCommand>();
+            group.AddButton(pullCommand);
+
+            var pushCommand = ServiceManager.Compose<PushCommand>();
+            group.AddButton(pushCommand);
+
+            group = _tab.AddGroup("General", null, "");
+
+            var logoutCommand = ServiceManager.Compose<LogoutCommand>();
+            group.AddButton(logoutCommand);
+
+            var maintainCommand = ServiceManager.Compose<MaintainCommand>();
+            group.AddButton(maintainCommand);
         }
 
         private void WhenRuleApplicationDefChanged(object sender, EventArgs<RuleApplicationDef> e)
@@ -102,8 +133,8 @@ namespace InRuleContrib.Authoring.Extensions.Git
 
         public override void Disable()
         {
-            //IrAuthorShell.Ribbon.RemoveTab(_tab);
-            //_tab = null;
+            IrAuthorShell.Ribbon.RemoveTab(_tab);
+            _tab = null;
 
             _fileOpenMenu.RemoveMenuItem(_openFromGitRepoButton);
             _fileOpenMenu = null;
