@@ -188,8 +188,50 @@ namespace InRuleContrib.Repository.Storage.Git
 
         public RuleApplicationGitInfo[] GetRuleApplications()
         {
-            throw new NotImplementedException();
+            var headTarget = _repository.Refs.Head.ResolveToDirectReference();
+
+            if (headTarget == null)
+            {
+                return new RuleApplicationGitInfo[0];
+            }
+
+            var ruleApplications = new List<RuleApplicationGitInfo>();
+            var commit = _repository.Lookup<Commit>(headTarget.TargetIdentifier);
+
+            foreach (var treeEntry in commit.Tree)
+            {
+                if (treeEntry?.Target == null || !(treeEntry.Target is Tree))
+                {
+                    continue;
+                }
+
+                //var ruleAppDef = serializer.Deserialize(treeEntry);
+
+                var tree = (Tree)treeEntry.Target;
+                var blob = (Blob)tree[$"{treeEntry.Name}.xml"].Target;
+
+                var xml = blob.GetContentText();
+                var type = typeof(RuleApplicationDef);
+                var def = (RuleApplicationDef)RuleRepositoryDefBase.LoadFromXml(xml, type);
+
+                var logEntry = _repository.Commits.QueryBy(treeEntry.Name, new CommitFilter() { FirstParentOnly = true }).First();
+
+                var info = new RuleApplicationGitInfo(def, logEntry.Commit);
+                ruleApplications.Add(info);
+            }
+
+            return ruleApplications.ToArray();
         }
+
+        /*var notes = new StringBuilder();
+            foreach (var treeEntry in commit.Tree)
+            {
+                //_repository.Lookup<Commit>(ObjectId.TryParse())
+                var logEntry = _repository.Commits.QueryBy(treeEntry.Name, new CommitFilter() { FirstParentOnly = true }).First();
+                notes.AppendFormat("{0},{1}\n", treeEntry.Name, logEntry.Commit.Committer.When.ToUniversalTime());
+            }
+            notes.Remove(notes.Length - 1, 1);
+            _repository.Notes.Add(commit.Id, notes.ToString(), author, committer, "inrule/git");*/
 
         /*/// <summary>
         /// 

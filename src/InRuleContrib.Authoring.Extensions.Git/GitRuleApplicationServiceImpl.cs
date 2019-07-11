@@ -181,8 +181,6 @@ namespace InRuleContrib.Authoring.Extensions.Git
                     }
                     else
                     {
-                        
-
                         var path = InRuleGitRepository.Clone(
                             sourceUrl: selectedOptionViewModel.SourceUrl, 
                             destinationPath: selectedOptionViewModel.Model.WorkingDirectory,
@@ -261,8 +259,10 @@ namespace InRuleContrib.Authoring.Extensions.Git
 
                 using (var repository = InRuleGitRepository.Open(selectedOption.WorkingDirectory))
                 {
+                    var ruleApplications = repository.GetRuleApplications();
                     //var ruleApplications = repository.GetRuleApplicationSummaries();
                     //ruleAppDef = repository.GetRuleApplication("NewRuleApplication");
+                    ruleAppDef = repository.GetRuleApplication(ruleApplications[0].Name);
                 }
             };
 
