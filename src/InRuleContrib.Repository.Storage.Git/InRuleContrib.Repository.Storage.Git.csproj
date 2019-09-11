@@ -36,7 +36,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="InRule.Repository" Version="5.2.0" />
-    <PackageReference Include="LibGit2Sharp" Version="0.26.0" />
+    <PackageReference Include="LibGit2Sharp" Version="0.26.1" />
   </ItemGroup>
 
 </Project>
