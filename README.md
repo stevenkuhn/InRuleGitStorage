@@ -7,7 +7,7 @@ This project adds support for storing and managing InRule rule applications in a
 ### Installing
 
 ```powershell
-Install-Package InRuleContrib.Repository.Storage.Git -IncludePrerelease
+Install-Package Sknet.InRuleGitStorage -IncludePrerelease
 ```
 
 ## Usage
