@@ -23,8 +23,10 @@ steps:
   displayName: Setting build target if triggered by tag
   condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
 
-- task: GitVersion@4
+- task: GitVersion@5
   displayName: Calculate GitVersion
+  inputs:
+    runtime: 'core'
 
 - task: Cake@0
   displayName: Run Cake build script
@@ -35,7 +37,7 @@ steps:
     arguments: '-configuration="Release"'
   env:
     GitHub_Access_Token: $(gitHubAccessToken)
-    NuGet_Publish_Source: $(mygetApiKey)
+    NuGet_Publish_Source: $(nugetPublishSource)
 
 - task: PublishTestResults@2
   displayName: Publish Test Results [netcoreapp2.2]

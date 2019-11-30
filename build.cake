@@ -176,8 +176,8 @@ Task("Publish-To-Folder")
   {
     if (!DirectoryExists(artifactsFolder)) { CreateDirectory(artifactsFolder); }
     
-    CopyFiles($"./src/**/{configuration}/**/*.{gitVersion.SemVer}.nupkg", artifactsFolder);
-    CopyFiles($"./src/**/{configuration}/**/*.{gitVersion.SemVer}.symbols.nupkg", artifactsFolder);
+    CopyFiles($"./src/**/{configuration}/**/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg", artifactsFolder);
+    CopyFiles($"./src/**/{configuration}/**/Sknet.InRuleGitStorage.{gitVersion.SemVer}.snupkg", artifactsFolder);
 
     if (!DirectoryExists($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension")) { CreateDirectory($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension"); }
     if (!DirectoryExists($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/lib")) { CreateDirectory($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/lib"); }
@@ -221,8 +221,9 @@ Task("Publish-To-GitHub")
     }
 
     var artifacts = new List<FilePath>();
-    artifacts.AddRange(GetFiles("./artifacts/**/*.nupkg"));
-    artifacts.AddRange(GetFiles("./artifacts/**/*.zip"));
+    artifacts.Add($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg");
+    artifacts.Add($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.snupkg");
+    artifacts.Add($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension.{gitVersion.SemVer}.zip");
     artifacts = artifacts.OrderBy(x => x.GetFilename().ToString()).ToList();
 
     PublishReleaseWithArtifacts(
@@ -243,21 +244,18 @@ Task("Publish-To-GitHub")
     );
   });
 
-Task("Publish-To-MyGet-Feed")
+Task("Publish-To-NuGet-Feed")
   .IsDependentOn("Publish-To-Folder")
   .Does(() =>
   {
-    // if (string.IsNullOrWhiteSpace(nugetPublishSource))
-    // {
-    //   throw new InvalidOperationException("Cannot publish NuGet package(s) to the MyGet feed. You must provide a NuGet publish url via the 'nugetPublishSource' command-line argument or the 'NuGet_Publish_Source' environment variable.");
-    // }
+    /*if (string.IsNullOrWhiteSpace(nugetPublishSource))
+    {
+      throw new InvalidOperationException("Cannot publish NuGet package(s) to the NuGet feed. You must provide a NuGet publish url via the 'nugetPublishSource' command-line argument or the 'NuGet_Publish_Source' environment variable.");
+    }
 
-    // Func<IFileSystemInfo, bool> excludeSymbolPackages =
-    //   fileSystemInfo => !fileSystemInfo.Path.FullPath.EndsWith(".symbols.nupkg", StringComparison.OrdinalIgnoreCase);
-
-    // NuGetPush(GetFiles("./artifacts/**/*.nupkg", excludeSymbolPackages), new NuGetPushSettings {
-    //   Source = nugetPublishSource,
-    // });
+    NuGetPush($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg", new NuGetPushSettings {
+      Source = nugetPublishSource,
+    });*/
   });
 
 //////////////////////////////////////////////////////////////////////
@@ -284,7 +282,7 @@ Task("Release")
   .IsDependentOn("Build")
   .IsDependentOn("Test")
   .IsDependentOn("Publish-To-GitHub")
-  .IsDependentOn("Publish-To-MyGet-Feed");
+  .IsDependentOn("Publish-To-NuGet-Feed");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

@@ -1,5 +1,7 @@
 # Introduction
 
+[![Nuget](https://img.shields.io/nuget/vpre/Sknet.InRuleGitStorage)](https://www.nuget.org/packages/Sknet.InRuleGitStorage)
+
 This project allows you to store and manage your [InRule](https://www.inrule.com/)® business rules in a Git repository.
 
 ## Features
@@ -16,7 +18,5 @@ This project allows you to store and manage your [InRule](https://www.inrule.com
   - Lorem ipsum dolor sit amet
   - Lorem ipsum dolor sit amet
 
-## Contact & Support
 
-## License
 

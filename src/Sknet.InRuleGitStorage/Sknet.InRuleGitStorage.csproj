@@ -16,6 +16,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <NoWarn>1701;1702;NU5105</NoWarn>
   </PropertyGroup>
