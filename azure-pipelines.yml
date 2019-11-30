@@ -37,7 +37,7 @@ steps:
     arguments: '-configuration="Release"'
   env:
     GitHub_Access_Token: $(gitHubAccessToken)
-    NuGet_Publish_Source: $(nugetPublishSource)
+    NuGet_ApiKey: $(nugetApiKey)
 
 - task: PublishTestResults@2
   displayName: Publish Test Results [netcoreapp2.2]

@@ -18,7 +18,7 @@ namespace Sknet.InRuleGitStorage
         }
 
         /// <summary>
-        /// This handler will be called to let the user make a decision on whether to allow the connection to preoceed based on the certificate presented by the server.
+        /// This handler will be called to let the user make a decision on whether to allow the connection to proceed based on the certificate presented by the server.
         /// </summary>
         public CertificateCheckHandler CertificateCheck
         {

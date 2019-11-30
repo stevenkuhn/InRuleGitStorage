@@ -3,15 +3,12 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <PackageProjectUrl>https://stevenkuhn.github.io/InRuleGitStorage/</PackageProjectUrl>
+    <PackageProjectUrl>https://inrulegitstorage.stevenkuhn.net/</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Authors>Steven Kuhn</Authors>
     <Company>Steven Kuhn</Company>
     <Copyright>Copyright © Steven Kuhn 2019</Copyright>
-    <RepositoryUrl>https://github.com/stevenkuhn/InRuleGitStorage.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>Sknet.InRuleGitStorage is a library for storing rule applications in a Git repository.</Description>
+    <Description>Sknet.InRuleGitStorage is a library for storing and managing InRule® business rules in a Git repository.</Description>
     <Product>Sknet.InRuleGitStorage</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -19,10 +16,13 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <NoWarn>1701;1702;NU5105</NoWarn>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl>https://inrulegitstorage.stevenkuhn.net/icon.png</PackageIconUrl>
+    <PackageTags>inrule git</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="logo.ico" />
+    <None Include="icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>

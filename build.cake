@@ -11,7 +11,7 @@
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var githubAccessToken = Argument("githubAccessToken", EnvironmentVariable("GitHub_Access_Token") ?? null);
-var nugetPublishSource = Argument("nugetPublishSource", EnvironmentVariable("NuGet_Publish_Source") ?? null);
+var nugetApiKey = Argument("nugetApiKey", EnvironmentVariable("NuGet_ApiKey") ?? null);
 
 //////////////////////////////////////////////////////////////////////
 // GLOBALS
@@ -248,14 +248,14 @@ Task("Publish-To-NuGet-Feed")
   .IsDependentOn("Publish-To-Folder")
   .Does(() =>
   {
-    /*if (string.IsNullOrWhiteSpace(nugetPublishSource))
+    if (string.IsNullOrWhiteSpace(nugetApiKey))
     {
-      throw new InvalidOperationException("Cannot publish NuGet package(s) to the NuGet feed. You must provide a NuGet publish url via the 'nugetPublishSource' command-line argument or the 'NuGet_Publish_Source' environment variable.");
+      throw new InvalidOperationException("Cannot publish NuGet package(s) to the NuGet feed. You must provide a NuGet API key via the 'nugetApiKey' command-line argument or the 'NuGet_ApiKey' environment variable.");
     }
 
     NuGetPush($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg", new NuGetPushSettings {
-      Source = nugetPublishSource,
-    });*/
+      ApiKey = nugetApiKey,
+    });
   });
 
 //////////////////////////////////////////////////////////////////////

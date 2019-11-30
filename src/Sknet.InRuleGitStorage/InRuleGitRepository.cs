@@ -356,7 +356,8 @@ namespace Sknet.InRuleGitStorage
                 ours: baseCommit,
                 theirs: headCommit,
                 options: new MergeTreeOptions
-                {
+                { 
+                   
                 });
 
             // TODO: fix message when pulling from remote
@@ -428,14 +429,18 @@ namespace Sknet.InRuleGitStorage
             if (string.IsNullOrWhiteSpace(remote)) throw new ArgumentException("Specified remote cannot be null or whitespace.", nameof(remote));
             if (merger == null) throw new ArgumentNullException(nameof(merger));
 
-            // TODO: Set Fetch options
-            Fetch(remote, new FetchOptions());
+            options = options ?? new PullOptions();
+
+            var fetchOptions = options.FetchOptions ?? new FetchOptions();
+            var mergeOptions = options.MergeOptions ?? new MergeOptions();
+
+            Fetch(remote, fetchOptions);
 
             // TODO: What if this doesn't resolve?
             var referenceName = _repository.Refs.Head.ResolveToDirectReference().CanonicalName.Replace("refs/heads/", $"refs/remotes/{remote}/");
             var reference = _repository.Refs[referenceName];
 
-            return MergeFromReference(reference, merger, new MergeOptions());
+            return MergeFromReference(reference, merger, mergeOptions);
         }
 
         /// <summary>
@@ -471,6 +476,8 @@ namespace Sknet.InRuleGitStorage
                 pushRefSpec: _repository.Refs.Head.ResolveToDirectReference().CanonicalName,
                 pushOptions: new LibGit2Sharp.PushOptions
                 {
+                    CertificateCheck = options.CertificateCheck,
+                    CredentialsProvider = options.CredentialsProvider
                 });
         }
 
