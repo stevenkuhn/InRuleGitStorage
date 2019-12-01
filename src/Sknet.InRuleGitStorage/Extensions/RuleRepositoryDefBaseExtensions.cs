@@ -24,5 +24,21 @@ namespace Sknet.InRuleGitStorage.Extensions
 
             return stream;
         }
+
+        internal static Stream GetXmlStream(this RuleRepositoryDefCollection defCollection)
+        {
+            if (defCollection == null)
+            {
+                throw new ArgumentNullException(nameof(defCollection));
+            }
+
+            var stream = new MemoryStream();
+
+            XmlSerializationUtility.SaveObjectToStream(stream, defCollection);
+
+            stream.Position = 0;
+
+            return stream;
+        }
     }
 }

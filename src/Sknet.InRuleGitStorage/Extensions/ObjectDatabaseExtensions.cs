@@ -28,6 +28,24 @@ namespace Sknet.InRuleGitStorage.Extensions
             }
         }
 
+        internal static Blob CreateBlob(this ObjectDatabase objectDatabase, RuleRepositoryDefCollection defCollection)
+        {
+            if (objectDatabase == null)
+            {
+                throw new ArgumentNullException(nameof(objectDatabase));
+            }
+
+            if (defCollection == null)
+            {
+                throw new ArgumentNullException(nameof(defCollection));
+            }
+
+            using (var stream = defCollection.GetXmlStream())
+            {
+                return objectDatabase.CreateBlob(stream);
+            }
+        }
+
         internal static Commit CreateCommit(this ObjectDatabase objectDatabase,
             Signature author,
             Signature committer,

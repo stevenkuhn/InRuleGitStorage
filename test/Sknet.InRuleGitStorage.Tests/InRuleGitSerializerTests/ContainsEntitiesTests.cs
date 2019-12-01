@@ -1,4 +1,6 @@
-﻿using InRule.Repository;
+﻿using InRule.Common.Utilities;
+using InRule.Repository;
+using InRule.Repository.Classifications;
 using InRule.Repository.EndPoints;
 using InRule.Repository.Vocabulary;
 using LibGit2Sharp;
@@ -49,8 +51,15 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
             Assert.NotNull(entity1Tree);
             Assert.NotNull(entity1Tree["Entity1.xml"]);
 
-            Assert.NotEmpty(ruleApp.Entities);
-            Assert.All(ruleApp.Entities, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
+            var collectionTreeEntry = entitiesTree["Entities.xml"];
+            Assert.NotNull(collectionTreeEntry);
+
+            var collectionStream = ((Blob)collectionTreeEntry.Target).GetContentStream();
+            var collectionDef = (EntityDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(EntityDefCollection));
+
+            Assert.Empty(ruleApp.Entities);
+            Assert.NotEmpty(collectionDef);
+            Assert.All(collectionDef, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
         }
     }
 
@@ -95,8 +104,15 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
             Assert.NotNull(field1Tree);
             Assert.NotNull(field1Tree["Field1.xml"]);
 
-            Assert.NotEmpty(entityDef.Fields);
-            Assert.All(entityDef.Fields, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
+            var collectionTreeEntry = fieldsTree["Fields.xml"];
+            Assert.NotNull(collectionTreeEntry);
+
+            var collectionStream = ((Blob)collectionTreeEntry.Target).GetContentStream();
+            var collectionDef = (FieldDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(FieldDefCollection));
+
+            Assert.Empty(entityDef.Fields);
+            Assert.NotEmpty(collectionDef);
+            Assert.All(collectionDef, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
         }
 
         [Fact]
@@ -126,8 +142,15 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
             Assert.NotNull(classification1Tree);
             Assert.NotNull(classification1Tree["Classification1.xml"]);
 
-            Assert.NotEmpty(entityDef.Classifications);
-            Assert.All(entityDef.Classifications, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
+            var collectionTreeEntry = classificationsTree["Classifications.xml"];
+            Assert.NotNull(collectionTreeEntry);
+
+            var collectionStream = ((Blob)collectionTreeEntry.Target).GetContentStream();
+            var collectionDef = (ClassificationDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(ClassificationDefCollection));
+
+            Assert.Empty(entityDef.Classifications);
+            Assert.NotEmpty(collectionDef);
+            Assert.All(collectionDef, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
         }
     }
 
@@ -164,8 +187,15 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
             Assert.NotNull(dataElementsTree);
             Assert.NotNull(dataElementsTree["Table1.xml"]);
 
-            Assert.NotEmpty(ruleApp.DataElements);
-            Assert.All(ruleApp.DataElements, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
+            var collectionTreeEntry = dataElementsTree["DataElements.xml"];
+            Assert.NotNull(collectionTreeEntry);
+
+            var collectionStream = ((Blob)collectionTreeEntry.Target).GetContentStream();
+            var collectionDef = (DataElementDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(DataElementDefCollection));
+
+            Assert.Empty(ruleApp.DataElements);
+            Assert.NotEmpty(collectionDef);
+            Assert.All(collectionDef, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
         }
     }
 
@@ -202,8 +232,15 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
             Assert.NotNull(endPointsTree);
             Assert.NotNull(endPointsTree["RestService1.xml"]);
 
-           Assert.NotEmpty(ruleApp.EndPoints);
-           Assert.All(ruleApp.EndPoints, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
+            var collectionTreeEntry = endPointsTree["EndPoints.xml"];
+            Assert.NotNull(collectionTreeEntry);
+
+            var collectionStream = ((Blob)collectionTreeEntry.Target).GetContentStream();
+            var collectionDef = (EndPointDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(EndPointDefCollection));
+
+            Assert.Empty(ruleApp.EndPoints);
+            Assert.NotEmpty(collectionDef);
+            Assert.All(collectionDef, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
         }
     }
 
@@ -243,8 +280,16 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
             Assert.NotNull(vocabularyTree);
             Assert.NotNull(vocabularyTree["Notification1.xml"]);
 
-            Assert.NotEmpty(entityDef.Vocabulary.Templates);
-            Assert.All(entityDef.Vocabulary.Templates, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
+            var collectionTreeEntry = vocabularyTree["Templates.xml"];
+            Assert.NotNull(collectionTreeEntry);
+
+            var collectionStream = ((Blob)collectionTreeEntry.Target).GetContentStream();
+            var collectionDef = (TemplateDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(TemplateDefCollection));
+
+            Assert.Empty(entityDef.Vocabulary.Templates);
+
+            Assert.NotEmpty(collectionDef);
+            Assert.All(collectionDef, (RuleRepositoryDefBase def) => Assert.Equal(def.Guid.ToString(), def.Name));
         }
     }
 }

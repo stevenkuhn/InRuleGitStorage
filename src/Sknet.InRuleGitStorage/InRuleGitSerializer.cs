@@ -1,4 +1,5 @@
-﻿using InRule.Repository;
+﻿using InRule.Common.Utilities;
+using InRule.Repository;
 using InRule.Repository.EndPoints;
 using InRule.Repository.RuleElements;
 using InRule.Repository.Vocabulary;
@@ -61,8 +62,16 @@ namespace Sknet.InRuleGitStorage
                 var dataElementsTree = tree["DataElements"]?.Target as Tree;
                 if (dataElementsTree != null)
                 {
+                    var collectionBlob = (Blob)dataElementsTree["DataElements.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (DataElementDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(DataElementDefCollection));
+
+                    containsDataElementsDef.DataElements = defCollection;
+
                     foreach (var dataElementTreeEntry in dataElementsTree)
                     {
+                        if (dataElementTreeEntry.Name == "DataElements.xml") continue;
+
                         var dataElementBlob = (Blob)dataElementTreeEntry.Target;
                         var dataElementXml = dataElementBlob.GetContentText();
                         var dataElementType = GetDefTypeFromXml(dataElementXml);
@@ -78,8 +87,16 @@ namespace Sknet.InRuleGitStorage
                 var endPointsTree = tree["EndPoints"]?.Target as Tree;
                 if (endPointsTree != null)
                 {
+                    var collectionBlob = (Blob)endPointsTree["EndPoints.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (EndPointDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(EndPointDefCollection));
+
+                    containsEndPointsDef.EndPoints = defCollection;
+
                     foreach (var endPointTreeEntry in endPointsTree)
                     {
+                        if (endPointTreeEntry.Name == "EndPoints.xml") continue;
+
                         var endPointBlob = (Blob)endPointTreeEntry.Target;
                         var endPointXml = endPointBlob.GetContentText();
                         var endPointType = GetDefTypeFromXml(endPointXml);
@@ -95,23 +112,39 @@ namespace Sknet.InRuleGitStorage
                 var entitiesTree = tree["Entities"]?.Target as Tree;
                 if (entitiesTree != null)
                 {
+                    var collectionBlob = (Blob)entitiesTree["Entities.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (EntityDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(EntityDefCollection));
+
+                    containsEntitiesDef.Entities = defCollection;
+
                     foreach (var entityTreeEntry in entitiesTree)
                     {
+                        if (entityTreeEntry.Name == "Entities.xml") continue;
+
                         var entityDef = DeserializeDefFromTree<EntityDef>(entityTreeEntry);
                         containsEntitiesDef.Entities[entityDef.Guid] = entityDef;
                     }
                 }
             }
 
-            if (def is IContainsFields containsFielsDef)
+            if (def is IContainsFields containsFieldsDef)
             {
                 var fieldsTree = tree["Fields"]?.Target as Tree;
                 if (fieldsTree != null)
                 {
+                    var collectionBlob = (Blob)fieldsTree["Fields.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (FieldDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(FieldDefCollection));
+
+                    containsFieldsDef.Fields = defCollection;
+
                     foreach (var fieldTreeEntry in fieldsTree)
                     {
+                        if (fieldTreeEntry.Name == "Fields.xml") continue;
+
                         var fieldDef = DeserializeDefFromTree<FieldDef>(fieldTreeEntry);
-                        containsFielsDef.Fields[fieldDef.Guid] = fieldDef;
+                        containsFieldsDef.Fields[fieldDef.Guid] = fieldDef;
                     }
                 }
             }
@@ -121,8 +154,16 @@ namespace Sknet.InRuleGitStorage
                 var ruleElementsTree = tree["RuleElements"]?.Target as Tree;
                 if (ruleElementsTree != null)
                 {
+                    var collectionBlob = (Blob)ruleElementsTree["RuleElements.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (RuleElementDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(RuleElementDefCollection));
+
+                    containsRuleElementsDef.RuleElements = defCollection;
+
                     foreach (var ruleElementTreeEntry in ruleElementsTree)
                     {
+                        if (ruleElementTreeEntry.Name == "RuleElements.xml") continue;
+
                         var ruleElementDef = DeserializeDefFromTree<RuleElementDef>(ruleElementTreeEntry);
                         containsRuleElementsDef.RuleElements[ruleElementDef.Guid] = ruleElementDef;
                     }
@@ -134,8 +175,16 @@ namespace Sknet.InRuleGitStorage
                 var ruleSetsTree = tree["RuleSets"]?.Target as Tree;
                 if (ruleSetsTree != null)
                 {
+                    var collectionBlob = (Blob)ruleSetsTree["RuleSets.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (RuleSetDefBaseCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(RuleSetDefBaseCollection));
+
+                    containsRuleSetsDef.RuleSets = defCollection;
+
                     foreach (var ruleSetTreeEntry in ruleSetsTree)
                     {
+                        if (ruleSetTreeEntry.Name == "RuleSets.xml") continue;
+
                         var ruleSetDef = DeserializeDefFromTree<RuleSetDef>(ruleSetTreeEntry);
                         containsRuleSetsDef.RuleSets[ruleSetDef.Guid] = ruleSetDef;
                     }
@@ -147,8 +196,16 @@ namespace Sknet.InRuleGitStorage
                 var ruleSetParametersTree = tree["Parameters"]?.Target as Tree;
                 if (ruleSetParametersTree != null)
                 {
+                    var collectionBlob = (Blob)ruleSetParametersTree["Parameters.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (RuleSetParameterDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(RuleSetParameterDefCollection));
+
+                    containsRuleSetParametersDef.Parameters = defCollection;
+
                     foreach (var ruleSetParameterTreeEntry in ruleSetParametersTree)
                     {
+                        if (ruleSetParameterTreeEntry.Name == "Parameters.xml") continue;
+
                         var ruleSetParameterBlob = (Blob)ruleSetParameterTreeEntry.Target;
                         var ruleSetParameterXml = ruleSetParameterBlob.GetContentText();
                         var ruleSetParameterType = GetDefTypeFromXml(ruleSetParameterXml);
@@ -164,14 +221,27 @@ namespace Sknet.InRuleGitStorage
                 var vocabularyTree = tree["Vocabulary"]?.Target as Tree;
                 if (vocabularyTree != null)
                 {
-                    foreach (var vocabularyTreeEntry in vocabularyTree)
-                    {
-                        var vocabularyBlob = (Blob)vocabularyTreeEntry.Target;
-                        var vocabularyXml = vocabularyBlob.GetContentText();
-                        var vocabularyType = GetDefTypeFromXml(vocabularyXml);
-                        var vocabularyDef = (TemplateDef)RuleRepositoryDefBase.LoadFromXml(vocabularyXml, vocabularyType);
+                    var collectionBlob = (Blob)vocabularyTree["Templates.xml"].Target;
+                    var collectionStream = collectionBlob.GetContentStream();
+                    var defCollection = (TemplateDefCollection)XmlSerializationUtility.GetObjectFromStream(collectionStream, typeof(TemplateDefCollection));
 
-                        containsVocabularyDef.Vocabulary.Templates[vocabularyDef.Guid] = vocabularyDef;
+                    var vocabularyBlob = (Blob)tree["Vocabulary.xml"].Target;
+                    var vocabularyStream = vocabularyBlob.GetContentStream();
+                    var vocabularyDef = (VocabularyDef)XmlSerializationUtility.GetObjectFromStream(vocabularyStream, typeof(VocabularyDef));
+                    containsVocabularyDef.Vocabulary = vocabularyDef;
+
+                    containsVocabularyDef.Vocabulary.Templates = defCollection;
+
+                    foreach (var templateTreeEntry in vocabularyTree)
+                    {
+                        if (templateTreeEntry.Name == "Templates.xml") continue;
+
+                        var templateBlob = (Blob)templateTreeEntry.Target;
+                        var templateXml = templateBlob.GetContentText();
+                        var templateType = GetDefTypeFromXml(templateXml);
+                        var templateDef = (TemplateDef)RuleRepositoryDefBase.LoadFromXml(templateXml, templateType);
+
+                        containsVocabularyDef.Vocabulary.Templates[templateDef.Guid] = templateDef;
                     }
                 }
             }
@@ -193,7 +263,7 @@ namespace Sknet.InRuleGitStorage
             return DefTypeLookup[typeName];
         }
 
-        private Tree SerializeDefsThatHaveNoChildDefs(RuleRepositoryDefCollection defs, ObjectDatabase objectDatabase)
+        private Tree SerializeDefsThatHaveNoChildDefs(RuleRepositoryDefCollection defs, string propertyName, ObjectDatabase objectDatabase)
         {
             if (defs == null || defs.Count == 0) return null;
 
@@ -211,10 +281,16 @@ namespace Sknet.InRuleGitStorage
                 defs[i] = defPointer;
             }
 
+            // serialize def collection and then remove items from collection
+            var defCollectionBlob = objectDatabase.CreateBlob(defs);
+            treeDefinition.Add($"{propertyName}.xml", defCollectionBlob, Mode.NonExecutableFile);
+
+            defs.Clear();
+
             return objectDatabase.CreateTree(treeDefinition);
         }
 
-        private Tree SerializeDefsThatHaveChildDefs(RuleRepositoryDefCollection defs, ObjectDatabase objectDatabase)
+        private Tree SerializeDefsThatHaveChildDefs(RuleRepositoryDefCollection defs, string propertyName, ObjectDatabase objectDatabase)
         {
             if (defs == null || defs.Count == 0) return null;
 
@@ -232,6 +308,12 @@ namespace Sknet.InRuleGitStorage
                 defs[i] = defPointer;
             }
 
+            // serialize def collection and then remove items from collection
+            var defCollectionBlob = objectDatabase.CreateBlob(defs);
+            treeDefinition.Add($"{propertyName}.xml", defCollectionBlob, Mode.NonExecutableFile);
+
+            defs.Clear();
+
             return objectDatabase.CreateTree(treeDefinition);
         }
 
@@ -241,7 +323,7 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsDataElements containsDataElementsDef)
             {
-                var tree = SerializeDefsThatHaveNoChildDefs(containsDataElementsDef.DataElements, objectDatabase);
+                var tree = SerializeDefsThatHaveNoChildDefs(containsDataElementsDef.DataElements, "DataElements", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("DataElements", tree);
@@ -250,7 +332,7 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsEndPoints containsEndPointsDef)
             {
-                var tree = SerializeDefsThatHaveNoChildDefs(containsEndPointsDef.EndPoints, objectDatabase);
+                var tree = SerializeDefsThatHaveNoChildDefs(containsEndPointsDef.EndPoints, "EndPoints", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("EndPoints", tree);
@@ -259,7 +341,7 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsEntities containsEntitiesDef)
             {
-                var tree = SerializeDefsThatHaveChildDefs(containsEntitiesDef.Entities, objectDatabase);
+                var tree = SerializeDefsThatHaveChildDefs(containsEntitiesDef.Entities, "Entities", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("Entities", tree);
@@ -268,13 +350,13 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsFields containsFieldsDef)
             {
-                var tree = SerializeDefsThatHaveChildDefs(containsFieldsDef.Fields, objectDatabase);
+                var tree = SerializeDefsThatHaveChildDefs(containsFieldsDef.Fields, "Fields", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("Fields", tree);
                 }
 
-                tree = SerializeDefsThatHaveChildDefs(containsFieldsDef.Classifications, objectDatabase);
+                tree = SerializeDefsThatHaveChildDefs(containsFieldsDef.Classifications, "Classifications", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("Classifications", tree);
@@ -283,7 +365,7 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsRuleElements containsRuleElementsDef && !(def is IContainsRuleSets))
             {
-                var tree = SerializeDefsThatHaveChildDefs(containsRuleElementsDef.RuleElements, objectDatabase);
+                var tree = SerializeDefsThatHaveChildDefs(containsRuleElementsDef.RuleElements, "RuleElements", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("RuleElements", tree);
@@ -292,7 +374,7 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsRuleSets containsRuleSetsDef)
             {
-                var tree = SerializeDefsThatHaveChildDefs(containsRuleSetsDef.RuleSets, objectDatabase);
+                var tree = SerializeDefsThatHaveChildDefs(containsRuleSetsDef.RuleSets, "RuleSets", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("RuleSets", tree);
@@ -301,7 +383,7 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsRuleSetParameters containsRuleSetParametersDef)
             {
-                var tree = SerializeDefsThatHaveNoChildDefs(containsRuleSetParametersDef.Parameters, objectDatabase);
+                var tree = SerializeDefsThatHaveNoChildDefs(containsRuleSetParametersDef.Parameters, "Parameters", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("Parameters", tree);
@@ -310,10 +392,13 @@ namespace Sknet.InRuleGitStorage
 
             if (def is IContainsVocabulary containsVocabularyDef)
             {
-                var tree = SerializeDefsThatHaveNoChildDefs(containsVocabularyDef.Vocabulary?.Templates, objectDatabase);
+                var tree = SerializeDefsThatHaveNoChildDefs(containsVocabularyDef.Vocabulary?.Templates, "Templates", objectDatabase);
                 if (tree != null)
                 {
                     treeDefinition.Add("Vocabulary", tree);
+
+                    var vocabularyBlob = objectDatabase.CreateBlob(containsVocabularyDef.Vocabulary);
+                    treeDefinition.Add("Vocabulary.xml", vocabularyBlob, Mode.NonExecutableFile);
                 }
             }
 
