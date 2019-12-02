@@ -255,6 +255,7 @@ Task("Publish-To-NuGet-Feed")
 
     NuGetPush($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg", new NuGetPushSettings {
       ApiKey = nugetApiKey,
+      Source = "https://api.nuget.org/v3/index.json"
     });
   });
 

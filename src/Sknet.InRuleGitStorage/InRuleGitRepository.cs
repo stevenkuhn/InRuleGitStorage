@@ -227,8 +227,6 @@ namespace Sknet.InRuleGitStorage
                     continue;
                 }
 
-                //var ruleAppDef = serializer.Deserialize(treeEntry);
-
                 var tree = (Tree)treeEntry.Target;
                 var blob = (Blob)tree[$"{treeEntry.Name}.xml"].Target;
 
@@ -236,7 +234,7 @@ namespace Sknet.InRuleGitStorage
                 var type = typeof(RuleApplicationDef);
                 var def = (RuleApplicationDef)RuleRepositoryDefBase.LoadFromXml(xml, type);
 
-                var logEntry = _repository.Commits.QueryBy(treeEntry.Name, new CommitFilter() { FirstParentOnly = true }).First();
+                var logEntry = _repository.Commits.QueryBy(treeEntry.Path, new CommitFilter() { SortBy = CommitSortStrategies.Time, FirstParentOnly = false }).First();
 
                 var info = new RuleApplicationGitInfo(def, logEntry.Commit);
                 ruleApplications.Add(info);
