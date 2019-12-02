@@ -671,10 +671,12 @@ namespace Sknet.InRuleGitStorage
 
         private static void SetFolderIcon(string path)
         {
+#if NETSTANDARD2_0
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return;
             }
+#endif
 
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Specified path cannot be null or whitespace.", nameof(path));

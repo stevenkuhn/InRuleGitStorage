@@ -12,7 +12,7 @@ namespace Sknet.InRuleGitStorage
         /// </summary>
         public FetchOptions FetchOptions { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Collection of parameters controlling Merge behavior
         /// </summary>
         public MergeOptions MergeOptions { get; set; }
