@@ -1,2 +1,3 @@
 - [Introduction](introduction)
-- [Quick Start](quick-start)
+- [Installation](installation)
+- [Usage](usage)
