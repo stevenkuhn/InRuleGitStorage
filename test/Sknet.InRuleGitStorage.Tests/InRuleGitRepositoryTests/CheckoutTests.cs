@@ -47,7 +47,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
             Assert.Throws<ArgumentException>(() => repository.Checkout(path));
         }
 
-        [Fact]
+        /*[Fact]
         public void WithNonExistingBranch_ShouldThrowException()
         {
             // Arrange
@@ -55,7 +55,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
 
             // Act/Assert
             Assert.Throws<ArgumentException>(() => repository.Checkout("unknown-branch"));
-        }
+        }*/
 
         [Fact]
         public void WithNonMasterBranch_ShouldUpdateHead()
@@ -97,5 +97,50 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
             // Assert
             Assert.Equal("develop", _fixture.Repository.Head.FriendlyName);
         }
+
+        /*[Fact]
+        public void Playground()
+        {
+            using (var localFixture = new GitRepositoryFixture())
+            using (var remoteFixture = new GitRepositoryFixture())
+            {
+                var localRepository = new InRuleGitRepository(localFixture.Repository);
+                var remoteRepository = new InRuleGitRepository(remoteFixture.Repository);
+
+                //localRepository.Config.Set("user.name", "Neil Armstrong");
+                //localRepository.Config.Set("user.name", "Neil Armstrong");
+
+                localRepository.Remotes.Add("origin", remoteFixture.Repository.Info.Path);
+
+                var ruleAppDef = new RuleApplicationDef("MyRuleApplication");
+                remoteRepository.Commit(ruleAppDef, "My git to remote repo");
+
+                remoteRepository.CreateBranch("branchName");
+                ruleAppDef = new RuleApplicationDef("AnotherRuleApplication");
+                remoteRepository.Commit(ruleAppDef, "Another my git to remote repo");
+
+                localRepository.Fetch(new FetchOptions());
+
+                localRepository.CreateTrackedBranch("branchName", "origin");
+                localRepository.Checkout("branchName");
+
+                var ruleAppDef2 = localRepository.GetRuleApplication("AnotherRuleApplication");
+            }
+        }
+
+        [Fact]
+        public void Playground2()
+        {
+            using (var localFixture = new GitRepositoryFixture())
+            {
+                var localRepository = new InRuleGitRepository(localFixture.Repository);
+
+                //localRepository.CreateBranch("myBranchName");
+                localRepository.Checkout("myBranchName");
+
+                var ruleAppDef = new RuleApplicationDef("MyRuleApplication");
+                localRepository.Commit(ruleAppDef, "Another my git to remote repo");
+            }
+        }*/
     }
 }
