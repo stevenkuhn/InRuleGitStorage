@@ -95,6 +95,23 @@ using (var repo = InRuleGitRepository.Init("/path/to/repo"))
 }
 ```
 
+## Config<small style="color: #aaa;">&nbsp;&nbsp;property</small>
+
+>Provides access to the configuration settings for this repository.
+
+Example
+
+```csharp
+// Initialize a new repository
+using (var repo = InRuleGitRepository.Init("/path/to/repo"))
+{
+    // Set the user name and email for the repository to be used for commits, merges,
+    // and pulls when a signature is not explictly given
+    repo.Config.Set("user.name", "Gamora");
+    repo.Config.Set("user.email", "gamora@gotg.com");
+}
+```
+
 ## CreateBranch
 
 >Creates a new branch from the current branch.
@@ -196,18 +213,74 @@ using (var repo = InRuleGitRepository.Open("/path/to/repo"))
 
 >Performs a merge of the current branch and the specified branch, and create a commit if there are no conflicts.
 
+!> **Merge conflict** support has not been implemented yet. If any merge conflicts are detected, then
+a `NotImplementedException` will occur.
+
 Example:
 
 ```csharp
+// Initialize a new repository
+using (var repo = InRuleGitRepository.Init("/path/to/repo"))
+{
+    // Create and commit a new rule application to the repository
+    var ruleApplication = new RuleApplicationDef("MyRuleApplication");
+    repo.Commit(ruleApplication, "Add a new rule application");
+
+    // Create and checkout a new branch
+    repo.CreateBranch("my-change");
+    repo.Checkout("my-change");
+
+    // Make a change to the rule application and commit
+    ruleApplication.Entities.Add(new Entity("MyEntity"));
+    repo.Commit(ruleApplication, "Add a new entity");
+
+    // Checkout master branch
+    repo.Checkout("master");
+
+    // Merge the entity change into the current (master) branch
+    repo.Merge("my-change");
+}
 ```
 
 ## Pull
 
 >Fetches all of the changes from a remote InRule git repository and merge into the current branch.
 
+!> **Merge conflict** support has not been implemented yet. If any merge conflicts are detected
+while attempting to merge the remote branch, then a `NotImplementedException` will occur.
+
 Example:
 
 ```csharp
+// Clone the remote repository to a local directory
+InRuleGitRepository.Clone("https://github.com/owner/repo.git", "/path/to/local/repo");
+
+// Get a new instance of the local InRule Git repository
+using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
+{
+    // Fetch all the latest changes from the "origin" remote and merge the remote branch
+    // into the local current branch of the same name
+    repo.Pull();
+
+    // Add another remote, fetch all the latest changes from that remote, and merge the
+    // remote brach into the local current branch of the same name
+    repo.Remotes.Add("another-remote", "https://github.com/owner/another-repo.git");
+    repo.Pull("another-remote");
+
+    // Fetch all the latest changes from "origin" using authentication and merge the
+    // remote branch into the local current branch of the same name
+    repo.Pull(new PullOptions
+    {
+        FetchOptions = new FetchOptions
+        {
+            CredentialsProvider = (url, usernameFromUrl, types) => new UsernamePasswordCredentials
+            {
+                Username = "github_username",
+                Password = "github_accesstoken"
+            }
+        }
+    })
+}
 ```
 
 ## Push
@@ -217,6 +290,35 @@ Example:
 Example:
 
 ```csharp
+// Clone the remote repository to a local directory
+InRuleGitRepository.Clone("https://github.com/owner/repo.git", "/path/to/local/repo");
+
+// Get a new instance of the local InRule Git repository
+using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
+{
+    // Create and commit a new rule application to the repository
+    var ruleApplication = new RuleApplicationDef("MyRuleApplication");
+    repo.Commit(ruleApplication, "Add a new rule application");
+
+    // Push the new rule application in the current branch to the remote repository
+    // to a remote branch of the same name
+    repo.Push();
+}
+```
+
+## Remotes<small style="color: #aaa;">&nbsp;&nbsp;property</small>
+
+>Lookup and manage remotes in the repository.
+
+Example:
+
+```csharp
+// Initialize a new repository
+using (var repo = InRuleGitRepository.Init("/path/to/repo"))
+{
+    // Add a remote repository to fetch, pull, and push changes
+    repo.Remotes.Add("origin", "https://github.com/owner/repo.git");
+}
 ```
 
 ## RemoveBranch
