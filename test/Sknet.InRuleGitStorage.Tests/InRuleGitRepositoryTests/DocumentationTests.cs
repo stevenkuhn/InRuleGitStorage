@@ -31,6 +31,9 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
             // Get a new instance of your local InRule Git repository
             using (var repo = InRuleGitRepository.Open(_fixture.DirectoryPath))
             {
+                repo.Config.Set("user.name", "Starlord");
+                repo.Config.Set("user.email", "starlord@gotg.com");
+
                 // Create a new rule application and commit it to the "master" branch
                 var ruleApp = new RuleApplicationDef("QuickstartSample");
                 repo.Commit(ruleApp, "Add quickstart sample rule application");
@@ -51,6 +54,9 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
             {
                 using (var repo = InRuleGitRepository.Open(remoteFixture.Repository.Info.Path))// var repo = new InRuleGitRepository(remoteFixture.Repository))
                 {
+                    repo.Config.Set("user.name", "Starlord");
+                    repo.Config.Set("user.email", "starlord@gotg.com");
+
                     var ruleApp = new RuleApplicationDef("BlankRuleApp");
                     repo.Commit(ruleApp, "Add blank rule application");
 
@@ -80,6 +86,9 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
                 // Get a new instance of your local InRule Git repository
                 using (var repo = InRuleGitRepository.Open(_fixture.DirectoryPath))
                 {
+                    repo.Config.Set("user.name", "Starlord");
+                    repo.Config.Set("user.email", "starlord@gotg.com");
+
                     // Create a local branch that is tracked to the remote "v0.2.0" branch
                     repo.CreateBranch("v0.2.0", "origin");
 
@@ -114,6 +123,9 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
                 // === ==== ===
                 using (var repo = InRuleGitRepository.Open(remoteFixture.Repository.Info.Path))
                 {
+                    repo.Config.Set("user.name", "Starlord");
+                    repo.Config.Set("user.email", "starlord@gotg.com");
+
                     repo.Checkout("v0.2.0");
                     var ruleApp = repo.GetRuleApplication("InvoiceSample");
                     repo.Checkout("master");
