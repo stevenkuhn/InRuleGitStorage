@@ -75,3 +75,7 @@ using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
 	repo.RemoveBranch("invoice-date-field");
 }
 ```
+
+## Support
+
+- Create a [GitHub issue](https://github.com/stevenkuhn/InRuleGitStorage-Issues/issues) for bug reports, feature requests, or questions with this library, the documentation, or the [samples](https://github.com/stevenkuhn/InRuleGitStorage-Samples) repository.
