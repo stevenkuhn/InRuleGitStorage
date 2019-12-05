@@ -4,6 +4,36 @@ using System.IO;
 
 namespace Sknet.InRuleGitStorage.Tests.Fixtures
 {
+    public class TemporaryDirectoryFixture : IDisposable
+    {
+        public string DirectoryPath { get; }
+
+        public TemporaryDirectoryFixture()
+        {
+            DirectoryPath = Path.Combine(Environment.CurrentDirectory, "Data", $"repo-{Guid.NewGuid().ToString("N")}");
+            Directory.CreateDirectory(DirectoryPath);
+        }
+
+        public void Dispose()
+        {
+            DeleteDirectoryPath();
+        }
+
+        private void DeleteDirectoryPath()
+        {
+            if (!string.IsNullOrWhiteSpace(DirectoryPath) && Directory.Exists(DirectoryPath))
+            {
+                var directoryInfo = new DirectoryInfo(DirectoryPath);
+                foreach (var file in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
+                {
+                    file.Attributes &= ~FileAttributes.ReadOnly;
+                }
+
+                Directory.Delete(DirectoryPath, true);
+            }
+        }
+    }
+
     public class GitRepositoryFixture : IDisposable
     {
         private readonly string _repositoryPath;
@@ -11,7 +41,7 @@ namespace Sknet.InRuleGitStorage.Tests.Fixtures
 
         public GitRepositoryFixture() : this(true)
         {
-            
+
         }
 
         public GitRepositoryFixture(bool isBare)

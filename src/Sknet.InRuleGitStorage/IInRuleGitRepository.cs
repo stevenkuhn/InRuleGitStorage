@@ -28,15 +28,6 @@ namespace Sknet.InRuleGitStorage
         /// </summary>
         /// <param name="ruleApplication">The rule application to store in the repository.</param>
         /// <param name="message">The description of why a change was made to the repository.</param>
-        /// <returns>The generated commit containing the specified rule application and any existing rule applications.</returns>
-        Commit Commit(RuleApplicationDef ruleApplication, string message);
-
-        /// <summary>
-        /// Store the content of the specified rule application in the current
-        /// branch as a new commit.
-        /// </summary>
-        /// <param name="ruleApplication">The rule application to store in the repository.</param>
-        /// <param name="message">The description of why a change was made to the repository.</param>
         /// <param name="author">The signature of who made the change.</param>
         /// <param name="committer">The signature of who added the change to the repository.</param>
         /// <returns>The generated commit containing the specified rule application and any existing rule applications.</returns>
@@ -55,10 +46,12 @@ namespace Sknet.InRuleGitStorage
         Branch CreateBranch(string branchName);
 
         /// <summary>
-        /// Fetch all of the latest changes from a remote InRule git repository.
+        /// Create a new tracked branch from the remote branch of the same name.
         /// </summary>
-        /// <param name="options">The parameters that control the fetch behavior.</param>
-        void Fetch(FetchOptions options);
+        /// <param name="branchName">The branch name for the new branch.</param>
+        /// <param name="remote">The name for the remote repository.</param>
+        /// <returns>The created branch.</returns>
+        Branch CreateBranch(string branchName, string remote);
 
         /// <summary>
         /// Fetch all of the latest changes from a remote InRule git repository.
@@ -86,45 +79,10 @@ namespace Sknet.InRuleGitStorage
         /// create a commit if there are no conflicts.
         /// </summary>
         /// <param name="branchName">The branch name to merge with the current branch.</param>
-        /// <param name="options">The parameters that control the merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        MergeTreeResult Merge(string branchName, MergeOptions options);
-
-        /// <summary>
-        /// Perform a merge of the current branch and the specified branch, and
-        /// create a commit if there are no conflicts.
-        /// </summary>
-        /// <param name="branchName">The branch name to merge with the current branch.</param>
         /// <param name="merger">The signature to use for the merge.</param>
         /// <param name="options">The parameters that control the merge behavior.</param>
         /// <returns>The result of a merge of two trees and any conflicts.</returns>
         MergeTreeResult Merge(string branchName, Signature merger, MergeOptions options);
-
-        /// <summary>
-        /// Fetch all of the changes from a remote InRule git repository and
-        /// merge into the current branch.
-        /// </summary>
-        /// <param name="options">The parameters that control the fetch and merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        MergeTreeResult Pull(PullOptions options);
-
-        /// <summary>
-        /// Fetch all of the changes from a remote InRule git repository and
-        /// merge into the current branch.
-        /// </summary>
-        /// <param name="merger">The signature to use for the merge.</param>
-        /// <param name="options">The parameters that control the fetch and merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        MergeTreeResult Pull(Signature merger, PullOptions options);
-
-        /// <summary>
-        /// Fetch all of the changes from a remote InRule git repository and
-        /// merge into the current branch.
-        /// </summary>
-        /// <param name="remote">The name or URI for the remote repository.</param>
-        /// <param name="options">The parameters that control the fetch and merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        MergeTreeResult Pull(string remote, PullOptions options);
 
         /// <summary>
         /// Fetch all of the changes from a remote InRule git repository and
@@ -135,12 +93,6 @@ namespace Sknet.InRuleGitStorage
         /// <param name="options">The parameters that control the fetch and merge behavior.</param>
         /// <returns>The result of a merge of two trees and any conflicts.</returns>
         MergeTreeResult Pull(string remote, Signature merger, PullOptions options);
-
-        /// <summary>
-        /// Push the current branch to a remote InRule git repository.
-        /// </summary>
-        /// <param name="options">The parameters that control the push behavior.</param>
-        void Push(PushOptions options);
 
         /// <summary>
         /// Push the current branch to a remote InRule git repository.
@@ -159,5 +111,14 @@ namespace Sknet.InRuleGitStorage
         /// </summary>
         /// <param name="branchName">The branch name to remove.</param>
         void RemoveBranch(string branchName);
+
+        /// <summary>
+        /// Create a commit that removes the specified rule application from the current branch.
+        /// </summary>
+        /// <param name="ruleApplicationName">The case-insensitive rule application name.</param>
+        /// <param name="message">The description of why a change was made to the repository.</param>
+        /// <param name="author">The signature of who made the change.</param>
+        /// <param name="committer">The signature of who added the change to the repository.</param>
+        Commit RemoveRuleApplication(string ruleApplicationName, string message, Signature author, Signature committer);
     }
 }

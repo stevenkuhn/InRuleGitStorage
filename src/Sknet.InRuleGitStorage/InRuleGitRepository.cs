@@ -37,6 +37,12 @@ namespace Sknet.InRuleGitStorage
             if (branchName == null) throw new ArgumentNullException(nameof(branchName));
             if (string.IsNullOrWhiteSpace(branchName)) throw new ArgumentException("Specified branch name cannot be null or whitespace.", nameof(branchName));
 
+            if (!_repository.Refs.Any())
+            {
+                _repository.Refs.UpdateTarget("HEAD", $"refs/heads/{branchName}");
+                return;
+            }
+
             var targetRef = _repository.Refs[$"refs/heads/{branchName}"];
 
             if (targetRef == null)
@@ -45,20 +51,6 @@ namespace Sknet.InRuleGitStorage
             }
 
             _repository.Refs.UpdateTarget(_repository.Refs.Head, targetRef);
-        }
-
-        /// <summary>
-        /// Store the content of the specified rule application in the current
-        /// branch as a new commit.
-        /// </summary>
-        /// <param name="ruleApplication">The rule application to store in the repository.</param>
-        /// <param name="message">The description of why a change was made to the repository.</param>
-        /// <returns>The generated commit containing the specified rule application and any existing rule applications.</returns>
-        public Commit Commit(RuleApplicationDef ruleApplication, string message)
-        {
-            var signature = Config.BuildSignature(DateTimeOffset.Now);
-
-            return Commit(ruleApplication, message, signature, signature);
         }
 
         /// <summary>
@@ -124,16 +116,49 @@ namespace Sknet.InRuleGitStorage
             if (branchName == null) throw new ArgumentNullException(nameof(branchName));
             if (string.IsNullOrWhiteSpace(branchName)) throw new ArgumentException("Specified branch name cannot be null or whitespace.", nameof(branchName));
 
-            var targetRef = _repository.Refs[$"refs/heads/{branchName}"];
+            var branch = _repository.Branches[branchName];
 
-            if (targetRef != null)
+            if (branch != null)
             {
                 throw new ArgumentException("Specified branch already exists; cannot create a branch.", nameof(branchName));
             }
 
-            //_repository.Refs.UpdateTarget(_repository.Refs.Head, $"refs/heads/develop");
             // TODO: Add test to create branch when no commits exist
             return _repository.CreateBranch(branchName);
+        }
+
+        /// <summary>
+        /// Create a new tracked branch from the remote branch of the same name.
+        /// </summary>
+        /// <param name="branchName">The branch name for the new branch.</param>
+        /// <param name="remote">The name for the remote repository.</param>
+        /// <returns>The created branch.</returns>
+        public Branch CreateBranch(string branchName, string remote)
+        {
+            if (branchName == null) throw new ArgumentNullException(nameof(branchName));
+            if (string.IsNullOrWhiteSpace(branchName)) throw new ArgumentException("Specified branch name cannot be null or whitespace.", nameof(branchName));
+            if (remote == null) throw new ArgumentNullException(nameof(remote));
+            if (string.IsNullOrWhiteSpace(remote)) throw new ArgumentException("Specified remote cannot be null or whitespace.", nameof(remote));
+
+            var branch = _repository.Branches[branchName];
+
+            if (branch != null)
+            {
+                throw new ArgumentException("Specified branch already exists; cannot create a branch.", nameof(branchName));
+            }
+
+            var remoteBranch = _repository.Branches[$"{remote}/{branchName}"];
+
+            if (!remoteBranch.IsRemote)
+            {
+                throw new NotImplementedException();
+            }
+
+            branch = _repository.CreateBranch(branchName, remoteBranch.Tip);
+
+            _repository.Branches.Update(branch, b => b.TrackedBranch = remoteBranch.CanonicalName);
+
+            return branch;
         }
 
         /// <summary>
@@ -143,15 +168,6 @@ namespace Sknet.InRuleGitStorage
         public void Dispose()
         {
             _repository.Dispose();
-        }
-
-        /// <summary>
-        /// Fetch all of the latest changes from a remote InRule git repository.
-        /// </summary>
-        /// <param name="options">The parameters that control the fetch behavior.</param>
-        public void Fetch(FetchOptions options)
-        {
-            Fetch("origin", options);
         }
 
         /// <summary>
@@ -302,20 +318,6 @@ namespace Sknet.InRuleGitStorage
         /// create a commit if there are no conflicts.
         /// </summary>
         /// <param name="branchName">The branch name to merge with the current branch.</param>
-        /// <param name="options">The parameters that control the merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        public MergeTreeResult Merge(string branchName, MergeOptions options)
-        {
-            var signature = Config.BuildSignature(DateTimeOffset.Now);
-
-            return Merge(branchName, signature, options);
-        }
-
-        /// <summary>
-        /// Perform a merge of the current branch and the specified branch, and
-        /// create a commit if there are no conflicts.
-        /// </summary>
-        /// <param name="branchName">The branch name to merge with the current branch.</param>
         /// <param name="merger">The signature to use for the merge.</param>
         /// <param name="options">The parameters that control the merge behavior.</param>
         /// <returns>The result of a merge of two trees and any conflicts.</returns>
@@ -355,8 +357,8 @@ namespace Sknet.InRuleGitStorage
                 ours: baseCommit,
                 theirs: headCommit,
                 options: new MergeTreeOptions
-                { 
-                   
+                {
+
                 });
 
             // TODO: fix message when pulling from remote
@@ -371,45 +373,6 @@ namespace Sknet.InRuleGitStorage
             _repository.Refs.UpdateTarget(_repository.Refs.Head.TargetIdentifier, mergeCommit.Sha);
 
             return mergeTreeResult;
-        }
-
-        /// <summary>
-        /// Fetch all of the changes from a remote InRule git repository and
-        /// merge into the current branch.
-        /// </summary>
-        /// <param name="options">The parameters that control the fetch and merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        public MergeTreeResult Pull(PullOptions options)
-        {
-            var signature = Config.BuildSignature(DateTimeOffset.Now);
-
-            return Pull(signature, options);
-        }
-
-        /// <summary>
-        /// Fetch all of the changes from a remote InRule git repository and
-        /// merge into the current branch.
-        /// </summary>
-        /// <param name="merger">The signature to use for the merge.</param>
-        /// <param name="options">The parameters that control the fetch and merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        public MergeTreeResult Pull(Signature merger, PullOptions options)
-        {
-            return Pull("origin", merger, options);
-        }
-
-        /// <summary>
-        /// Fetch all of the changes from a remote InRule git repository and
-        /// merge into the current branch.
-        /// </summary>
-        /// <param name="remote">The name or URI for the remote repository.</param>
-        /// <param name="options">The parameters that control the fetch and merge behavior.</param>
-        /// <returns>The result of a merge of two trees and any conflicts.</returns>
-        public MergeTreeResult Pull(string remote, PullOptions options)
-        {
-            var signature = Config.BuildSignature(DateTimeOffset.Now);
-
-            return Pull(remote, signature, options);
         }
 
         /// <summary>
@@ -440,15 +403,6 @@ namespace Sknet.InRuleGitStorage
             var reference = _repository.Refs[referenceName];
 
             return MergeFromReference(reference, merger, mergeOptions);
-        }
-
-        /// <summary>
-        /// Push the current branch to a remote InRule git repository.
-        /// </summary>
-        /// <param name="options">The parameters that control the push behavior.</param>
-        public void Push(PushOptions options)
-        {
-            Push("origin", options);
         }
 
         /// <summary>
@@ -507,6 +461,61 @@ namespace Sknet.InRuleGitStorage
             }
 
             _repository.Branches.Remove(branchName);
+        }
+
+        /// <summary>
+        /// Create a commit that removes the specified rule application from the current branch.
+        /// </summary>
+        /// <param name="ruleApplicationName">The case-insensitive rule application name.</param>
+        /// <param name="message">The description of why a change was made to the repository.</param>
+        /// <param name="author">The signature of who made the change.</param>
+        /// <param name="committer">The signature of who added the change to the repository.</param>
+        public Commit RemoveRuleApplication(string ruleApplicationName, string message, Signature author, Signature committer)
+        {
+            if (ruleApplicationName == null) throw new ArgumentNullException(nameof(ruleApplicationName));
+            if (string.IsNullOrWhiteSpace(ruleApplicationName)) throw new ArgumentException("Specified rule application name cannot be null or whitespace.", nameof(ruleApplicationName));
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (author == null) throw new ArgumentNullException(nameof(author));
+            if (committer == null) throw new ArgumentNullException(nameof(committer));
+
+            var headTarget = _repository.Refs.Head.ResolveToDirectReference();
+
+            if (headTarget == null)
+            {
+                return null;
+            }
+
+            var commit = _repository.Lookup<Commit>(headTarget.TargetIdentifier);
+
+            var ruleAppTreeEntry = commit.Tree[ruleApplicationName];
+
+            if (ruleAppTreeEntry?.Target == null || !(ruleAppTreeEntry.Target is Tree))
+            {
+                return null;
+            }
+
+            var parents = new[] { _repository.Lookup<Commit>(_repository.Refs.Head.TargetIdentifier) };
+
+            var allRuleAppsTreeDefinition = new TreeDefinition();
+
+            var parentTree = parents[0].Tree;
+
+            foreach (var treeEntry in parentTree)
+            {
+                if (string.Equals(treeEntry.Name, ruleAppTreeEntry.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                allRuleAppsTreeDefinition.Add(treeEntry.Name, treeEntry);
+            }
+
+            var allRuleAppsTree = _repository.ObjectDatabase.CreateTree(allRuleAppsTreeDefinition);
+            commit = _repository.ObjectDatabase.CreateCommit(author, committer, message, allRuleAppsTree, parents, true, null);
+
+            _repository.Refs.UpdateTarget(_repository.Refs.Head.TargetIdentifier, commit.Sha);
+
+            return commit;
         }
 
         /// <summary>
