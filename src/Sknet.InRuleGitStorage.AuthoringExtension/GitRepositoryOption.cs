@@ -26,7 +26,7 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
                 var hash = MD5Hash(SourceUrl);
 
                 var appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                return Path.Combine(appDataDirectory, "InRule", "irAuthor", "GitRepository", hash);
+                return Path.Combine(appDataDirectory, "InRule", "irAuthor", "InRuleGitStorage", hash);
             }
         }
 

@@ -13,7 +13,7 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension.Commands
                 "Maintain",
                 ImageFactory.GetImageAuthoringAssembly("/Images/Catalog16.png"),
                 ImageFactory.GetImageAuthoringAssembly("/Images/Catalog32.png"),
-                isEnabled: true)
+                isEnabled: false)
         {
             Subscribe(
                 Subscription.RuleApplicationOpened,

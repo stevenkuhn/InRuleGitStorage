@@ -41,7 +41,7 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension.Commands
 
         public override void Execute()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }
