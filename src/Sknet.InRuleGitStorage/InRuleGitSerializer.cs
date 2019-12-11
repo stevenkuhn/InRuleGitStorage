@@ -257,8 +257,11 @@ namespace Sknet.InRuleGitStorage
 
         private static Type GetDefTypeFromXml(string xml)
         {
-            string searchString = $"<?xml version=\"1.0\" encoding=\"utf-8\"?>{Environment.NewLine}<";
-            var typeName = xml.Substring(searchString.Length, xml.IndexOf(" ", searchString.Length, StringComparison.Ordinal) - searchString.Length);
+            string searchString = $"<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+            var searchStringIndex = xml.IndexOf(searchString);
+
+            var typeNameIndex = xml.IndexOf('<', searchStringIndex + searchString.Length) + 1;
+            var typeName = xml.Substring(typeNameIndex, xml.IndexOf(' ', typeNameIndex) - typeNameIndex);
 
             return DefTypeLookup[typeName];
         }
