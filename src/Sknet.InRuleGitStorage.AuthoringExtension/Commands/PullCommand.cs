@@ -24,12 +24,12 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension.Commands
 
         protected override void WhenRuleApplicationOpened(object sender, EventArgs e)
         {
-            IsEnabled = RuleApplicationService.PersistenceInfo.IsGitRepository();
+            //IsEnabled = RuleApplicationService.PersistenceInfo.IsGitRepository();
         }
 
         protected override void WhenRuleApplicationDefChanged(object sender, EventArgs<RuleApplicationDef> e)
         {
-            IsEnabled = RuleApplicationService.PersistenceInfo.IsGitRepository();
+            //IsEnabled = RuleApplicationService.PersistenceInfo.IsGitRepository();
         }
 
         protected override void WhenRuleApplicationClosed(object sender, EventArgs e)

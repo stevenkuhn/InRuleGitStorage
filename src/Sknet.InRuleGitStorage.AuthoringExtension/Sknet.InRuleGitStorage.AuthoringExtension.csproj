@@ -141,6 +141,9 @@
     <Compile Include="Controls\GitRepositoryOptionControl.xaml.cs">
       <DependentUpon>GitRepositoryOptionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\OpenFromGitRepositoryControl.xaml.cs">
+      <DependentUpon>OpenFromGitRepositoryControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extension.cs" />
     <Compile Include="GitCredentialsProvider.cs" />
     <Compile Include="GitPersistenceInfo.cs" />
@@ -177,12 +180,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sknet.InRuleGitStorage\Sknet.InRuleGitStorage.csproj">
-      <Project>{d45a8705-1162-489a-bbec-33a8daebe7bb}</Project>
-      <Name>Sknet.InRuleGitStorage</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\OpenFromGit16.png" />
     <Resource Include="Images\OpenFromGit32.png" />
     <Resource Include="Images\SaveToGit16.png" />
@@ -196,6 +193,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\GitRepositoryOptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\OpenFromGitRepositoryControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -221,6 +222,12 @@
   <ItemGroup>
     <Resource Include="Images\GitDiscard16.png" />
     <Resource Include="Images\GitDiscard32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sknet.InRuleGitStorage\Sknet.InRuleGitStorage.csproj">
+      <Project>{d45a8705-1162-489a-bbec-33a8daebe7bb}</Project>
+      <Name>Sknet.InRuleGitStorage</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
