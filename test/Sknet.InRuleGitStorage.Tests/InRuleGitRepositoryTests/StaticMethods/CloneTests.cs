@@ -68,11 +68,12 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests.StaticMethods
 
                 // Assert
                 Assert.NotNull(clonedPath);
-                Assert.Equal(path + "\\", clonedPath);
+                Assert.Equal(Path.GetFullPath(path), Path.GetFullPath(clonedPath));
                 Assert.True(new LibGit2Sharp.Repository(path).Info.IsBare);
             }
             finally
             {
+                new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
                 Directory.Delete(path, true);
             }
         }

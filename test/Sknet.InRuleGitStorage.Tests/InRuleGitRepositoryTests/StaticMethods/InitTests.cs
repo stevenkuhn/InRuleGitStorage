@@ -58,6 +58,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryFactoryTests
             }
             finally
             {
+                new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
                 Directory.Delete(path, true);
             }
         }
@@ -77,6 +78,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryFactoryTests
             }
             finally
             {
+                new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
                 Directory.Delete(path, true);
             }
         }
@@ -96,6 +98,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryFactoryTests
             }
             finally
             {
+                new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
                 Directory.Delete(path, true);
             }
         }

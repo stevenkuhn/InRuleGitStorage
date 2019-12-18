@@ -29,6 +29,8 @@ namespace Sknet.InRuleGitStorage.Tests.Fixtures
                     file.Attributes &= ~FileAttributes.ReadOnly;
                 }
 
+                directoryInfo.Attributes &= ~FileAttributes.ReadOnly;
+
                 Directory.Delete(DirectoryPath, true);
             }
         }
@@ -76,6 +78,8 @@ namespace Sknet.InRuleGitStorage.Tests.Fixtures
                 {
                     file.Attributes &= ~FileAttributes.ReadOnly;
                 }
+
+                directoryInfo.Attributes &= ~FileAttributes.ReadOnly;
 
                 Directory.Delete(_repositoryPath, true);
             }

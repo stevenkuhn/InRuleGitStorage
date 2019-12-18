@@ -565,6 +565,20 @@ namespace Sknet.InRuleGitStorage
                     nameof(destinationPath));
             }
 
+            if (!Directory.Exists(destinationPath))
+            {
+                Directory.CreateDirectory(destinationPath);
+            }
+
+            destinationPath = Path.GetFullPath(destinationPath);
+
+            SetFolderIcon(destinationPath);
+
+            if (IsWindowsOSPlatform())
+            {
+                destinationPath = Path.Combine(destinationPath, "tmp");
+            }
+
             // TODO: What if the sourceUrl is not a valid Git repo or a valid InRule Git repo?
 
             options = options ?? new CloneOptions();
@@ -576,15 +590,27 @@ namespace Sknet.InRuleGitStorage
                 IsBare = true
             });
 
-            /*(url, usernameFromUrl, types) => new UsernamePasswordCredentials
+            if (IsWindowsOSPlatform())
             {
-                Username = username,
-                Password = password
-            }*/
+                var directoryInfo = new DirectoryInfo(destinationPath);
+                var files = directoryInfo.GetFiles();
+                var directories = directoryInfo.GetDirectories();
 
-            SetFolderIcon(destinationPath);
+                foreach (var directory in directories)
+                {
+                    directory.MoveTo(Path.Combine(directoryInfo.Parent.FullName, directory.Name));
+                }
 
-            return result;
+                foreach (var file in files)
+                {
+                    file.MoveTo(Path.Combine(directoryInfo.Parent.FullName, file.Name));
+                }
+
+                directoryInfo.Delete();
+                destinationPath = directoryInfo.Parent.FullName;
+            }
+
+            return destinationPath;
         }
 
         /// <summary>
@@ -680,17 +706,15 @@ namespace Sknet.InRuleGitStorage
 
         private static void SetFolderIcon(string path)
         {
-#if NETSTANDARD2_0
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!IsWindowsOSPlatform())
             {
                 return;
             }
-#endif
 
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Specified path cannot be null or whitespace.", nameof(path));
 
-            File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.System);
+            File.SetAttributes(path, File.GetAttributes(path) /*| FileAttributes.System*/ | FileAttributes.ReadOnly);
 
             var logoPath = Path.Combine(path, "logo.ico");
             using (Stream input = typeof(InRuleGitRepository).Assembly.GetManifestResourceStream("Sknet.InRuleGitStorage.logo.ico"))
@@ -706,6 +730,17 @@ IconResource = .\logo.ico,0");
 
             File.SetAttributes(desktopIniPath, File.GetAttributes(desktopIniPath) | FileAttributes.Hidden | FileAttributes.System);
             File.SetAttributes(logoPath, File.GetAttributes(logoPath) | FileAttributes.Hidden | FileAttributes.System);
+        }
+
+        private static bool IsWindowsOSPlatform()
+        {
+#if NETSTANDARD
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+#elif NETFRAMEWORK
+            return Environment.OSVersion.Platform == PlatformID.Win32NT; 
+#else
+            throw new NotSupportedException("IsWindowsOSPlayform() is only supported with NETSTANDARD and NETFRAMEWORK directives.");
+#endif
         }
     }
 }
