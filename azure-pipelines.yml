@@ -40,11 +40,11 @@ steps:
     NuGet_ApiKey: $(nugetApiKey)
 
 - task: PublishTestResults@2
-  displayName: Publish Test Results [netcoreapp2.2]
+  displayName: Publish Test Results [netcoreapp3.1]
   inputs:
     testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TestResults/netcoreapp2.2/TestResult*.trx'
-    testRunTitle: netcoreapp2.2
+    testResultsFiles: '**/TestResults/netcoreapp3.1/TestResult*.trx'
+    testRunTitle: netcoreapp3.1
     mergeTestResults: true
     failTaskOnFailedTests: true
 

@@ -152,10 +152,10 @@ Task("Test")
       DotNetCoreTest(file.FullPath, new DotNetCoreTestSettings
       {
         Configuration = configuration,
-        Framework = "netcoreapp2.2",
+        Framework = "netcoreapp3.1",
         NoBuild = true,
         NoRestore = true,
-        Logger = "trx;LogFileName=./netcoreapp2.2/TestResult.trx",
+        Logger = "trx;LogFileName=./netcoreapp3.1/TestResult.trx",
       });
 
       DotNetCoreTest(file.FullPath, new DotNetCoreTestSettings
