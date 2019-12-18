@@ -642,10 +642,17 @@ namespace Sknet.InRuleGitStorage
                     nameof(path));
             }
 
+            if (Repository.IsValid(path))
+            {
+                throw new ArgumentException(
+                    "Specified path already contains an existing Git repository; cannot initialize a new InRule Git repository.",
+                    nameof(path));
+            }
+
             if (IsValid(path))
             {
                 throw new ArgumentException(
-                    "Specified path already contains an existing git repository; cannot initialize a new Git repository.",
+                    "Specified path already contains an existing InRule Git repository; cannot initialize a new InRule Git repository.",
                     nameof(path));
             }
 
@@ -698,7 +705,7 @@ namespace Sknet.InRuleGitStorage
             if (!IsValid(path))
             {
                 throw new ArgumentException(
-                    "Specified path is not a valid Git repository.",
+                    "Specified path is not a valid InRule Git repository.",
                     nameof(path));
             }
 
@@ -737,7 +744,7 @@ namespace Sknet.InRuleGitStorage
             if (path == null) throw new ArgumentNullException(nameof(path));
             if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Specified path cannot be null or whitespace.", nameof(path));
 
-            File.SetAttributes(path, File.GetAttributes(path) /*| FileAttributes.System*/ | FileAttributes.ReadOnly);
+            File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.ReadOnly);
 
             var logoPath = Path.Combine(path, "logo.ico");
             using (Stream input = typeof(InRuleGitRepository).Assembly.GetManifestResourceStream("Sknet.InRuleGitStorage.logo.ico"))
