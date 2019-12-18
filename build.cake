@@ -76,7 +76,8 @@ Task("Clean")
       ToolVersion = MSBuildToolVersion.VS2019
     });
 
-    DotNetCoreClean(solutionFolder, new DotNetCoreCleanSettings { Configuration = configuration });
+    DotNetCoreClean("./test/Sknet.InRuleGitStorage.Tests/Sknet.InRuleGitStorage.Tests.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
+    DotNetCoreClean("./src/Sknet.InRuleGitStorage/Sknet.InRuleGitStorage.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
   });
 
 Task("Clean-Artifacts")
