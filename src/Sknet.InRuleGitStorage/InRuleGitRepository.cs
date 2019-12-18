@@ -551,10 +551,17 @@ namespace Sknet.InRuleGitStorage
                     nameof(destinationPath));
             }
 
+            if (Repository.IsValid(destinationPath))
+            {
+                throw new ArgumentException(
+                    "Specified destination path already contains an existing Git repository; cannot be used to clone an InRule Git repository.",
+                    nameof(destinationPath));
+            }
+
             if (IsValid(destinationPath))
             {
                 throw new ArgumentException(
-                    "Specified destination path already contains an existing git repository; cannot be used to clone an InRule Git repository.",
+                    "Specified destination path already contains an existing InRule Git repository; cannot be used to clone an InRule Git repository.",
                     nameof(destinationPath));
             }
 
@@ -610,6 +617,11 @@ namespace Sknet.InRuleGitStorage
                 destinationPath = directoryInfo.Parent.FullName;
             }
 
+            using (var repo = new Repository(destinationPath))
+            {
+                repo.Config.Set("inrule.enabled", true, ConfigurationLevel.Local);
+            }
+
             return destinationPath;
         }
 
@@ -648,6 +660,9 @@ namespace Sknet.InRuleGitStorage
 
             SetFolderIcon(path);
 
+            using var repo = new Repository(path);
+            repo.Config.Set("inrule.enabled", true, ConfigurationLevel.Local);
+
             return result;
         }
 
@@ -658,7 +673,15 @@ namespace Sknet.InRuleGitStorage
         /// <returns>True if the path is a valid InRule git repository; false otherwise.</returns>
         public static bool IsValid(string path)
         {
-            return LibGit2Sharp.Repository.IsValid(path);
+            if (!LibGit2Sharp.Repository.IsValid(path))
+            {
+                return false;
+            }
+
+            using var repo = new Repository(path);
+            var config = repo.Config.Get<bool>("inrule.enabled", ConfigurationLevel.Local);
+
+            return config != null && config.Value;
         }
 
         /// <summary>

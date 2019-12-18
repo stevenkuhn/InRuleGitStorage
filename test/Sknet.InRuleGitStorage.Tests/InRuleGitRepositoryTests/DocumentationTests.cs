@@ -52,7 +52,12 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
             // Arrage
             using (var remoteFixture = new GitRepositoryFixture())
             {
-                using (var repo = InRuleGitRepository.Open(remoteFixture.Repository.Info.Path))// var repo = new InRuleGitRepository(remoteFixture.Repository))
+                using (var repo = new LibGit2Sharp.Repository(remoteFixture.Repository.Info.Path))
+                {
+                    repo.Config.Set("inrule.enabled", true);
+                }
+
+                using (var repo = InRuleGitRepository.Open(remoteFixture.Repository.Info.Path))
                 {
                     repo.Config.Set("user.name", "Starlord");
                     repo.Config.Set("user.email", "starlord@gotg.com");
