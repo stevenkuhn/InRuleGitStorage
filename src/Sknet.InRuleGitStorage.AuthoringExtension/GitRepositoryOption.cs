@@ -8,16 +8,21 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
 {
     public class GitRepositoryOption
     {
+        private string _workingDirectory;
+
         public Guid Guid { get; set; }
-
         public string Name { get; set; }
-
         public string SourceUrl { get; set; }
 
         public string WorkingDirectory
         {
             get
             {
+                if (!string.IsNullOrWhiteSpace(_workingDirectory))
+                {
+                    return _workingDirectory;
+                }
+
                 if (string.IsNullOrWhiteSpace(SourceUrl))
                 {
                     return null;
@@ -27,6 +32,10 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
 
                 var appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 return Path.Combine(appDataDirectory, "InRule", "irAuthor", "InRuleGitStorage", hash);
+            }
+            set
+            {
+                _workingDirectory = value;
             }
         }
 

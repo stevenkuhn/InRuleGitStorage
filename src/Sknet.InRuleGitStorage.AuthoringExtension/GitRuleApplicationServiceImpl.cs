@@ -15,6 +15,7 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
+using InRule.Repository.Client;
 
 namespace Sknet.InRuleGitStorage.AuthoringExtension
 {
@@ -52,6 +53,8 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
             _ruleApplicationService.RuleApplicationDefChanging -= RuleApplicationService_RuleApplicationDefChanging;
             _ruleApplicationService.ValidationFailed -= RuleApplicationService_ValidationFailed;
         }
+
+        public event EventHandler RuleApplicationCommitted;
 
         private GitRepositoryOption GetSelectedGitRepositoryOption()
         {
@@ -203,7 +206,7 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
             if (selectedRuleAppInfo != null)
             {
                 RuleApplicationDef ruleAppDef = null;
-                var backgroundWindow = new BackgroundWorkerWaitWindow(Strings.Open_Rule_Application, "Loading from Git Repository...");
+                var backgroundWindow = new BackgroundWorkerWaitWindow(Strings.Open_Rule_Application, "Loading from Git repository...");
 
                 backgroundWindow.DoWork += delegate
                 {
@@ -241,6 +244,50 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
             }
 
             return false;
+        }
+
+        // HACK
+        public override bool CheckOut(RuleAppCheckOutMode checkOutMode)
+        {
+            if (!_ruleApplicationService.PersistenceInfo.IsGitRepository())
+            {
+                return base.CheckOut(checkOutMode);
+            }
+
+            var waitWindow = new BackgroundWorkerWaitWindow("Pulling from Git Repository", "Pulling changes from remote Git repository...");
+            waitWindow.DoWork += delegate
+            {
+                var path = ((GitPersistenceInfo)_ruleApplicationService.PersistenceInfo).Filename;
+                using (var repo = InRuleGitRepository.Open(path))
+                {
+                    repo.Pull(new PullOptions
+                    {
+                        FetchOptions = new FetchOptions
+                        {
+                            CredentialsProvider = GitCredentialsProvider.CredentialsHandler
+                        }
+                    });
+
+                    var ruleAppDef = repo.GetRuleApplication(_ruleApplicationService.RuleApplicationDef.Name);
+                    ruleAppDef.SetOriginalContentCode();
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        _ruleApplicationService.SetRuleApplicationDef(ruleAppDef, _ruleApplicationService.PersistenceInfo);
+                    });
+                }
+            };
+
+            waitWindow.RunWorkerCompleted += delegate (object sender1, RunWorkerCompletedEventArgs e1)
+            {
+
+            };
+
+            waitWindow.ShowDialog();
+
+            waitWindow.Close();
+
+            return true;
         }
 
         public override bool Save()
@@ -309,40 +356,57 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
                     return false;
                 }
 
-                if (!InRuleGitRepository.IsValid(selectedOption.WorkingDirectory))
+                var waitWindow = new BackgroundWorkerWaitWindow("Save to Git Repository", "Saving to Git repository...");
+                waitWindow.DoWork += delegate
                 {
-                    throw new NotImplementedException();
-                }
-
-                using (var repository = InRuleGitRepository.Open(selectedOption.WorkingDirectory))
-                {
-                    repository.Commit(ruleAppDef, $"Saving rule app {ruleAppDef.Name}");
-                    ruleAppDef.SetOriginalContentCode();
-                }
-
-                if (ruleAppDef.CatalogState != CatalogState.None)
-                {
-                    ruleAppDef.VisitDefs(delegate (RuleRepositoryDefBase def)
+                    if (!InRuleGitRepository.IsValid(selectedOption.WorkingDirectory))
                     {
-                        if (def is RuleApplicationDef)
+                        throw new NotImplementedException();
+                    }
+
+                    using (var repository = InRuleGitRepository.Open(selectedOption.WorkingDirectory))
+                    {
+                        repository.Commit(ruleAppDef, $"Saving rule app {ruleAppDef.Name}");
+                        ruleAppDef.SetOriginalContentCode();
+                    }
+
+                    if (ruleAppDef.CatalogState != CatalogState.None)
+                    {
+                        ruleAppDef.VisitDefs(delegate (RuleRepositoryDefBase def)
                         {
-                            ((RuleApplicationDef)def).SchemaCatalogState = CatalogState.None;
-                            ((RuleApplicationDef)def).SchemaCatalogSharingState =
-                                CatalogSharingState.None;
+                            if (def is RuleApplicationDef)
+                            {
+                                ((RuleApplicationDef)def).SchemaCatalogState = CatalogState.None;
+                                ((RuleApplicationDef)def).SchemaCatalogSharingState =
+                                    CatalogSharingState.None;
+                            }
+                            def.CatalogState = CatalogState.None;
+                            def.CatalogSharingState = CatalogSharingState.None;
+                            return true;
+                        });
+
+                        var existingPersistenceInfo = _ruleApplicationService.PersistenceInfo;
+                        var newPersistenceInfo = new GitPersistenceInfo(ruleAppDef.Name, selectedOption.WorkingDirectory, selectedOption);
+
+                        if (existingPersistenceInfo == null || !existingPersistenceInfo.IsSame(newPersistenceInfo))
+                        {
+                            _ruleApplicationService.SetRuleApplicationDef(ruleAppDef, newPersistenceInfo);
                         }
-                        def.CatalogState = CatalogState.None;
-                        def.CatalogSharingState = CatalogSharingState.None;
-                        return true;
-                    });
-                }
+                    }
 
-                var existingPersistenceInfo = _ruleApplicationService.PersistenceInfo;
-                var newPersistenceInfo = new GitPersistenceInfo(ruleAppDef.Name, selectedOption.WorkingDirectory, selectedOption);
+                    RuleApplicationCommitted?.Invoke(this, new EventArgs());
+                };
 
-                if (existingPersistenceInfo == null || !existingPersistenceInfo.IsSame(newPersistenceInfo))
+                waitWindow.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e)
                 {
-                    _ruleApplicationService.SetRuleApplicationDef(ruleAppDef, newPersistenceInfo);
-                }
+                    if (e.Error != null)
+                    {
+                        throw new NotImplementedException();
+                    }
+                };
+
+                waitWindow.ShowDialog();
+                waitWindow.Close();
 
                 success = true;
             }

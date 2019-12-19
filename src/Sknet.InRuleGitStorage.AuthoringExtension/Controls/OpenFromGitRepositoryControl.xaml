@@ -53,7 +53,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <CrossPlatform:IrDataGridTextColumn Header="Date modified" Width="150" Binding="{Binding Commit.Author.When}" />
+                    <CrossPlatform:IrDataGridTextColumn Header="Date modified" Width="150" Binding="{Binding Commit.Author.When, StringFormat=G}" />
                     <CrossPlatform:IrDataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}" />
                 </CrossPlatform:IrDataGrid.Columns>
             </CrossPlatform:IrDataGrid>
