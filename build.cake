@@ -3,7 +3,7 @@
 #addin nuget:?package=Cake.OctoDeploy&version=3.2.0
 
 // Install tools.
-#tool nuget:?package=GitVersion.CommandLine&version=5.1.2
+#tool nuget:?package=GitVersion.CommandLine&version=5.1.3
 
 //////////////////////////////////////////////////////////////////////
 // PARAMETERS
@@ -12,6 +12,7 @@ var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var githubAccessToken = Argument("githubAccessToken", EnvironmentVariable("GitHub_Access_Token") ?? null);
 var nugetApiKey = Argument("nugetApiKey", EnvironmentVariable("NuGet_ApiKey") ?? null);
+var inRuleVersion = Argument("inRuleVersion", EnvironmentVariable("InRule_Version") ?? "5.2.0");
 
 //////////////////////////////////////////////////////////////////////
 // GLOBALS
@@ -66,8 +67,15 @@ Teardown(context =>
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-Task("Clean")
+Task("Clean-Sdk")
   .Does(() => 
+  {
+    DotNetCoreClean("./test/Sknet.InRuleGitStorage.Tests/Sknet.InRuleGitStorage.Tests.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
+    DotNetCoreClean("./src/Sknet.InRuleGitStorage/Sknet.InRuleGitStorage.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
+  });
+
+Task("Clean-AuthoringExtension")
+  .Does(() =>
   {
     MSBuild("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new MSBuildSettings 
     { 
@@ -75,9 +83,6 @@ Task("Clean")
       Targets = { "Clean" },
       ToolVersion = MSBuildToolVersion.VS2019
     });
-
-    DotNetCoreClean("./test/Sknet.InRuleGitStorage.Tests/Sknet.InRuleGitStorage.Tests.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
-    DotNetCoreClean("./src/Sknet.InRuleGitStorage/Sknet.InRuleGitStorage.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
   });
 
 Task("Clean-Artifacts")
@@ -99,17 +104,38 @@ Task("Clean-TestResults")
     }
   });
 
-Task("Restore")
+Task("Restore-Sdk")
+  .Does(() => 
+  {
+    DotNetCoreTool("./src/Sknet.InRuleGitStorage/Sknet.InRuleGitStorage.csproj", "add", $"package InRule.Repository --no-restore --version {inRuleVersion}");
+    
+    DotNetCoreRestore("./src/Sknet.InRuleGitStorage/Sknet.InRuleGitStorage.csproj");
+    DotNetCoreRestore("./test/Sknet.InRuleGitStorage.Tests/Sknet.InRuleGitStorage.Tests.csproj");
+  });
+
+Task("Restore-AuthoringExtension")
   .Does(() => 
   {
     NuGetRestore("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new NuGetRestoreSettings
     { 
       PackagesDirectory = "./packages"
     });
+
+    NuGetUpdate("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new NuGetUpdateSettings
+    {
+      Id = new [] 
+        { 
+          // "InRule.Authoring.Core", 
+          "InRule.Authoring.SDK",
+          // "InRule.Common",
+          // "InRule.Repository",
+          // "InRule.Runtime"
+        },
+      Version = inRuleVersion
+    });
   });
 
-Task("Build")
-  .IsDependentOn("Restore")
+Task("Build-Sdk")
   .Does(() => 
   {
     DotNetCoreBuild("./src/Sknet.InRuleGitStorage/Sknet.InRuleGitStorage.csproj", new DotNetCoreBuildSettings
@@ -117,7 +143,8 @@ Task("Build")
       ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
                                           .Append($"/p:AssemblyVersion={assemblySemVer}")
                                           .Append($"/p:InformationalVersion={informationalVersion}"),
-      Configuration = configuration
+      Configuration = configuration,
+      NoRestore = true
     });
 
     DotNetCoreBuild("./test/Sknet.InRuleGitStorage.Tests/Sknet.InRuleGitStorage.Tests.csproj", new DotNetCoreBuildSettings
@@ -125,9 +152,17 @@ Task("Build")
       ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
                                           .Append($"/p:AssemblyVersion={assemblySemVer}")
                                           .Append($"/p:InformationalVersion={informationalVersion}"),
-      Configuration = configuration
+      Configuration = configuration,
+      NoRestore = true
     });
 
+  });
+
+Task("Build-AuthoringExtension")
+  .IsDependentOn("Restore-AuthoringExtension")
+  .IsDependentOn("Build-Sdk")
+  .Does(() =>
+  {
     MSBuild("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new MSBuildSettings
     {
       ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
@@ -139,9 +174,9 @@ Task("Build")
     });
   });
 
-Task("Test")
+Task("Test-Sdk")
   .IsDependentOn("Clean-TestResults")
-  .IsDependentOn("Build")
+  .IsDependentOn("Build-Sdk")
   .Does(() => 
   {
     var projectFiles = GetFiles("./test/**/*.csproj");
@@ -172,7 +207,8 @@ Task("Test")
 
 Task("Publish-To-Folder")
   .IsDependentOn("Clean-Artifacts")
-  .IsDependentOn("Build")
+  .IsDependentOn("Build-Sdk")
+  .IsDependentOn("Build-AuthoringExtension")
   .Does(() =>
   {
     if (!DirectoryExists(artifactsFolder)) { CreateDirectory(artifactsFolder); }
@@ -263,6 +299,23 @@ Task("Publish-To-NuGet-Feed")
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
+
+Task("Clean")
+  .IsDependentOn("Clean-Sdk")
+  .IsDependentOn("Clean-AuthoringExtension")
+  .IsDependentOn("Clean-Artifacts")
+  .IsDependentOn("Clean-TestResults");
+
+Task("Restore")
+  .IsDependentOn("Restore-Sdk")
+  .IsDependentOn("Restore-AuthoringExtension");
+
+Task("Build")
+  .IsDependentOn("Build-Sdk")
+  .IsDependentOn("Build-AuthoringExtension");
+
+Task("Test")
+  .IsDependentOn("Test-Sdk");
 
 Task("Default")
   .IsDependentOn("Restore")
