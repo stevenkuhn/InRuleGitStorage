@@ -7,7 +7,11 @@ using LibGit2Sharp;
 using Sknet.InRuleGitStorage.Extensions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Sknet.InRuleGitStorage
 {
@@ -33,7 +37,7 @@ namespace Sknet.InRuleGitStorage
     }
 
     internal class InRuleGitSerializer : IInRuleGitSerializer
-    {
+    { 
         public InRuleGitSerializer()
         {
         }
@@ -53,9 +57,10 @@ namespace Sknet.InRuleGitStorage
             var tree = (Tree)treeEntry.Target;
             var blob = (Blob)tree[$"{treeEntry.Name}.xml"].Target;
 
-            var xml = blob.GetContentText();
+            var xml = blob.GetContentStream();
             var type = GetDefTypeFromXml(xml);
-            var def = (T)RuleRepositoryDefBase.LoadFromXml(xml, type);
+
+            var def = (T)XmlSerializationUtility.GetObjectFromStream(xml, type);
 
             if (def is IContainsDataElements containsDataElementsDef)
             {
@@ -73,9 +78,9 @@ namespace Sknet.InRuleGitStorage
                         if (dataElementTreeEntry.Name == "DataElements.xml") continue;
 
                         var dataElementBlob = (Blob)dataElementTreeEntry.Target;
-                        var dataElementXml = dataElementBlob.GetContentText();
+                        var dataElementXml = dataElementBlob.GetContentStream();
                         var dataElementType = GetDefTypeFromXml(dataElementXml);
-                        var dataElementDef = (DataElementDef)RuleRepositoryDefBase.LoadFromXml(dataElementXml, dataElementType);
+                        var dataElementDef = (DataElementDef)XmlSerializationUtility.GetObjectFromStream(dataElementXml, dataElementType);
 
                         containsDataElementsDef.DataElements[dataElementDef.Guid] = dataElementDef;
                     }
@@ -98,9 +103,9 @@ namespace Sknet.InRuleGitStorage
                         if (endPointTreeEntry.Name == "EndPoints.xml") continue;
 
                         var endPointBlob = (Blob)endPointTreeEntry.Target;
-                        var endPointXml = endPointBlob.GetContentText();
+                        var endPointXml = endPointBlob.GetContentStream();
                         var endPointType = GetDefTypeFromXml(endPointXml);
-                        var endPointDef = (EndPointDef)RuleRepositoryDefBase.LoadFromXml(endPointXml, endPointType);
+                        var endPointDef = (EndPointDef)XmlSerializationUtility.GetObjectFromStream(endPointXml, endPointType);
 
                         containsEndPointsDef.EndPoints[endPointDef.Guid] = endPointDef;
                     }
@@ -207,9 +212,9 @@ namespace Sknet.InRuleGitStorage
                         if (ruleSetParameterTreeEntry.Name == "Parameters.xml") continue;
 
                         var ruleSetParameterBlob = (Blob)ruleSetParameterTreeEntry.Target;
-                        var ruleSetParameterXml = ruleSetParameterBlob.GetContentText();
+                        var ruleSetParameterXml = ruleSetParameterBlob.GetContentStream();
                         var ruleSetParameterType = GetDefTypeFromXml(ruleSetParameterXml);
-                        var ruleSetParameterDef = (RuleSetParameterDef)RuleRepositoryDefBase.LoadFromXml(ruleSetParameterXml, ruleSetParameterType);
+                        var ruleSetParameterDef = (RuleSetParameterDef)XmlSerializationUtility.GetObjectFromStream(ruleSetParameterXml, ruleSetParameterType);
 
                         containsRuleSetParametersDef.Parameters[ruleSetParameterDef.Guid] = ruleSetParameterDef;
                     }
@@ -237,9 +242,9 @@ namespace Sknet.InRuleGitStorage
                         if (templateTreeEntry.Name == "Templates.xml") continue;
 
                         var templateBlob = (Blob)templateTreeEntry.Target;
-                        var templateXml = templateBlob.GetContentText();
+                        var templateXml = templateBlob.GetContentStream();
                         var templateType = GetDefTypeFromXml(templateXml);
-                        var templateDef = (TemplateDef)RuleRepositoryDefBase.LoadFromXml(templateXml, templateType);
+                        var templateDef = (TemplateDef)XmlSerializationUtility.GetObjectFromStream(templateXml, templateType);
 
                         containsVocabularyDef.Vocabulary.Templates[templateDef.Guid] = templateDef;
                     }
@@ -249,20 +254,21 @@ namespace Sknet.InRuleGitStorage
             return def;
         }
 
-        private static readonly Dictionary<string, Type> DefTypeLookup =
+        private static readonly Dictionary<string, Type> DefTypeLookup = 
             typeof(RuleRepositoryDefBase).Assembly
                 .GetTypes()
-                .Where(x => x.Name.EndsWith("Def") || (x.BaseType != null && x.BaseType.Name.EndsWith("Def")))
-                .ToDictionary(x => x.Name, x => x);
+                .Where(type => type.IsSubclassOf(typeof(RuleRepositoryDefBase)))
+                .ToDictionary(type => type.GetXmlTypeName(), type => type);
 
-        private static Type GetDefTypeFromXml(string xml)
+        private static Type GetDefTypeFromXml(Stream xml)
         {
-            string searchString = $"<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-            var searchStringIndex = xml.IndexOf(searchString);
+            var settings = new XmlReaderSettings { ConformanceLevel = ConformanceLevel.Fragment, CloseInput = false };
+            using var reader = XmlReader.Create(xml, settings);
 
-            var typeNameIndex = xml.IndexOf('<', searchStringIndex + searchString.Length) + 1;
-            var typeName = xml.Substring(typeNameIndex, xml.IndexOf(' ', typeNameIndex) - typeNameIndex);
+            while (reader.Read() && !reader.IsStartElement()) { };
+            var typeName = reader.Name;
 
+            xml.Position = 0;
             return DefTypeLookup[typeName];
         }
 

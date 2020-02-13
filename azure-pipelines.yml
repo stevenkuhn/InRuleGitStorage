@@ -17,42 +17,56 @@ pr:
 variables:
   buildTarget: CI
 
-steps:
+jobs:
 
-- script: "echo ##vso[task.setvariable variable=buildTarget]Release"
-  displayName: Setting build target if triggered by tag
-  condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+- job: BuildAndTest
+  displayName: Build and Test
+  strategy:
+    matrix: 
+      InRule520:
+        InRule_Version: '5.2.0'
+      InRule550:
+        InRule_Version: '5.5.0'
+    maxParallel: 1
+  workspace: 
+    clean: all  
+  
+  steps:
 
-- task: GitVersion@5
-  displayName: Calculate GitVersion
-  inputs:
-    runtime: 'core'
+  #- script: "echo ##vso[task.setvariable variable=buildTarget]Release"
+  #  displayName: Setting build target if triggered by tag
+  #  condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
 
-- task: Cake@0
-  displayName: Run Cake build script
-  inputs:
-    script: 'build.cake'
-    target: $(buildTarget)
-    verbosity: 'Verbose'
-    arguments: '-configuration="Release"'
-  env:
-    GitHub_Access_Token: $(gitHubAccessToken)
-    NuGet_ApiKey: $(nugetApiKey)
+  - task: GitVersion@5
+    displayName: Calculate GitVersion
+    inputs:
+      runtime: 'core'
 
-- task: PublishTestResults@2
-  displayName: Publish Test Results [netcoreapp3.1]
-  inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TestResults/netcoreapp3.1/TestResult*.trx'
-    testRunTitle: netcoreapp3.1
-    mergeTestResults: true
-    failTaskOnFailedTests: true
+  - task: Cake@0
+    displayName: Run Cake build script
+    inputs:
+      script: 'build.cake'
+      target: $(buildTarget)
+      verbosity: 'Verbose'
+      arguments: '-configuration="Release"'
+    env:
+      GitHub_Access_Token: $(gitHubAccessToken)
+      NuGet_ApiKey: $(nugetApiKey)
 
-- task: PublishTestResults@2
-  displayName: Publish Test Results [net461]
-  inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: '**/TestResults/net461/TestResult*.trx'
-    testRunTitle: net461
-    mergeTestResults: true
-    failTaskOnFailedTests: true
+  - task: PublishTestResults@2
+    displayName: Publish Test Results [netcoreapp3.1]
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: '**/TestResults/netcoreapp3.1/TestResult*.trx'
+      testRunTitle: netcoreapp3.1
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results [net461]
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: '**/TestResults/net461/TestResult*.trx'
+      testRunTitle: net461
+      mergeTestResults: true
+      failTaskOnFailedTests: true
