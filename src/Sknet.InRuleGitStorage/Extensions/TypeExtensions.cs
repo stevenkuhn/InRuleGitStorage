@@ -19,8 +19,7 @@ namespace Sknet.InRuleGitStorage.Extensions
         {
             var xmlType = type.GetCustomAttribute<XmlTypeAttribute>(false);
 
-            //return !string.IsNullOrWhiteSpace(xmlType?.TypeName) ? xmlType.TypeName : type.Name;
-            return type.Name;
+            return !string.IsNullOrWhiteSpace(xmlType?.TypeName) ? xmlType.TypeName : type.Name;
         }
     }
 }

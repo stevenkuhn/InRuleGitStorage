@@ -23,11 +23,23 @@ jobs:
   displayName: Build and Test
   strategy:
     matrix: 
-      InRule520:
+      for_InRule_v520:
         InRule_Version: '5.2.0'
-      InRule550:
+      for_InRule_v530:
+        InRule_Version: '5.3.0'
+      for_InRule_v531:
+        InRule_Version: '5.3.1'
+      for_InRule_v540:
+        InRule_Version: '5.4.0'
+      for_InRule_v541:
+        InRule_Version: '5.4.1'
+      for_InRule_v542:
+        InRule_Version: '5.4.2'
+      for_InRule_v543:
+        InRule_Version: '5.4.3'
+      for_InRule_v550:
         InRule_Version: '5.5.0'
-    maxParallel: 1
+    maxParallel: 5
   workspace: 
     clean: all  
   
