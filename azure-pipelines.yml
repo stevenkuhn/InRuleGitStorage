@@ -9,10 +9,10 @@ trigger:
     include:
     - v*
 
-pr:
-  branches:
-    include:
-    - '*'
+# pr:
+#  branches:
+#    include:
+#    - '*'
 
 variables:
   buildTarget: CI
@@ -25,16 +25,16 @@ jobs:
     matrix: 
       for_InRule_v520:
         InRule_Version: '5.2.0'
-      for_InRule_v530:
-        InRule_Version: '5.3.0'
+#      for_InRule_v530:
+#        InRule_Version: '5.3.0'
       for_InRule_v531:
         InRule_Version: '5.3.1'
-      for_InRule_v540:
-        InRule_Version: '5.4.0'
-      for_InRule_v541:
-        InRule_Version: '5.4.1'
-      for_InRule_v542:
-        InRule_Version: '5.4.2'
+#      for_InRule_v540:
+#        InRule_Version: '5.4.0'
+#      for_InRule_v541:
+#        InRule_Version: '5.4.1'
+#      for_InRule_v542:
+#        InRule_Version: '5.4.2'
       for_InRule_v543:
         InRule_Version: '5.4.3'
       for_InRule_v550:
