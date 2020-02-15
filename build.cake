@@ -118,7 +118,8 @@ Task("Build")
     //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
     //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
     Configuration = parameters.Configuration,
-    NoRestore = true
+    NoRestore = true,
+    Framework = "netstandard2.0"
   });
 
   DotNetCoreBuild(parameters.Paths.Files.SdkTestProject, new DotNetCoreBuildSettings
@@ -127,7 +128,8 @@ Task("Build")
     //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
     //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
     Configuration = parameters.Configuration,
-    NoRestore = true
+    NoRestore = true,
+    Framework = "netcoreapp3.1"
   });
 });
 
@@ -163,14 +165,14 @@ Task("Test")
     Logger = "trx;LogFileName=./netcoreapp3.1/TestResult.trx",
   });
 
-  DotNetCoreTest(parameters.Paths.Files.SdkTestProject, new DotNetCoreTestSettings
+  /*DotNetCoreTest(parameters.Paths.Files.SdkTestProject, new DotNetCoreTestSettings
   {
     Configuration = parameters.Configuration,
     Framework = "net461",
     NoBuild = true,
     NoRestore = true,
     Logger = "trx;LogFileName=./net461/TestResult.trx"
-  });
+  });*/
 });
 
 /*Task("Test-Sdk")
