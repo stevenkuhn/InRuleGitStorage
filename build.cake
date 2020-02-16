@@ -130,6 +130,7 @@ Task("Build")
   {
     MSBuild(build.Files.AuthoringProject, new MSBuildSettings
     {
+      ArgumentCustomization = args => args.Append($"/p:NuGetPackagesPath=\"{MakeAbsolute(build.Directories.Packages).FullPath}\""),
       //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
       //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
       //                                    .Append($"/p:InformationalVersion={informationalVersion}"),

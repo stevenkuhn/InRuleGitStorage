@@ -36,7 +36,7 @@ public class BuildParameters
     Version = new BuildVersion(context);
 
     Directories = new BuildDirectories(context);
-    Files = new BuildFiles(Directories);
+    Files = new BuildFiles(context, Directories);
   }
 }
 
