@@ -46,5 +46,7 @@ jobs:
     - name: Run Cake
       env:
         InRule_Version: ${{ matrix.inrule }}
-      run: dotnet cake --target="GitHub"
+      run: |
+        dotnet cake --bootstrap
+        dotnet cake --target="GitHub"
     

@@ -1,9 +1,12 @@
+// Install modules
+#module nuget:?package=Cake.DotNetTool.Module&version=0.4.0
+
 // Install addins.
 #addin nuget:?package=Cake.Incubator&version=5.1.0
 #addin nuget:?package=Cake.OctoDeploy&version=3.2.0
 
 // Install tools.
-#tool nuget:?package=GitVersion.CommandLine&version=5.1.3
+#tool dotnet:?package=GitVersion.Tool&version=5.1.3
 #tool nuget:?package=NuGet.CommandLine&version=5.4.0
 
 // Load other scripts.
