@@ -9,15 +9,15 @@ public class BuildVersion
       throw new ArgumentNullException(nameof(context));
     }
 
-    context.Information("Calculating GitVersion...");
+    //context.Information("Calculating GitVersion...");
 
-    var gitVersion = context.GitVersion(new GitVersionSettings
-    {
-      NoFetch = true,
+    //var gitVersion = context.GitVersion(new GitVersionSettings
+    //{
+    //  NoFetch = true,
       //UpdateAssemblyInfo = true,
       //UpdateAssemblyInfoFilePath = "./src/Sknet.InRuleGitStorage.AuthoringExtension/Properties/AssemblyInfo.cs"
-    });
+    //});
 
-    context.Information("Result:\n{0}", gitVersion.Dump());
+    //context.Information("Result:\n{0}", gitVersion.Dump());
   }
 }
