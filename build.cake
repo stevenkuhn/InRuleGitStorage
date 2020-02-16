@@ -76,14 +76,20 @@ Task("Clean-TestResults")
 Task("Restore")
   .Does<BuildParameters>(build => 
 {
-  Information($"Updating NuGet package InRule.Repository v{build.InRule.Version} for SDK project.");
-  DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --version {build.InRule.Version}");
-
   Information("Restoring SDK project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkProject);
+  DotNetCoreRestore(build.Files.SdkProject, new DotNetCoreRestoreSettings
+  {
+    PackagesDirectory = build.Directories.Packages
+  });
 
   Information("Restoring SDK test project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkTestProject);
+  DotNetCoreRestore(build.Files.SdkTestProject, new DotNetCoreRestoreSettings
+  {
+    PackagesDirectory = build.Directories.Packages
+  });
+
+  Information($"Updating NuGet package InRule.Repository v{build.InRule.Version} for SDK project.");
+  DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --no-restore --version {build.InRule.Version} --package-directory \"{build.Directories.Packages}\"");
 
   if (build.IsRunningOnWindows)
   {

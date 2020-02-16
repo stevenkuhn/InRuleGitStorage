@@ -12,8 +12,8 @@ jobs:
         os: [windows-latest, ubuntu-latest]
         inrule: [5.2.0, 5.4.3, 5.5.0]
 
-    env:
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+#    env:
+#      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
     - name: Checkout Source

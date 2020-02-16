@@ -15,6 +15,6 @@ public class BuildDirectories
     }
 
     TestResults = context.GetDirectories(Test.Combine("**/TestResults").ToString());
-    Packages = context.EnvironmentVariable("NUGET_PACKAGES", "./packages");
+    Packages = context.EnvironmentVariable("NUGET_PACKAGES", ".nuget/packages");
   }
 }

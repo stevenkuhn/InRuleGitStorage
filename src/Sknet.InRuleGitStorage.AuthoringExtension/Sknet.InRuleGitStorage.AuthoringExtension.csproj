@@ -16,7 +16,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <NuGetPackagesPath Condition="'$(NuGetPackagesPath)' == ''">..\..\packages</NuGetPackagesPath>
+    <NuGetPackagesPath Condition="'$(NuGetPackagesPath)' == ''">..\..\.nuget\packages</NuGetPackagesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
