@@ -305,7 +305,7 @@ Task("Default")
   .IsDependentOn("Test");
 
 Task("GitHub")
-  .IsDependentOn("Clean")
+  //.IsDependentOn("Clean")
   .IsDependentOn("Test");
 
 //////////////////////////////////////////////////////////////////////
