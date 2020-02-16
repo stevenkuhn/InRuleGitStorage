@@ -14,9 +14,9 @@
 
 Setup<BuildParameters>(context =>
 {
-  var parameters = new BuildParameters(context);
+  var buildParameters = new BuildParameters(context);
 
-  return parameters;
+  return buildParameters;
 });
 
 Teardown<BuildParameters>((context, parameters) =>
@@ -29,16 +29,16 @@ Teardown<BuildParameters>((context, parameters) =>
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
-  .Does<BuildParameters>(parameters => 
+  .Does<BuildParameters>(build => 
 {
-  DotNetCoreClean(parameters.Paths.Files.SdkProject, new DotNetCoreCleanSettings 
+  DotNetCoreClean(build.Files.SdkProject, new DotNetCoreCleanSettings 
   {
-    Configuration = parameters.Configuration 
+    Configuration = build.Configuration 
   });
     
-  DotNetCoreClean(parameters.Paths.Files.SdkTestProject, new DotNetCoreCleanSettings
+  DotNetCoreClean(build.Files.SdkTestProject, new DotNetCoreCleanSettings
   { 
-    Configuration = parameters.Configuration
+    Configuration = build.Configuration
   });
 });
 
@@ -69,20 +69,20 @@ Task("Clean-Artifacts")
     }
   });*/
 Task("Clean-TestResults")
-  .Does<BuildParameters>(parameters => 
+  .Does<BuildParameters>(build => 
 {
   DeleteDirectories(
-    parameters.Paths.Directories.TestResults, 
+    build.Directories.TestResults, 
     new DeleteDirectorySettings { Force = true, Recursive = true });
 });
 
 Task("Restore")
-  .Does<BuildParameters>(parameters => 
+  .Does<BuildParameters>(build => 
 {
-  DotNetCoreTool(parameters.Paths.Files.SdkProject, "add", $"package InRule.Repository --version {parameters.InRule.Version}");
+  DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --version {build.InRule.Version}");
 
-  DotNetCoreRestore(parameters.Paths.Files.SdkProject);
-  DotNetCoreRestore(parameters.Paths.Files.SdkTestProject);
+  DotNetCoreRestore(build.Files.SdkProject);
+  DotNetCoreRestore(build.Files.SdkTestProject);
 });
 
 /*
@@ -110,26 +110,26 @@ Task("Restore-AuthoringExtension")
 
 Task("Build")
   .IsDependentOn("Restore")
-  .Does<BuildParameters>(parameters =>
+  .Does<BuildParameters>(build =>
 {
-  DotNetCoreBuild(parameters.Paths.Files.SdkProject, new DotNetCoreBuildSettings
+  DotNetCoreBuild(build.Files.SdkProject, new DotNetCoreBuildSettings
   {
     //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
     //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
     //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
-    Configuration = parameters.Configuration,
+    Configuration = build.Configuration,
     NoRestore = true,
-    Framework = "netstandard2.0"
+    Framework = build.IsRunningOnWindows ? null : "netstandard2.0"
   });
 
-  DotNetCoreBuild(parameters.Paths.Files.SdkTestProject, new DotNetCoreBuildSettings
+  DotNetCoreBuild(build.Files.SdkTestProject, new DotNetCoreBuildSettings
   {
     //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
     //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
     //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
-    Configuration = parameters.Configuration,
+    Configuration = build.Configuration,
     NoRestore = true,
-    Framework = "netcoreapp3.1"
+    Framework = build.IsRunningOnWindows ? null : "netcoreapp3.1"
   });
 });
 
@@ -154,25 +154,28 @@ Task("Build-AuthoringExtension")
 Task("Test")
   .IsDependentOn("Clean-TestResults")
   .IsDependentOn("Build")
-  .Does<BuildParameters>(parameters =>
+  .Does<BuildParameters>(build =>
 {
-  DotNetCoreTest(parameters.Paths.Files.SdkTestProject, new DotNetCoreTestSettings
+  DotNetCoreTest(build.Files.SdkTestProject, new DotNetCoreTestSettings
   {
-    Configuration = parameters.Configuration,
+    Configuration = build.Configuration,
     Framework = "netcoreapp3.1",
     NoBuild = true,
     NoRestore = true,
     Logger = "trx;LogFileName=./netcoreapp3.1/TestResult.trx",
   });
 
-  /*DotNetCoreTest(parameters.Paths.Files.SdkTestProject, new DotNetCoreTestSettings
+  if (build.IsRunningOnWindows)
   {
-    Configuration = parameters.Configuration,
-    Framework = "net461",
-    NoBuild = true,
-    NoRestore = true,
-    Logger = "trx;LogFileName=./net461/TestResult.trx"
-  });*/
+    DotNetCoreTest(build.Files.SdkTestProject, new DotNetCoreTestSettings
+    {
+      Configuration = build.Configuration,
+      Framework = "net461",
+      NoBuild = true,
+      NoRestore = true,
+      Logger = "trx;LogFileName=./net461/TestResult.trx"
+    });
+  }
 });
 
 /*Task("Test-Sdk")
@@ -343,7 +346,7 @@ Task("Release")
 Task("Default")
   .IsDependentOn("Test");
 
-Task("CI")
+Task("GitHub")
   .IsDependentOn("Clean")
   .IsDependentOn("Test");
 
