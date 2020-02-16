@@ -77,33 +77,27 @@ Task("Restore")
   .Does<BuildParameters>(build => 
 {
   Information("Restoring SDK project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkProject, new DotNetCoreRestoreSettings
-  {
-    PackagesDirectory = build.Directories.Packages
-  });
+  DotNetCoreRestore(build.Files.SdkProject);
 
   Information("Restoring SDK test project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkTestProject, new DotNetCoreRestoreSettings
-  {
-    PackagesDirectory = build.Directories.Packages
-  });
+  DotNetCoreRestore(build.Files.SdkTestProject);
 
   Information($"Updating NuGet package InRule.Repository v{build.InRule.Version} for SDK project.");
-  DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --no-restore --version {build.InRule.Version} --package-directory \"{build.Directories.Packages}\"");
+  DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --no-restore --version {build.InRule.Version}");
 
   if (build.IsRunningOnWindows)
   {
     Information("Restoring Authoring project NuGet packages...");
     NuGetRestore(build.Files.AuthoringProject, new NuGetRestoreSettings
     { 
-      PackagesDirectory = build.Directories.Packages,
+      PackagesDirectory = "./packages",
       Source = new [] { "https://api.nuget.org/v3/index.json" },
     });
 
     Information($"Update NuGet package InRule.Authoring.SDK v{build.InRule.Version} for Authoring project.");
     NuGetUpdate(build.Files.AuthoringProject, new NuGetUpdateSettings
     {
-      ArgumentCustomization = args => args.Append($"-RepositoryPath \"{build.Directories.Packages}\""),
+      ArgumentCustomization = args => args.Append("-RepositoryPath ./packages"),
       Id = new [] { "InRule.Authoring.SDK" },
       Source = new [] { "https://api.nuget.org/v3/index.json" },
       Version = build.InRule.Version
@@ -139,7 +133,7 @@ Task("Build")
   {
     MSBuild(build.Files.AuthoringProject, new MSBuildSettings
     {
-      ArgumentCustomization = args => args.Append($"/p:NuGetPackagesPath=\"{MakeAbsolute(build.Directories.Packages).FullPath}\""),
+      //ArgumentCustomization = args => args.Append($"/p:NuGetPackagesPath=\"{MakeAbsolute(build.Directories.Packages).FullPath}\""),
       //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
       //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
       //                                    .Append($"/p:InformationalVersion={informationalVersion}"),

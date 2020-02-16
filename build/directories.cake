@@ -1,7 +1,6 @@
 public class BuildDirectories
 {
   public DirectoryPath Artifacts { get; } = "./artifacts";
-  public DirectoryPath Packages { get; }
   public DirectoryPath Solution { get; } = "./";
   public DirectoryPath Source { get; } = "./src";
   public DirectoryPath Test { get; } = "./test";
@@ -15,6 +14,5 @@ public class BuildDirectories
     }
 
     TestResults = context.GetDirectories(Test.Combine("**/TestResults").ToString());
-    Packages = context.EnvironmentVariable("NUGET_PACKAGES", ".nuget/packages");
   }
 }
