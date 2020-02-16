@@ -16,21 +16,24 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
-    - uses: actions/checkout@master
+    - name: Checkout Source
+      uses: actions/checkout@master
+
+    - name: Fetch master branch and tags
       run: |
         git fetch --depth=1 origin +refs/tags/*:refs/tags/*
         git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
 
-    - uses: actions/cache@v1
-      name: Setup Cache for NuGet
+    - name: Setup Cache for NuGet
+      uses: actions/cache@v1
       with:
         path: ${{ github.workspace }}/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
     
-    - uses: actions/cache@v1
-      name: Setup Cache for Cake Tools
+    - name: Setup Cache for Cake Tools
+      uses: actions/cache@v1
       with:
         path: ${{ github.workspace }}/tools
         key: ${{ runner.os }}-caketools-${{ hashFiles('build.cake') }}
