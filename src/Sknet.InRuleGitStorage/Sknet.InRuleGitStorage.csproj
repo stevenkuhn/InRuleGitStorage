@@ -20,6 +20,7 @@
     <PackageIconUrl>https://inrulegitstorage.stevenkuhn.net/icon.png</PackageIconUrl>
     <PackageTags>inrule git</PackageTags>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
 
   <ItemGroup>
