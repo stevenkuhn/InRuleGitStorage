@@ -28,17 +28,17 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ${{ github.workspace }}/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        key: ${{ runner.os }}-nuget-v2-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-nuget-
+          ${{ runner.os }}-nuget-v2-
     
     - name: Setup Cache for Cake Tools
       uses: actions/cache@v1
       with:
         path: ${{ github.workspace }}/tools
-        key: ${{ runner.os }}-caketools-${{ hashFiles('build.cake') }}
+        key: ${{ runner.os }}-caketools-v2-${{ hashFiles('build.cake') }}
         restore-keys: |
-          ${{ runner.os }}-caketools-
+          ${{ runner.os }}-caketools-v2-
 
     - name: Restore .NET Core Tools
       run: dotnet tool restore
