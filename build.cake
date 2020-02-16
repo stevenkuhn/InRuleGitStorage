@@ -94,12 +94,10 @@ Task("Restore")
     Information($"Update NuGet package InRule.Authoring.SDK v{build.InRule.Version} for Authoring project.");
     NuGetUpdate(build.Files.AuthoringProject, new NuGetUpdateSettings
     {
+      ArgumentCustomization = args => args.Append($"-RepositoryPath \"{build.Directories.Packages}\""),
       Id = new [] { "InRule.Authoring.SDK" },
       Source = new [] { "https://api.nuget.org/v3/index.json" },
-      Version = build.InRule.Version,
-      EnvironmentVariables = new Dictionary<string, string> {
-        { "NUGET_PACKAGES", build.Directories.Packages.FullPath }
-      }
+      Version = build.InRule.Version
     });
   }
 });
