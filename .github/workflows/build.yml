@@ -4,8 +4,13 @@ on: [push, pull_request]
 
 jobs: 
   build_windows:
-    name: Build on Windows
-    runs-on: windows-latest
+    name: Build
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        inrule: [5.2.0, 5.5.0]
 
     steps:
     - uses: actions/checkout@master
@@ -15,9 +20,11 @@ jobs:
       with:
         dotnet-version: '3.1.101'
 
-    - name: Setup Cake
+    - name: Restore .NET Core Tools
       run: dotnet tool restore
-      
+
     - name: Run Cake
+      env:
+        InRule_Version: ${{ matrix.inrule }}
       run: dotnet cake --target="GitHub"
     
