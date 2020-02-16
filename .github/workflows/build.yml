@@ -19,16 +19,20 @@ jobs:
     - uses: actions/checkout@master
 
     - uses: actions/cache@v1
+      name: Setup Cache for NuGet
       with:
         path: ${{ github.workspace }}/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v1.4.0
+    
+    - uses: actions/cache@v1
+      name: Setup Cache for Cake Tools
       with:
-        dotnet-version: '3.1.101'
+        path: ${{ github.workspace }}/tools
+        key: ${{ runner.os }}-caketools-${{ hashFiles('build.cake') }}
+        restore-keys: |
+          ${{ runner.os }}-caketools-
 
     - name: Restore .NET Core Tools
       run: dotnet tool restore
