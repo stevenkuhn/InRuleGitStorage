@@ -12,9 +12,6 @@ jobs:
         os: [windows-latest, ubuntu-latest]
         inrule: [5.2.0, 5.4.3, 5.5.0]
 
-#    env:
-#      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-
     steps:
     - name: Checkout Source
       uses: actions/checkout@master
@@ -22,25 +19,6 @@ jobs:
     - name: Fetch all history for all tags and branches
       run: |
         git fetch --prune --unshallow
-
-#    - name: Setup Cache for NuGet
-#      uses: actions/cache@v1
-#      if: runner.os == 'windows'
-#      with:
-#        path: ${{ github.workspace }}/.nuget/packages
-#        key: ${{ runner.os }}-nuget-v2-${{ matrix.inrule }}-${{ hashFiles('**/packages.lock.json') }}
-#        restore-keys: |
-#          ${{ runner.os }}-nuget-v2-${{ matrix.inrule }}-
-#          ${{ runner.os }}-nuget-v2-
-    
-#    - name: Setup Cache for Cake Tools
-#      uses: actions/cache@v1
-#      if: runner.os == 'windows'
-#      with:
-#        path: ${{ github.workspace }}/tools
-#        key: ${{ runner.os }}-caketools-v2-${{ hashFiles('build.cake') }}
-#        restore-keys: |
-#          ${{ runner.os }}-caketools-v2-
 
     - name: Restore .NET Core Tools
       run: dotnet tool restore
