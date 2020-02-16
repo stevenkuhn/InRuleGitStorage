@@ -23,21 +23,24 @@ jobs:
       run: |
         git fetch --prune --unshallow
 
-#    - name: Setup Cache for NuGet
-#      uses: actions/cache@v1
-#      with:
-#        path: ${{ github.workspace }}/.nuget/packages
-#        key: ${{ runner.os }}-nuget-v2-${{ hashFiles('**/packages.lock.json') }}
-#        restore-keys: |
-#          ${{ runner.os }}-nuget-v2-
+    - name: Setup Cache for NuGet
+      uses: actions/cache@v1
+      if: runner.os == 'windows'
+      with:
+        path: ${{ github.workspace }}/.nuget/packages
+        key: ${{ runner.os }}-nuget-v2-${{ matrix.inrule }}-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-v2-${{ matrix.inrule }}-
+          ${{ runner.os }}-nuget-v2-
     
-#    - name: Setup Cache for Cake Tools
-#      uses: actions/cache@v1
-#      with:
-#        path: ${{ github.workspace }}/tools
-#        key: ${{ runner.os }}-caketools-v2-${{ hashFiles('build.cake') }}
-#        restore-keys: |
-#          ${{ runner.os }}-caketools-v2-
+    - name: Setup Cache for Cake Tools
+      uses: actions/cache@v1
+      if: runner.os == 'windows'
+      with:
+        path: ${{ github.workspace }}/tools
+        key: ${{ runner.os }}-caketools-v2-${{ hashFiles('build.cake') }}
+        restore-keys: |
+          ${{ runner.os }}-caketools-v2-
 
     - name: Restore .NET Core Tools
       run: dotnet tool restore
