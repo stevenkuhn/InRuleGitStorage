@@ -76,13 +76,13 @@ Task("Restore")
   Information("Restoring SDK project NuGet packages...");
   DotNetCoreRestore(build.Files.SdkProject, new DotNetCoreRestoreSettings
   {
-    LockedMode = true
+    LockedMode = false
   });
 
   Information("Restoring SDK test project NuGet packages...");
   DotNetCoreRestore(build.Files.SdkTestProject, new DotNetCoreRestoreSettings
   {
-    LockedMode = true
+    LockedMode = false
   });
 
   Information($"Updating NuGet package InRule.Repository v{build.InRule.Version} for SDK project.");
