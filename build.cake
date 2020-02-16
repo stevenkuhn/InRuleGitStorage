@@ -73,20 +73,14 @@ Task("Clean-TestResults")
 Task("Restore")
   .Does<BuildParameters>(build => 
 {
-  Information("Restoring SDK project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkProject, new DotNetCoreRestoreSettings
-  {
-    LockedMode = false
-  });
-
-  Information("Restoring SDK test project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkTestProject, new DotNetCoreRestoreSettings
-  {
-    LockedMode = false
-  });
-
   Information($"Updating NuGet package InRule.Repository v{build.InRule.Version} for SDK project.");
   DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --version {build.InRule.Version}");
+
+  Information("Restoring SDK project NuGet packages...");
+  DotNetCoreRestore(build.Files.SdkProject);
+
+  Information("Restoring SDK test project NuGet packages...");
+  DotNetCoreRestore(build.Files.SdkTestProject);
 
   if (build.IsRunningOnWindows)
   {
