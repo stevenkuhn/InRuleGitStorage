@@ -20,10 +20,10 @@ Setup<BuildParameters>(context =>
   return buildParameters;
 });
 
-Teardown<BuildParameters>((context, parameters) =>
+/*Teardown<BuildParameters>((context, parameters) =>
 {
 
-});
+});*/
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
