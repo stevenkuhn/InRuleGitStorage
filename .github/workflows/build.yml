@@ -16,8 +16,7 @@ jobs:
       uses: actions/checkout@master
 
     - name: Fetch all history for all tags and branches
-      run: |
-        git fetch --prune --unshallow
+      run: git fetch --prune --unshallow
 
     - name: Restore .NET Core Tools
       run: dotnet tool restore
@@ -42,8 +41,7 @@ jobs:
       uses: actions/checkout@master
 
     - name: Fetch all history for all tags and branches
-      run: |
-        git fetch --prune --unshallow
+      run: git fetch --prune --unshallow
 
     - name: Restore .NET Core Tools
       run: dotnet tool restore
