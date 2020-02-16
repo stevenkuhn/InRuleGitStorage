@@ -4,6 +4,7 @@
 
 // Install tools.
 #tool nuget:?package=GitVersion.CommandLine&version=5.1.3
+#tool nuget:?package=NuGet.CommandLine&version=5.4.0
 
 // Load other scripts.
 #load "./build/parameters.cake"
@@ -40,27 +41,19 @@ Task("Clean")
   { 
     Configuration = build.Configuration
   });
-});
 
-/*Task("Clean-Sdk")
-  .Does(() => 
+  if (build.IsRunningOnWindows)
   {
-    DotNetCoreClean("./test/Sknet.InRuleGitStorage.Tests/Sknet.InRuleGitStorage.Tests.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
-    DotNetCoreClean("./src/Sknet.InRuleGitStorage/Sknet.InRuleGitStorage.csproj", new DotNetCoreCleanSettings { Configuration = configuration });
-  });
-
-Task("Clean-AuthoringExtension")
-  .Does(() =>
-  {
-    MSBuild("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new MSBuildSettings 
+    MSBuild(build.Files.AuthoringProject, new MSBuildSettings 
     { 
-      Configuration = configuration,
+      Configuration = build.Configuration,
       Targets = { "Clean" },
       ToolVersion = MSBuildToolVersion.VS2019
     });
-  });
+  }
+});
 
-Task("Clean-Artifacts")
+/*Task("Clean-Artifacts")
   .Does(() => 
   {
     if (DirectoryExists(artifactsFolder))
@@ -68,6 +61,7 @@ Task("Clean-Artifacts")
       DeleteDirectory(artifactsFolder, new DeleteDirectorySettings { Force = true, Recursive = true });
     }
   });*/
+
 Task("Clean-TestResults")
   .Does<BuildParameters>(build => 
 {
@@ -79,34 +73,33 @@ Task("Clean-TestResults")
 Task("Restore")
   .Does<BuildParameters>(build => 
 {
+  Information($"Installing InRule.Repository v{build.InRule.Version} to SDK project.");
   DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --version {build.InRule.Version}");
 
+  Information("Restoring SDK project NuGet packages...");
   DotNetCoreRestore(build.Files.SdkProject);
+
+  Information("Restoring SDK test project NuGet packages...");
   DotNetCoreRestore(build.Files.SdkTestProject);
-});
 
-/*
-Task("Restore-AuthoringExtension")
-  .Does(() => 
+  if (build.IsRunningOnWindows)
   {
-    NuGetRestore("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new NuGetRestoreSettings
+    Information("Restoring Authoring project NuGet packages...");
+    NuGetRestore(build.Files.AuthoringProject, new NuGetRestoreSettings
     { 
-      PackagesDirectory = "./packages"
+      PackagesDirectory = build.Directories.Packages,
+      Source = new [] { "https://api.nuget.org/v3/index.json" },
     });
 
-    NuGetUpdate("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new NuGetUpdateSettings
+    Information($"Installing InRule.Authoring.SDK v{build.InRule.Version} to Authoring project.");
+    NuGetUpdate(build.Files.AuthoringProject, new NuGetUpdateSettings
     {
-      Id = new [] 
-        { 
-          // "InRule.Authoring.Core", 
-          "InRule.Authoring.SDK",
-          // "InRule.Common",
-          // "InRule.Repository",
-          // "InRule.Runtime"
-        },
-      Version = inRuleVersion
+      Id = new [] { "InRule.Authoring.SDK" },
+      Source = new [] { "https://api.nuget.org/v3/index.json" },
+      Version = build.InRule.Version, 
     });
-  });*/
+  }
+});
 
 Task("Build")
   .IsDependentOn("Restore")
@@ -131,25 +124,20 @@ Task("Build")
     NoRestore = true,
     Framework = build.IsRunningOnWindows ? null : "netcoreapp3.1"
   });
-});
 
-/*
-Task("Build-AuthoringExtension")
-  .IsDependentOn("Restore-AuthoringExtension")
-  .IsDependentOn("Build-Sdk")
-  .Does(() =>
+  if (build.IsRunningOnWindows)
   {
-    MSBuild("./src/Sknet.InRuleGitStorage.AuthoringExtension/Sknet.InRuleGitStorage.AuthoringExtension.csproj", new MSBuildSettings
+    MSBuild(build.Files.AuthoringProject, new MSBuildSettings
     {
-      ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
-                                          .Append($"/p:AssemblyVersion={assemblySemVer}")
-                                          .Append($"/p:InformationalVersion={informationalVersion}"),
-      Configuration = configuration,
+      //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
+      //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
+      //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
+      Configuration = build.Configuration,
       Restore = false,
       ToolVersion = MSBuildToolVersion.VS2019,
     });
-  });
-*/
+  }
+});
 
 Task("Test")
   .IsDependentOn("Clean-TestResults")
@@ -178,37 +166,7 @@ Task("Test")
   }
 });
 
-/*Task("Test-Sdk")
-  .IsDependentOn("Clean-TestResults")
-  .IsDependentOn("Build-Sdk")
-  .Does(() => 
-  {
-    var projectFiles = GetFiles("./test/**a/*.csproj");
-    foreach (var file in projectFiles)
-    {
-      // Ignore any temporary nCrunch projects that might be running when this build runs
-      if (file.FullPath.IndexOf("nCrunch", StringComparison.OrdinalIgnoreCase) >= 0) continue;
-
-      DotNetCoreTest(file.FullPath, new DotNetCoreTestSettings
-      {
-        Configuration = configuration,
-        Framework = "netcoreapp3.1",
-        NoBuild = true,
-        NoRestore = true,
-        Logger = "trx;LogFileName=./netcoreapp3.1/TestResult.trx",
-      });
-
-      DotNetCoreTest(file.FullPath, new DotNetCoreTestSettings
-      {
-        Configuration = configuration,
-        Framework = "net461",
-        NoBuild = true,
-        NoRestore = true,
-        Logger = "trx;LogFileName=./net461/TestResult.trx"
-      });
-    }
-  });
-
+/*
 Task("Publish-To-Folder")
   .IsDependentOn("Clean-Artifacts")
   .IsDependentOn("Build-Sdk")

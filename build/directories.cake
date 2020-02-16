@@ -1,6 +1,7 @@
 public class BuildDirectories
 {
   public DirectoryPath Artifacts { get; } = "./artifacts";
+  public DirectoryPath Packages { get; } = "./packages";
   public DirectoryPath Solution { get; } = "./";
   public DirectoryPath Source { get; } = "./src";
   public DirectoryPath Test { get; } = "./test";
