@@ -77,10 +77,16 @@ Task("Restore")
   DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --version {build.InRule.Version}");
 
   Information("Restoring SDK project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkProject);
+  DotNetCoreRestore(build.Files.SdkProject, new DotNetCoreRestoreSettings
+  {
+    LockedMode = true
+  });
 
   Information("Restoring SDK test project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkTestProject);
+  DotNetCoreRestore(build.Files.SdkTestProject, new DotNetCoreRestoreSettings
+  {
+    LockedMode = true
+  });
 
   if (build.IsRunningOnWindows)
   {
