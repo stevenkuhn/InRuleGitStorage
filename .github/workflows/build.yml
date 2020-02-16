@@ -17,6 +17,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@master
+      run: |
+        git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        git fetch --no-tags --prune --depth=1 origin +refs/heads/master:refs/remotes/origin/master
 
     - uses: actions/cache@v1
       name: Setup Cache for NuGet
