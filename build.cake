@@ -73,9 +73,6 @@ Task("Clean-TestResults")
 Task("Restore")
   .Does<BuildParameters>(build => 
 {
-  Information($"Installing InRule.Repository v{build.InRule.Version} to SDK project.");
-  DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --version {build.InRule.Version}");
-
   Information("Restoring SDK project NuGet packages...");
   DotNetCoreRestore(build.Files.SdkProject, new DotNetCoreRestoreSettings
   {
@@ -88,6 +85,9 @@ Task("Restore")
     LockedMode = true
   });
 
+  Information($"Updating NuGet package InRule.Repository v{build.InRule.Version} for SDK project.");
+  DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --version {build.InRule.Version}");
+
   if (build.IsRunningOnWindows)
   {
     Information("Restoring Authoring project NuGet packages...");
@@ -97,7 +97,7 @@ Task("Restore")
       Source = new [] { "https://api.nuget.org/v3/index.json" },
     });
 
-    Information($"Installing InRule.Authoring.SDK v{build.InRule.Version} to Authoring project.");
+    Information($"Update NuGet package InRule.Authoring.SDK v{build.InRule.Version} for Authoring project.");
     NuGetUpdate(build.Files.AuthoringProject, new NuGetUpdateSettings
     {
       Id = new [] { "InRule.Authoring.SDK" },
