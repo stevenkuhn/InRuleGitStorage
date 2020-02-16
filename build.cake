@@ -96,7 +96,10 @@ Task("Restore")
     {
       Id = new [] { "InRule.Authoring.SDK" },
       Source = new [] { "https://api.nuget.org/v3/index.json" },
-      Version = build.InRule.Version, 
+      Version = build.InRule.Version,
+      EnvironmentVariables = new Dictionary<string, string> {
+        { "NUGET_PACKAGES", build.Directories.Packages.FullPath }
+      }
     });
   }
 });
