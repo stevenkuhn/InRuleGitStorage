@@ -23,10 +23,10 @@ Setup<BuildParameters>(context =>
   return buildParameters;
 });
 
-/*Teardown<BuildParameters>((context, parameters) =>
+Teardown<BuildParameters>((context, parameters) =>
 {
 
-});*/
+});
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -35,7 +35,10 @@ Setup<BuildParameters>(context =>
 Task("Clean")
   .Does<BuildParameters>(build => 
 {
-  DotNetCoreClean(build.Files.SdkProject, new DotNetCoreCleanSettings 
+  DeleteDirectories(GetDirectories("./**/obj"), new DeleteDirectorySettings { Force = true, Recursive = true });
+  DeleteDirectories(GetDirectories("./**/bin"), new DeleteDirectorySettings { Force = true, Recursive = true });
+
+  /*DotNetCoreClean(build.Files.SdkProject, new DotNetCoreCleanSettings 
   {
     Configuration = build.Configuration 
   });
@@ -53,17 +56,17 @@ Task("Clean")
       Targets = { "Clean" },
       ToolVersion = MSBuildToolVersion.VS2019
     });
-  }
+  }*/
 });
 
-/*Task("Clean-Artifacts")
-  .Does(() => 
+Task("Clean-Artifacts")
+  .Does<BuildParameters>(build => 
+{
+  if (DirectoryExists(build.Directories.Artifacts))
   {
-    if (DirectoryExists(artifactsFolder))
-    {
-      DeleteDirectory(artifactsFolder, new DeleteDirectorySettings { Force = true, Recursive = true });
-    }
-  });*/
+    DeleteDirectory(build.Directories.Artifacts, new DeleteDirectorySettings { Force = true, Recursive = true });
+  }
+});
 
 Task("Clean-TestResults")
   .Does<BuildParameters>(build => 
@@ -111,9 +114,9 @@ Task("Build")
 {
   DotNetCoreBuild(build.Files.SdkProject, new DotNetCoreBuildSettings
   {
-    //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
-    //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
-    //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
+    ArgumentCustomization = args => args.Append($"/p:Version={build.Version.FullSemanticVersion}")
+                                        .Append($"/p:AssemblyVersion={build.Version.AssemblySemanticVersion}")
+                                        .Append($"/p:InformationalVersion={build.Version.InformationalVersion}"),
     Configuration = build.Configuration,
     NoRestore = true,
     Framework = build.IsRunningOnWindows ? null : "netstandard2.0"
@@ -121,9 +124,9 @@ Task("Build")
 
   DotNetCoreBuild(build.Files.SdkTestProject, new DotNetCoreBuildSettings
   {
-    //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
-    //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
-    //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
+    ArgumentCustomization = args => args.Append($"/p:Version={build.Version.FullSemanticVersion}")
+                                        .Append($"/p:AssemblyVersion={build.Version.AssemblySemanticVersion}")
+                                        .Append($"/p:InformationalVersion={build.Version.InformationalVersion}"),
     Configuration = build.Configuration,
     NoRestore = true,
     Framework = build.IsRunningOnWindows ? null : "netcoreapp3.1"
@@ -133,10 +136,9 @@ Task("Build")
   {
     MSBuild(build.Files.AuthoringProject, new MSBuildSettings
     {
-      //ArgumentCustomization = args => args.Append($"/p:NuGetPackagesPath=\"{MakeAbsolute(build.Directories.Packages).FullPath}\""),
-      //ArgumentCustomization = args => args.Append($"/p:Version={fullSemVer}")
-      //                                    .Append($"/p:AssemblyVersion={assemblySemVer}")
-      //                                    .Append($"/p:InformationalVersion={informationalVersion}"),
+      ArgumentCustomization = args => args.Append($"/p:Version={build.Version.FullSemanticVersion}")
+                                          .Append($"/p:AssemblyVersion={build.Version.AssemblySemanticVersion}")
+                                          .Append($"/p:InformationalVersion={build.Version.InformationalVersion}"),
       Configuration = build.Configuration,
       Restore = false,
       ToolVersion = MSBuildToolVersion.VS2019,
@@ -171,50 +173,69 @@ Task("Test")
   }
 });
 
-/*
-Task("Publish-To-Folder")
+Task("Publish-Artifacts")
+  .IsDependentOn("Build")
   .IsDependentOn("Clean-Artifacts")
-  .IsDependentOn("Build-Sdk")
-  .IsDependentOn("Build-AuthoringExtension")
-  .Does(() =>
+  .Does<BuildParameters>(build =>
+{
+  if (!DirectoryExists(build.Directories.Artifacts)) { CreateDirectory(build.Directories.Artifacts); }
+
+  CopyFiles($"./src/**/{build.Configuration}/**/Sknet.InRuleGitStorage.{build.Version.SemanticVersion}.nupkg", build.Directories.Artifacts);
+  CopyFiles($"./src/**/{build.Configuration}/**/Sknet.InRuleGitStorage.{build.Version.SemanticVersion}.snupkg", build.Directories.Artifacts);
+
+  if (build.IsRunningOnWindows)
   {
-    if (!DirectoryExists(artifactsFolder)) { CreateDirectory(artifactsFolder); }
-    
-    CopyFiles($"./src/**a/{configuration}/**a/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg", artifactsFolder);
-    CopyFiles($"./src/**a/{configuration}/**a/Sknet.InRuleGitStorage.{gitVersion.SemVer}.snupkg", artifactsFolder);
+    if (!DirectoryExists($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension")) { CreateDirectory($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension"); }
+    if (!DirectoryExists($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/lib")) { CreateDirectory($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/lib"); }
+    if (!DirectoryExists($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/lib/win32")) { CreateDirectory($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/lib/win32"); }
 
-    if (!DirectoryExists($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension")) { CreateDirectory($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension"); }
-    if (!DirectoryExists($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/lib")) { CreateDirectory($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/lib"); }
-    if (!DirectoryExists($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/lib/win32")) { CreateDirectory($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/lib/win32"); }
-
-    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{configuration}/Sknet.InRuleGitStorage.AuthoringExtension.*", $"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/");
-    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{configuration}/Sknet.InRuleGitStorage.*", $"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/");
+    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{build.Configuration}/Sknet.InRuleGitStorage.AuthoringExtension.*", $"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/");
+    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{build.Configuration}/Sknet.InRuleGitStorage.*", $"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/");
     
-    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{configuration}/LibGit2Sharp.*", $"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/", true);
-    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{configuration}/lib/win32/**a/*", $"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/lib/win32/", true);
-    DeleteFiles($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/**a/*.xml");
+    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{build.Configuration}/LibGit2Sharp.*", $"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/", true);
+    CopyFiles($"./src/Sknet.InRuleGitStorage.AuthoringExtension/bin/{build.Configuration}/lib/win32/**/*", $"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/lib/win32/", true);
+    DeleteFiles($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/**/*.xml");
     
-    Zip($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/", $"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension.{gitVersion.SemVer}.zip");
+    Zip($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/", $"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension.{build.Version.SemanticVersion}.zip");
     
-    DeleteDirectory($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension/", new DeleteDirectorySettings
+    DeleteDirectory($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension/", new DeleteDirectorySettings
     {
       Force = true,
       Recursive = true,
     });
-  });
+  }
+});
 
 Task("Deploy-To-irAuthor")
-  .IsDependentOn("Publish-To-Folder")
-  .Does(() =>
+  .IsDependentOn("Publish-Artifacts")
+  .Does<BuildParameters>(build =>
   {
-    var extensionFolder = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/InRule/irAuthor/ExtensionExchange/Sknet.InRuleGitStorage";
+    if (DirectoryExists(build.Directories.IrAuthorExtensions)) { DeleteDirectory(build.Directories.IrAuthorExtensions, new DeleteDirectorySettings { Force = true, Recursive = true }); }
+    CreateDirectory(build.Directories.IrAuthorExtensions);
 
-    if (DirectoryExists(extensionFolder)) { DeleteDirectory(extensionFolder, new DeleteDirectorySettings { Force = true, Recursive = true }); }
-    CreateDirectory(extensionFolder);
-
-    Unzip($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension.{gitVersion.SemVer}.zip", extensionFolder);
+    Unzip($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension.{build.Version.SemanticVersion}.zip", build.Directories.IrAuthorExtensions);
   });
 
+Task("Publish-To-GitHub")
+  .IsDependentOn("Publish-Artifacts")
+  .Does<BuildParameters>(build => 
+{
+  if (string.IsNullOrWhiteSpace(build.GitHub.AccessToken))
+  {
+    throw new InvalidOperationException("Cannot create release in GitHub. You must provide a GitHub access token via the 'githubAccessToken' command-line argument or the 'GitHub_Access_Token' environment variable.");
+  }
+});
+
+Task("Publish-To-NuGet-Feed")
+  .IsDependentOn("Publish-Artifacts")
+  .Does<BuildParameters>(build => 
+{
+  if (string.IsNullOrWhiteSpace(build.NuGet.ApiKey))
+  {
+    throw new InvalidOperationException("Cannot publish NuGet package(s) to the NuGet feed. You must provide a NuGet API key via the 'nugetApiKey' command-line argument or the 'NuGet_ApiKey' environment variable.");
+  }
+});
+/*
 Task("Publish-To-GitHub")
   .IsDependentOn("Publish-To-Folder")
   .Does(() => 
@@ -267,50 +288,19 @@ Task("Publish-To-NuGet-Feed")
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
-/*Task("Clean")
-  .IsDependentOn("Clean-Sdk")
-  .IsDependentOn("Clean-AuthoringExtension")
-  .IsDependentOn("Clean-Artifacts")
-  .IsDependentOn("Clean-TestResults");
-
-Task("Restore")
-  .IsDependentOn("Restore-Sdk")
-  .IsDependentOn("Restore-AuthoringExtension");
-
-Task("Build")
-  .IsDependentOn("Build-Sdk")
-  .IsDependentOn("Build-AuthoringExtension");
-
-Task("Test")
-  .IsDependentOn("Test-Sdk");
-
 Task("Default")
-  .IsDependentOn("Restore")
-  .IsDependentOn("Build")
   .IsDependentOn("Test")
-  .IsDependentOn("Publish-To-Folder")
   .IsDependentOn("Deploy-To-irAuthor");
 
 Task("CI")
-  .IsDependentOn("Clean")
-  .IsDependentOn("Restore")
-  .IsDependentOn("Build")
   .IsDependentOn("Test")
-  .IsDependentOn("Publish-To-Folder");
+  .IsDependentOn("Publish-Artifacts");
 
 Task("Release")
   .IsDependentOn("Clean")
-  .IsDependentOn("Restore")
-  .IsDependentOn("Build")
   .IsDependentOn("Test")
   .IsDependentOn("Publish-To-GitHub")
-  .IsDependentOn("Publish-To-NuGet-Feed");*/
-
-Task("Default")
-  .IsDependentOn("Test");
-
-Task("GitHub")
-  .IsDependentOn("Test");
+  .IsDependentOn("Publish-To-NuGet-Feed");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

@@ -1,7 +1,11 @@
 public class BuildVersion
 {
+  public string AssemblySemanticVersion { get; }
+  public string FullSemanticVersion { get; }
+  public string InformationalVersion { get; }
+  public string SemanticVersion { get; }
   public bool SkipGitVersion { get; }
-
+  
   public BuildVersion(ICakeContext context)
   {
     if (context == null)
@@ -14,10 +18,13 @@ public class BuildVersion
     var gitVersion = context.GitVersion(new GitVersionSettings
     {
       NoFetch = true,
-      //UpdateAssemblyInfo = true,
-      //UpdateAssemblyInfoFilePath = "./src/Sknet.InRuleGitStorage.AuthoringExtension/Properties/AssemblyInfo.cs"
+      UpdateAssemblyInfo = true,
+      UpdateAssemblyInfoFilePath = "./src/Sknet.InRuleGitStorage.AuthoringExtension/Properties/AssemblyInfo.cs"
     });
 
-    context.Information("Result:\n{0}", gitVersion.Dump());
+    SemanticVersion = gitVersion.SemVer;
+    FullSemanticVersion = gitVersion.FullSemVer;
+    AssemblySemanticVersion = gitVersion.AssemblySemVer;
+    InformationalVersion = gitVersion.InformationalVersion;
   }
 }
