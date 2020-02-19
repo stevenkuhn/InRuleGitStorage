@@ -204,6 +204,8 @@ Task("Publish-Artifacts")
       Recursive = true,
     });
   }
+
+  Zip($"{build.Directories.Artifacts}/", $"{build.Directories.Artifacts}/artifacts.zip");
 });
 
 Task("Deploy-To-irAuthor")
