@@ -13,6 +13,7 @@ public class BuildParameters
   public bool IsRunningOnUnix { get; }
   public bool IsRunningOnWindows { get; }
   public NuGet NuGet { get; }
+  public bool IsSkippingBuild { get; }
   public string Target { get; }
   public BuildVersion Version { get; }
 
@@ -30,10 +31,14 @@ public class BuildParameters
     InRule = new InRule(context);
     IsLocalBuild = buildSystem.IsLocalBuild;
     IsRunningOnUnix = context.IsRunningOnUnix();
-    IsRunningOnWindows = context.IsRunningOnWindows();   
+    IsRunningOnWindows = context.IsRunningOnWindows();
     NuGet = new NuGet(context);
     Target = context.TargetTask.Name;
     Version = new BuildVersion(context);
+
+    IsSkippingBuild = bool.TryParse(
+      context.Argument("skipBuild", 
+      context.EnvironmentVariable("Skip_Build") ?? "False"), out bool isSkippingBuild) && isSkippingBuild;
 
     Directories = new BuildDirectories(context);
     Files = new BuildFiles(context, Directories);

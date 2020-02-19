@@ -33,6 +33,7 @@ Teardown<BuildParameters>((context, parameters) =>
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build => 
 {
   DeleteDirectories(GetDirectories("./**/obj"), new DeleteDirectorySettings { Force = true, Recursive = true });
@@ -60,6 +61,7 @@ Task("Clean")
 });
 
 Task("Clean-Artifacts")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build => 
 {
   if (DirectoryExists(build.Directories.Artifacts))
@@ -69,6 +71,7 @@ Task("Clean-Artifacts")
 });
 
 Task("Clean-TestResults")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build => 
 {
   DeleteDirectories(
@@ -77,6 +80,7 @@ Task("Clean-TestResults")
 });
 
 Task("Restore")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build => 
 {
   Information("Restoring SDK project NuGet packages...");
@@ -110,6 +114,7 @@ Task("Restore")
 
 Task("Build")
   .IsDependentOn("Restore")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build =>
 {
   DotNetCoreBuild(build.Files.SdkProject, new DotNetCoreBuildSettings
@@ -149,6 +154,7 @@ Task("Build")
 Task("Test")
   .IsDependentOn("Clean-TestResults")
   .IsDependentOn("Build")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build =>
 {
   DotNetCoreTest(build.Files.SdkTestProject, new DotNetCoreTestSettings
@@ -176,6 +182,7 @@ Task("Test")
 Task("Publish-Artifacts")
   .IsDependentOn("Build")
   .IsDependentOn("Clean-Artifacts")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build =>
 {
   if (!DirectoryExists(build.Directories.Artifacts)) { CreateDirectory(build.Directories.Artifacts); }
@@ -204,12 +211,11 @@ Task("Publish-Artifacts")
       Recursive = true,
     });
   }
-
-  //Zip($"{build.Directories.Artifacts}/", $"{build.Directories.Artifacts}/artifacts.zip");
 });
 
 Task("Deploy-To-irAuthor")
   .IsDependentOn("Publish-Artifacts")
+  .WithCriteria<BuildParameters>((context, build) => !build.IsSkippingBuild)
   .Does<BuildParameters>(build =>
   {
     if (DirectoryExists(build.Directories.IrAuthorExtensions)) { DeleteDirectory(build.Directories.IrAuthorExtensions, new DeleteDirectorySettings { Force = true, Recursive = true }); }
