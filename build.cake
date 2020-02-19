@@ -265,55 +265,12 @@ Task("Publish-To-NuGet-Feed")
   {
     throw new InvalidOperationException("Cannot publish NuGet package(s) to the NuGet feed. You must provide a NuGet API key via the 'nugetApiKey' command-line argument or the 'NuGet_ApiKey' environment variable.");
   }
-});
-/*
-Task("Publish-To-GitHub")
-  .IsDependentOn("Publish-To-Folder")
-  .Does(() => 
-  {
-    if (string.IsNullOrWhiteSpace(githubAccessToken))
-    {
-      throw new InvalidOperationException("Cannot create release in GitHub. You must provide a GitHub access token via the 'githubAccessToken' command-line argument or the 'GitHub_Access_Token' environment variable.");
-    }
 
-    var artifacts = new List<FilePath>();
-    artifacts.Add($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg");
-    artifacts.Add($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.snupkg");
-    artifacts.Add($"{artifactsFolder}/Sknet.InRuleGitStorage.AuthoringExtension.{gitVersion.SemVer}.zip");
-    artifacts = artifacts.OrderBy(x => x.GetFilename().ToString()).ToList();
-
-    PublishReleaseWithArtifacts(
-      tag: $"v{gitVersion.SemVer}",
-      releaseTitle: $"v{gitVersion.SemVer}",
-      releaseNotes: $"Release notes for `v{gitVersion.SemVer}` are not available at this time.",
-      draftRelease: false,
-      preRelease: !string.IsNullOrWhiteSpace(gitVersion.PreReleaseTag),
-      artifactPaths: artifacts.ToArray(),
-      artifactNames: artifacts.Select(x => x.GetFilename().ToString()).ToArray(),
-      artifactMimeTypes: artifacts.Select(x => "application/zip").ToArray(),
-      octoDeploySettings: new OctoDeploySettings
-      {
-        AccessToken = githubAccessToken,
-        Owner = "stevenkuhn",
-        Repository = "InRuleGitStorage"
-      }
-    );
+  NuGetPush($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.{build.Version.SemanticVersion}.nupkg", new NuGetPushSettings {
+    ApiKey = build.NuGet.ApiKey,
+    Source = "https://api.nuget.org/v3/index.json"
   });
-
-Task("Publish-To-NuGet-Feed")
-  .IsDependentOn("Publish-To-Folder")
-  .Does(() =>
-  {
-    if (string.IsNullOrWhiteSpace(nugetApiKey))
-    {
-      throw new InvalidOperationException("Cannot publish NuGet package(s) to the NuGet feed. You must provide a NuGet API key via the 'nugetApiKey' command-line argument or the 'NuGet_ApiKey' environment variable.");
-    }
-
-    NuGetPush($"{artifactsFolder}/Sknet.InRuleGitStorage.{gitVersion.SemVer}.nupkg", new NuGetPushSettings {
-      ApiKey = nugetApiKey,
-      Source = "https://api.nuget.org/v3/index.json"
-    });
-  });*/
+});
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
