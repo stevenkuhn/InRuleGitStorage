@@ -5,10 +5,7 @@ on: [push]
 jobs: 
   build:
     name: Build [windows]
-    runs-on: [
-      [self-hosted, windows],
-      ubuntu-latest
-    ]
+    runs-on: [ [self-hosted, windows], ubuntu-latest ]
 
     strategy:
       matrix:
