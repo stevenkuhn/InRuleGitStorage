@@ -25,7 +25,7 @@ Install-Package Sknet.InRuleGitStorage -IncludePrerelease
 ```
 
 ```batch
-dotnet add package Sknet.InRuleGitStorage --version 0.2.2
+dotnet add package Sknet.InRuleGitStorage --version 0.3.0
 ```
 
 ## Basic example
@@ -57,13 +57,13 @@ InRuleGitRepository.Clone(
 // Get a new instance of your local InRule Git repository
 using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
 {
-	// Create a local branch that is tracked to the remote "v0.2.2" branch
-	repo.CreateTrackedBranch("v0.2.2", "origin");
+	// Create a local branch that is tracked to the remote "v0.3.0" branch
+	repo.CreateTrackedBranch("v0.3.0", "origin");
 	
 	// Switch the current branch to the newly created tracked branch
-	repo.Checkout("v0.2.2");
+	repo.Checkout("v0.3.0");
 
-	// Create a local branch from the "v0.2.2" branch
+	// Create a local branch from the "v0.3.0" branch
 	repo.CreateBranch("invoice-date-field");
 	
 	// Switch the current branch to the newly created local branch
@@ -76,13 +76,13 @@ using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
 	repo.Commit(ruleApp, "Add invoice date field");
 
 	// Switch back to the previous branch that does not have the field change
-	repo.Checkout("v0.2.2");
+	repo.Checkout("v0.3.0");
 	
 	// Merge the invoice date field change into the current branch
 	repo.Merge("invoice-date-field");
 	
 	// Delete the original branch containing the invoice date field change since the
-    // change now exists in the "v0.2.2" branch
+    // change now exists in the "v0.3.0" branch
 	repo.RemoveBranch("invoice-date-field");
 }
 ```

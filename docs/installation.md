@@ -5,17 +5,17 @@ InRuleGitStorage is a NuGet package that can be installed using a package instal
 ## Package Manager
 
 ```powershell
-PM> Install-Package Sknet.InRuleGitStorage -Version 0.2.2
+PM> Install-Package Sknet.InRuleGitStorage -Version 0.3.0
 ```
 
 ## .NET CLI
 
 ```batch
-dotnet add package Sknet.InRuleGitStorage --version 0.2.2
+dotnet add package Sknet.InRuleGitStorage --version 0.3.0
 ```
 
 ## Package Reference
 
 ```xml
-<PackageReference Include="Sknet.InRuleGitStorage" Version="0.2.2" />
+<PackageReference Include="Sknet.InRuleGitStorage" Version="0.3.0" />
 ```
