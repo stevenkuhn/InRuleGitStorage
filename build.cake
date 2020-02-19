@@ -232,6 +232,29 @@ Task("Publish-To-GitHub")
   {
     throw new InvalidOperationException("Cannot create release in GitHub. You must provide a GitHub access token via the 'githubAccessToken' command-line argument or the 'GitHub_Access_Token' environment variable.");
   }
+
+  var artifacts = new List<FilePath>();
+  artifacts.Add($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.{build.Version.SemanticVersion}.nupkg");
+  artifacts.Add($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.{build.Version.SemanticVersion}.snupkg");
+  artifacts.Add($"{build.Directories.Artifacts}/Sknet.InRuleGitStorage.AuthoringExtension.{build.Version.SemanticVersion}.zip");
+  artifacts = artifacts.OrderBy(x => x.GetFilename().ToString()).ToList();
+
+  PublishReleaseWithArtifacts(
+    tag: $"v{build.Version.SemanticVersion}",
+    releaseTitle: $"v{build.Version.SemanticVersion}",
+    releaseNotes: $"Release notes for `v{build.Version.SemanticVersion}` are not available at this time.",
+    draftRelease: false,
+    preRelease: !string.IsNullOrWhiteSpace(build.Version.PreReleaseTag),
+    artifactPaths: artifacts.ToArray(),
+    artifactNames: artifacts.Select(x => x.GetFilename().ToString()).ToArray(),
+    artifactMimeTypes: artifacts.Select(x => "application/zip").ToArray(),
+    octoDeploySettings: new OctoDeploySettings
+    {
+      AccessToken = build.GitHub.AccessToken,
+      Owner = "stevenkuhn",
+      Repository = "InRuleGitStorage"
+    }
+  );
 });
 
 Task("Publish-To-NuGet-Feed")

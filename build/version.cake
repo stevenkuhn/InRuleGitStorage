@@ -3,6 +3,7 @@ public class BuildVersion
   public string AssemblySemanticVersion { get; }
   public string FullSemanticVersion { get; }
   public string InformationalVersion { get; }
+  public string PreReleaseTag { get; }
   public string SemanticVersion { get; }
   public bool SkipGitVersion { get; }
   
@@ -26,5 +27,6 @@ public class BuildVersion
     FullSemanticVersion = gitVersion.FullSemVer;
     AssemblySemanticVersion = gitVersion.AssemblySemVer;
     InformationalVersion = gitVersion.InformationalVersion;
+    PreReleaseTag = gitVersion.PreReleaseTag;
   }
 }

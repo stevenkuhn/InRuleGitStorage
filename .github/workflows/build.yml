@@ -1,4 +1,4 @@
-name: Build
+name: CI/CD
 
 on: [push]
 
@@ -86,6 +86,8 @@ jobs:
       env:
         InRule_Version: '5.2.0'
         Skip_Build: 'True'
+        GitHub_Access_Token: ${{ secrets.GitHub_Access_Token }}
+        NuGet_ApiKey: ${{ secrets.NuGet_ApiKey }}
       run: |
         dotnet cake --bootstrap
         dotnet cake --target="Release"
