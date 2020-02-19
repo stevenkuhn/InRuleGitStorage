@@ -29,7 +29,7 @@ jobs:
         dotnet cake --target="CI"
 
     - name: Upload artifacts
-      if: inrule == 5.2.0
+      if: matrix.inrule == 5.2.0
       uses: actions/upload-artifact@v1
       with:
         name: artifacts.zip
