@@ -84,10 +84,22 @@ Task("Restore")
   .Does<BuildParameters>(build => 
 {
   Information("Restoring SDK project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkProject);
+  DotNetCoreRestore(build.Files.SdkProject, new DotNetCoreRestoreSettings()
+  {
+    Sources = new [] { 
+      "https://api.nuget.org/v3/index.json",
+      "https://www.myget.org/F/stevenkuhn/api/v3/index.json"
+    },
+  });
 
   Information("Restoring SDK test project NuGet packages...");
-  DotNetCoreRestore(build.Files.SdkTestProject);
+  DotNetCoreRestore(build.Files.SdkTestProject, new DotNetCoreRestoreSettings()
+  {
+    Sources = new [] { 
+      "https://api.nuget.org/v3/index.json",
+      "https://www.myget.org/F/stevenkuhn/api/v3/index.json"
+    },
+  });
 
   Information($"Updating NuGet package InRule.Repository v{build.InRule.Version} for SDK project.");
   DotNetCoreTool(build.Files.SdkProject, "add", $"package InRule.Repository --no-restore --version {build.InRule.Version}");
@@ -98,7 +110,10 @@ Task("Restore")
     NuGetRestore(build.Files.AuthoringProject, new NuGetRestoreSettings
     { 
       PackagesDirectory = "./packages",
-      Source = new [] { "https://api.nuget.org/v3/index.json" },
+      Source = new [] { 
+        "https://api.nuget.org/v3/index.json",
+        "https://www.myget.org/F/stevenkuhn/api/v3/index.json"
+      },
     });
 
     Information($"Update NuGet package InRule.Authoring.SDK v{build.InRule.Version} for Authoring project.");
@@ -106,7 +121,11 @@ Task("Restore")
     {
       ArgumentCustomization = args => args.Append("-RepositoryPath ./packages"),
       Id = new [] { "InRule.Authoring.SDK" },
-      Source = new [] { "https://api.nuget.org/v3/index.json" },
+      Source = new []
+      {
+        "https://api.nuget.org/v3/index.json",
+        "https://www.myget.org/F/stevenkuhn/api/v3/index.json"
+      },
       Version = build.InRule.Version
     });
   }
