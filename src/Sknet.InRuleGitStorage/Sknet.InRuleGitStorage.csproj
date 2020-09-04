@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <PackageProjectUrl>https://inrulegitstorage.stevenkuhn.net/</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <PackageReference Include="InRule.Repository" Version="5.2.0" />
-    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0056-g233e450d6f" />
   </ItemGroup>
 
 </Project>
