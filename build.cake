@@ -195,6 +195,15 @@ Task("Test")
       NoRestore = true,
       Logger = "trx;LogFileName=./net461/TestResult.trx"
     });
+
+    DotNetCoreTest(build.Files.SdkTestProject, new DotNetCoreTestSettings
+    {
+      Configuration = build.Configuration,
+      Framework = "net472",
+      NoBuild = true,
+      NoRestore = true,
+      Logger = "trx;LogFileName=./net472/TestResult.trx"
+    });
   }
 });
 
