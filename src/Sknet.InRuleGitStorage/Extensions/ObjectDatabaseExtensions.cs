@@ -45,55 +45,5 @@ namespace Sknet.InRuleGitStorage.Extensions
                 return objectDatabase.CreateBlob(stream);
             }
         }
-
-        internal static Commit CreateCommit(this ObjectDatabase objectDatabase,
-            Signature author,
-            Signature committer,
-            string message,
-            RuleApplicationDef ruleApplicationDef,
-            IEnumerable<Commit> parents,
-            bool prettifyMessage)
-        {
-            return objectDatabase.CreateCommit(author, committer, message, ruleApplicationDef, parents, prettifyMessage, null);
-        }
-
-        internal static Commit CreateCommit(this ObjectDatabase objectDatabase,
-            Signature author,
-            Signature committer,
-            string message,
-            RuleApplicationDef ruleApplicationDef,
-            IEnumerable<Commit> parents,
-            bool prettifyMessage,
-            char? commentChar)
-        {
-            var parentsList = new List<Commit>(parents);
-            if (parentsList.Count > 1) throw new NotImplementedException();
-
-            var allRuleAppsTreeDefinition = new TreeDefinition();
-            if (parentsList.Count == 1)
-            {
-                var parentTree = parentsList[0].Tree;
-
-                foreach (var treeEntry in parentTree)
-                {
-                    if (string.Equals(treeEntry.Name, ruleApplicationDef.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    allRuleAppsTreeDefinition.Add(treeEntry.Name, treeEntry);
-                }
-            }
-
-            ruleApplicationDef = (RuleApplicationDef)ruleApplicationDef.CopyWithSameGuids();
-            
-            IInRuleGitSerializer serializer = new InRuleGitSerializer();
-            var ruleAppTree = serializer.Serialize(ruleApplicationDef, objectDatabase);
-
-            allRuleAppsTreeDefinition.Add(ruleApplicationDef.Name, ruleAppTree);
-            var allRuleAppsTree = objectDatabase.CreateTree(allRuleAppsTreeDefinition);
-
-            return objectDatabase.CreateCommit(author, committer, message, allRuleAppsTree, parentsList, prettifyMessage, commentChar);
-        }
     }
 }

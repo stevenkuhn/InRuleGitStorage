@@ -30,12 +30,12 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
         public void WithRuleAppThatHasEntities_ShouldReturnEntitiesInTree()
         {
             // Arrange
-            var serializer = new InRuleGitSerializer();
+            var serializer = new InRuleGitSerializer(_fixture.Repository);
             var ruleApp = new RuleApplicationDef("RuleAppWithEntities");
             ruleApp.Entities.Add(new EntityDef("Entity1"));
 
             // Act
-            var tree = serializer.Serialize(ruleApp, _fixture.Repository.ObjectDatabase);
+            var tree = serializer.Serialize(ruleApp);
 
             // Assert
             var entitiesTreeEntry = tree["Entities"];
@@ -81,13 +81,13 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
         public void WithEntityThatHasFields_ShouldReturnFieldsInTree()
         {
             // Arrange
-            var serializer = new InRuleGitSerializer();
+            var serializer = new InRuleGitSerializer(_fixture.Repository);
             var ruleApp = new RuleApplicationDef("RuleApp1");
             var entityDef = ruleApp.Entities.Add(new EntityDef("EntityWithFields"));
             entityDef.Fields.Add(new FieldDef("Field1", DataType.String));
 
             // Act
-            var tree = serializer.Serialize(ruleApp, _fixture.Repository.ObjectDatabase);
+            var tree = serializer.Serialize(ruleApp);
             tree = (Tree)tree["Entities/EntityWithFields"].Target;
 
             // Assert
@@ -119,13 +119,13 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
         public void WithEntityThatHasClassifications_ShouldReturnClassificationsInTree()
         {
             // Arrange
-            var serializer = new InRuleGitSerializer();
+            var serializer = new InRuleGitSerializer(_fixture.Repository);
             var ruleApp = new RuleApplicationDef("RuleApp1");
             var entityDef = ruleApp.Entities.Add(new EntityDef("EntityWithClassifications"));
             entityDef.Classifications.Add(new InRule.Repository.Classifications.ClassificationDef() { Name = "Classification1" });
 
             // Act
-            var tree = serializer.Serialize(ruleApp, _fixture.Repository.ObjectDatabase);
+            var tree = serializer.Serialize(ruleApp);
             tree = (Tree)tree["Entities/EntityWithClassifications"].Target;
 
             // Assert
@@ -172,12 +172,12 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
         public void WithRuleAppThatHasDataElements_ShouldReturnDataElementsInTree()
         {
             // Arrange
-            var serializer = new InRuleGitSerializer();
+            var serializer = new InRuleGitSerializer(_fixture.Repository);
             var ruleApp = new RuleApplicationDef("RuleAppWithDataElements");
             ruleApp.DataElements.Add(new TableDef("Table1"));
 
             // Act
-            var tree = serializer.Serialize(ruleApp, _fixture.Repository.ObjectDatabase);
+            var tree = serializer.Serialize(ruleApp);
 
             // Assert
             var dataElementsTreeEntry = tree["DataElements"];
@@ -217,12 +217,12 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
         public void WithRuleAppThatHasEndPoints_ShouldReturnEndPointsInTree()
         {
             // Arrange
-            var serializer = new InRuleGitSerializer();
+            var serializer = new InRuleGitSerializer(_fixture.Repository);
             var ruleApp = new RuleApplicationDef("RuleAppWithEndPoints");
             ruleApp.EndPoints.Add(new RestServiceDef("RestService1"));
 
             // Act
-            var tree = serializer.Serialize(ruleApp, _fixture.Repository.ObjectDatabase);
+            var tree = serializer.Serialize(ruleApp);
 
             // Assert
             var endPointsTreeEntry = tree["EndPoints"];
@@ -262,14 +262,14 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
         public void WithEntityThatHasVocabularyTemplates_ShouldReturnTemplatesInTree()
         {
             // Arrange
-            var serializer = new InRuleGitSerializer();
+            var serializer = new InRuleGitSerializer(_fixture.Repository);
             var ruleApp = new RuleApplicationDef("RuleApp1");
             var entityDef = ruleApp.Entities.Add(new EntityDef("EntityWithVocabulary"));
             entityDef.Vocabulary = new VocabularyDef();
             entityDef.Vocabulary.Templates.Add(new NotificationTemplateDef { Name = "Notification1" });
 
             // Act
-            var tree = serializer.Serialize(ruleApp, _fixture.Repository.ObjectDatabase);
+            var tree = serializer.Serialize(ruleApp);
             tree = (Tree)tree["Entities/EntityWithVocabulary"].Target;
 
             // Assert

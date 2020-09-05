@@ -1,6 +1,5 @@
 ﻿using InRule.Repository;
 using LibGit2Sharp;
-using Sknet.InRuleGitStorage.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -77,7 +76,55 @@ namespace Sknet.InRuleGitStorage
                 parents = new[] { _repository.Lookup<Commit>(_repository.Refs.Head.TargetIdentifier) };
             }
 
-            var commit = _repository.ObjectDatabase.CreateCommit(author, committer, message, ruleApplication, parents, true);
+            var defHashToTreeShaLookup = new Dictionary<string, string>();
+
+            var parentsList = new List<Commit>(parents);
+            if (parentsList.Count > 1) throw new NotImplementedException();
+
+            var allRuleAppsTreeDefinition = new TreeDefinition();
+            if (parentsList.Count == 1)
+            {
+                var parentTree = parentsList[0].Tree;
+
+                foreach (var treeEntry in parentTree)
+                {
+                    if (string.Equals(treeEntry.Name, ruleApplication.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    allRuleAppsTreeDefinition.Add(treeEntry.Name, treeEntry);
+                }
+
+                var lookupNote = _repository.Notes["inrule/git/refs", parentsList[0].Id];
+                if (lookupNote != null)
+                {
+                    using (var reader = new StringReader(lookupNote.Message))
+                    {
+                        while (true)
+                        {
+                            var line = reader.ReadLine();
+                            if (string.IsNullOrWhiteSpace(line))
+                            {
+                                break;
+                            }
+
+                            var parts = line.Split(':');
+                            defHashToTreeShaLookup[parts[0]] = parts[1];
+                        }
+                    }
+                }
+            }
+
+            ruleApplication = (RuleApplicationDef)ruleApplication.CopyWithSameGuids();
+
+            IInRuleGitSerializer serializer = new InRuleGitSerializer(_repository, defHashToTreeShaLookup);
+            var ruleAppTree = serializer.Serialize(ruleApplication);
+
+            allRuleAppsTreeDefinition.Add(ruleApplication.Name, ruleAppTree);
+            var allRuleAppsTree = _repository.ObjectDatabase.CreateTree(allRuleAppsTreeDefinition);
+
+            var commit = _repository.ObjectDatabase.CreateCommit(author, committer, message, allRuleAppsTree, parentsList, true, null);
 
             if (headTarget != null)
             {
@@ -87,6 +134,14 @@ namespace Sknet.InRuleGitStorage
             {
                 _repository.Refs.Add(_repository.Refs.Head.TargetIdentifier, commit.Sha);
             }
+
+            var sb = new StringBuilder();
+            foreach (var keyValuePair in defHashToTreeShaLookup)
+            {
+                sb.AppendLine($"{keyValuePair.Key}:{keyValuePair.Value}");
+            }
+
+            _repository.Notes.Add(commit.Id, sb.ToString(), author, committer, "inrule/git/refs");
 
             /*var notes = new StringBuilder();
             foreach (var treeEntry in commit.Tree)
@@ -194,7 +249,7 @@ namespace Sknet.InRuleGitStorage
             _repository.Network.Fetch(remoteObj.Name, fetchRefSpecs, new LibGit2Sharp.FetchOptions
             {
                 CertificateCheck = options.CertificateCheck,
-                CredentialsProvider = options.CredentialsProvider
+                CredentialsProvider = options.CredentialsProvider,
             });
         }
 
@@ -218,7 +273,15 @@ namespace Sknet.InRuleGitStorage
 
             var commit = _repository.Lookup<Commit>(headTarget.TargetIdentifier);
 
-            return commit.GetRuleApplication(ruleApplicationName);
+            var ruleAppTreeEntry = commit.Tree[ruleApplicationName];
+
+            if (ruleAppTreeEntry?.Target == null || !(ruleAppTreeEntry.Target is Tree))
+            {
+                return null;
+            }
+
+            IInRuleGitSerializer serializer = new InRuleGitSerializer(_repository);
+            return serializer.Deserialize(ruleAppTreeEntry);
         }
 
         /// <summary>
@@ -371,6 +434,54 @@ namespace Sknet.InRuleGitStorage
                 prettifyMessage: true);
 
             _repository.Refs.UpdateTarget(_repository.Refs.Head.TargetIdentifier, mergeCommit.Sha);
+
+            var defHashToTreeShaLookup = new Dictionary<string, string>();
+
+            var lookupNote = _repository.Notes["inrule/git/refs", baseCommit.Id];
+            if (lookupNote != null)
+            {
+                using (var reader = new StringReader(lookupNote.Message))
+                {
+                    while (true)
+                    {
+                        var line = reader.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line))
+                        {
+                            break;
+                        }
+
+                        var parts = line.Split(':');
+                        defHashToTreeShaLookup[parts[0]] = parts[1];
+                    }
+                }
+            }
+
+            lookupNote = _repository.Notes["inrule/git/refs", headCommit.Id];
+            if (lookupNote != null)
+            {
+                using (var reader = new StringReader(lookupNote.Message))
+                {
+                    while (true)
+                    {
+                        var line = reader.ReadLine();
+                        if (string.IsNullOrWhiteSpace(line))
+                        {
+                            break;
+                        }
+
+                        var parts = line.Split(':');
+                        defHashToTreeShaLookup[parts[0]] = parts[1];
+                    }
+                }
+            }
+
+            var sb = new StringBuilder();
+            foreach (var keyValuePair in defHashToTreeShaLookup)
+            {
+                sb.AppendLine($"{keyValuePair.Key}:{keyValuePair.Value}");
+            }
+
+            _repository.Notes.Add(mergeCommit.Id, sb.ToString(), merger, merger, "inrule/git/refs");
 
             return mergeTreeResult;
         }
@@ -620,6 +731,21 @@ namespace Sknet.InRuleGitStorage
             using (var repo = new Repository(destinationPath))
             {
                 repo.Config.Set("inrule.enabled", true, ConfigurationLevel.Local);
+
+                repo.Network.Remotes.Update("origin", r =>
+                {
+                    r.FetchRefSpecs.Add("+refs/notes/inrule/*:refs/notes/inrule/*");
+                    r.PushRefSpecs.Add("+refs/notes/inrule/*:refs/notes/inrule/*");
+                });
+
+                var remoteObj = repo.Network.Remotes["origin"];
+                var fetchRefSpecs = remoteObj.FetchRefSpecs.Select(x => x.Specification);
+
+                repo.Network.Fetch(remoteObj.Name, fetchRefSpecs, new LibGit2Sharp.FetchOptions
+                {
+                    CertificateCheck = options.CertificateCheck,
+                    CredentialsProvider = options.CredentialsProvider,
+                });
             }
 
             return destinationPath;
