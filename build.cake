@@ -1,4 +1,5 @@
 // Install modules
+#module nuget:?package=Cake.DotNetTool.Module&version=0.4.0
 
 // Install addins.
 #addin nuget:?package=Cake.Incubator&version=5.1.0

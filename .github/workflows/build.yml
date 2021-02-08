@@ -25,6 +25,7 @@ jobs:
       env:
         InRule_Version: ${{ matrix.inrule }}
       run: |
+        dotnet cake --bootstrap
         dotnet cake --target="CI"
 
     - name: Upload artifacts
@@ -56,6 +57,7 @@ jobs:
       env:
         InRule_Version: ${{ matrix.inrule }}
       run: |
+        dotnet cake --bootstrap
         dotnet cake --target="CI"
 
   release:
@@ -87,6 +89,7 @@ jobs:
         GitHub_Access_Token: ${{ secrets.GitHub_Access_Token }}
         NuGet_ApiKey: ${{ secrets.NuGet_ApiKey }}
       run: |
+        dotnet cake --bootstrap
         dotnet cake --target="Release"
   
     
