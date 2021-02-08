@@ -6,8 +6,8 @@
 #addin nuget:?package=Cake.OctoDeploy&version=3.2.0
 
 // Install tools.
-#tool dotnet:?package=GitVersion.Tool&version=5.1.3
-#tool nuget:?package=NuGet.CommandLine&version=5.4.0
+#tool dotnet:?package=GitVersion.Tool&version=5.6.5
+#tool nuget:?package=NuGet.CommandLine&version=5.8.1
 
 // Load other scripts.
 #load "./build/parameters.cake"
