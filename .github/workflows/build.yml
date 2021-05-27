@@ -25,8 +25,7 @@ jobs:
     - name: Run Build
       env:
         InRule_Version: ${{ matrix.inrule }}
-      run: |
-        ./build.ps1
+      run: ./build.ps1
 
     - name: Upload artifacts
       if: matrix.inrule == '5.2.0'
@@ -57,8 +56,7 @@ jobs:
     - name: Run Build
       env:
         InRule_Version: ${{ matrix.inrule }}
-      run: |
-        ./build.sh
+      run: ./build.sh
 
   # release:
   #   name: Create and Publish Release
