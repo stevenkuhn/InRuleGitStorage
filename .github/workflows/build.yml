@@ -5,28 +5,29 @@ on: [push]
 jobs: 
   build_windows:
     name: Build [windows]
-    runs-on: [self-hosted, windows]
+    runs-on: [windows-latest]
 
     strategy:
       matrix:
-        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0]
+        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0, 5.7.1]
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    - name: Fetch all history for all tags and branches
-      run: git fetch --prune --unshallow
+    # - name: Fetch all history for all tags and branches
+    #   run: git fetch --prune --unshallow
 
-    - name: Restore .NET Core Tools
-      run: dotnet tool restore
+    # - name: Restore .NET Core Tools
+    #   run: dotnet tool restore
 
-    - name: Run Cake
+    - name: Run Build
       env:
         InRule_Version: ${{ matrix.inrule }}
       run: |
-        dotnet cake --bootstrap
-        dotnet cake --target="CI"
+        ./build.ps1
 
     - name: Upload artifacts
       if: matrix.inrule == '5.2.0'
@@ -41,55 +42,54 @@ jobs:
 
     strategy:
       matrix:
-        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0]
+        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0, 5.7.1]
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    - name: Fetch all history for all tags and branches
-      run: git fetch --prune --unshallow
+    # - name: Fetch all history for all tags and branches
+    #   run: git fetch --prune --unshallow
 
-    - name: Restore .NET Core Tools
-      run: dotnet tool restore
+    # - name: Restore .NET Core Tools
+    #   run: dotnet tool restore
 
-    - name: Run Cake
+    - name: Run Build
       env:
         InRule_Version: ${{ matrix.inrule }}
       run: |
-        dotnet cake --bootstrap
-        dotnet cake --target="CI"
+        ./build.sh
 
-  release:
-    name: Create and Publish Release
-    runs-on: ubuntu-latest
-    needs: [ build_ubuntu, build_windows ]
+  # release:
+  #   name: Create and Publish Release
+  #   runs-on: ubuntu-latest
+  #   needs: [ build_ubuntu, build_windows ]
 
-    if: startsWith( github.ref, 'refs/tags/v' )
-    steps:
-    - name: Checkout Source
-      uses: actions/checkout@master
+  #   if: startsWith( github.ref, 'refs/tags/v' )
+  #   steps:
+  #   - name: Checkout Source
+  #     uses: actions/checkout@master
 
-    - name: Fetch all history for all tags and branches
-      run: git fetch --prune --unshallow
+  #   - name: Fetch all history for all tags and branches
+  #     run: git fetch --prune --unshallow
 
-    - name: Download artifacts
-      uses: actions/download-artifact@v1
-      with:
-        name: artifacts
-        path: artifacts
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v1
+  #     with:
+  #       name: artifacts
+  #       path: artifacts
 
-    - name: Restore .NET Core Tools
-      run: dotnet tool restore
+  #   - name: Restore .NET Core Tools
+  #     run: dotnet tool restore
 
-    - name: Run Cake
-      env:
-        InRule_Version: '5.2.0'
-        Skip_Build: 'True'
-        GitHub_Access_Token: ${{ secrets.GitHub_Access_Token }}
-        NuGet_ApiKey: ${{ secrets.NuGet_ApiKey }}
-      run: |
-        dotnet cake --bootstrap
-        dotnet cake --target="Release"
-  
-    
+  #   - name: Run Cake
+  #     env:
+  #       InRule_Version: '5.2.0'
+  #       Skip_Build: 'True'
+  #       GitHub_Access_Token: ${{ secrets.GitHub_Access_Token }}
+  #       NuGet_ApiKey: ${{ secrets.NuGet_ApiKey }}
+  #     run: |
+  #       dotnet cake --bootstrap
+  #       dotnet cake --target="Release"

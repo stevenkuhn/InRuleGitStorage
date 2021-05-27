@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E93D442A-DBB7-4A51-B850-3398CBC35B70}</ProjectGuid>
+    <ProjectGuid>{F4F47C86-5EE3-490D-BF19-7B500C93D023}</ProjectGuid>
     <OutputType>library</OutputType>
     <RootNamespace>Sknet.InRuleGitStorage.AuthoringExtension</RootNamespace>
     <AssemblyName>Sknet.InRuleGitStorage.AuthoringExtension</AssemblyName>
@@ -16,7 +16,6 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,8 +26,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
-    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
-    <GetVersion>false</GetVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,14 +35,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(NCrunch)' == '1' ">
-    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
-    <GetVersion>false</GetVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
-    <GetVersion>false</GetVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ActiproSoftware.Docking.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
@@ -116,7 +105,6 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -137,8 +125,10 @@
     <Compile Include="Commands\LogoutCommand.cs" />
     <Compile Include="Commands\MaintainCommand.cs" />
     <Compile Include="Commands\MergeCommand.cs" />
+    <Compile Include="Commands\OpenFromGitRepositoryCommand.cs" />
     <Compile Include="Commands\PullCommand.cs" />
     <Compile Include="Commands\PushCommand.cs" />
+    <Compile Include="Commands\SaveToGitRepositoryCommand.cs" />
     <Compile Include="Controls\GitRepositoryOptionControl.xaml.cs">
       <DependentUpon>GitRepositoryOptionControl.xaml</DependentUpon>
     </Compile>
@@ -151,7 +141,6 @@
     <Compile Include="GitRepositoryOption.cs" />
     <Compile Include="GitRepositorySettings.cs" />
     <Compile Include="GitRuleApplicationServiceImpl.cs" />
-    <Compile Include="Commands\OpenFromGitRepositoryCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -166,7 +155,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="RuleApplicationServiceWrapper.cs" />
-    <Compile Include="Commands\SaveToGitRepositoryCommand.cs" />
     <Compile Include="ViewModels\GitRepositoryOptionControlViewModel.cs" />
     <Compile Include="ViewModels\GitRepositoryOptionViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -174,6 +162,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="Images\GitBranch.pdn" />
+    <None Include="Images\GitMerge.pdn" />
+    <None Include="Images\GitPull.pdn" />
+    <None Include="Images\GitPush.pdn" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -181,54 +173,40 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Sknet.InRuleGitStorage\Sknet.InRuleGitStorage.csproj">
+      <Project>{67fba5ba-44c3-4d0c-9013-ef00a76712f3}</Project>
+      <Name>Sknet.InRuleGitStorage</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\GitRepositoryOptionControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\OpenFromGitRepositoryControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Git16.png" />
+    <Resource Include="Images\Git32.png" />
+    <Resource Include="Images\GitBranch16.png" />
+    <Resource Include="Images\GitBranch32.png" />
+    <Resource Include="Images\GitCommit16.png" />
+    <Resource Include="Images\GitCommit32.png" />
+    <Resource Include="Images\GitDiscard16.png" />
+    <Resource Include="Images\GitDiscard32.png" />
+    <Resource Include="Images\GitMerge16.png" />
+    <Resource Include="Images\GitMerge32.png" />
+    <Resource Include="Images\GitPull16.png" />
+    <Resource Include="Images\GitPull32.png" />
+    <Resource Include="Images\GitPush16.png" />
+    <Resource Include="Images\GitPush32.png" />
     <Resource Include="Images\OpenFromGit16.png" />
     <Resource Include="Images\OpenFromGit32.png" />
     <Resource Include="Images\SaveToGit16.png" />
     <Resource Include="Images\SaveToGit32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Git16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Git32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Controls\GitRepositoryOptionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\OpenFromGitRepositoryControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\GitPull16.png" />
-    <Resource Include="Images\GitPull32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\GitPush16.png" />
-    <Resource Include="Images\GitPush32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\GitBranch16.png" />
-    <Resource Include="Images\GitBranch32.png" />
-    <Resource Include="Images\GitMerge16.png" />
-    <Resource Include="Images\GitMerge32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\GitCommit16.png" />
-    <Resource Include="Images\GitCommit32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\GitDiscard16.png" />
-    <Resource Include="Images\GitDiscard32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Sknet.InRuleGitStorage\Sknet.InRuleGitStorage.csproj">
-      <Project>{d45a8705-1162-489a-bbec-33a8daebe7bb}</Project>
-      <Name>Sknet.InRuleGitStorage</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

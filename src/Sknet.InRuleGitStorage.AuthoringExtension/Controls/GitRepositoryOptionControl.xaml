@@ -67,8 +67,6 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="{Binding Source={StaticResource EditorRowHeight}, Converter={StaticResource gridLengthConverter}}" />
                                         <RowDefinition Height="{Binding Source={StaticResource EditorRowHeight}, Converter={StaticResource gridLengthConverter}}" />
-                                        <!--<RowDefinition Height="{Binding Source={StaticResource EditorRowHeight}, Converter={StaticResource gridLengthConverter}}" />-->
-                                        <!--<RowDefinition Height="{Binding Source={StaticResource EditorRowHeight}, Converter={StaticResource gridLengthConverter}}" />-->
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
 
@@ -82,18 +80,6 @@
                                     <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource IrTextBox}" 
                                              Text="{Binding SourceUrl, UpdateSourceTrigger=PropertyChanged}"
                                              Margin="5 0 0 0" />
-
-                                    <!--<TextBlock Grid.Row="2" Grid.Column="0" Text="Username:" Style="{StaticResource IrLabel}" />
-                                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource IrTextBox}" 
-                                             Text="{Binding Username}" 
-                                             Margin="5 0 0 0" />
-
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Password:" Style="{StaticResource IrLabel}" />
-                                    <PasswordBox Grid.Row="3" Grid.Column="1" Margin="5 0 0 0" 
-                                                 controls:PasswordBoxBindingHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 x:Name="passwordTextBox"
-                                                 Style="{StaticResource IrPasswordBox}" 
-                                                 controls:PasswordBoxBindingHelper.Attach="True" />-->
 
                                     <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Margin="0 5 0 0">
                                         <ribbon:Button ImageSourceSmall="/InRule.Authoring;Component/Images/arrowup16.png"

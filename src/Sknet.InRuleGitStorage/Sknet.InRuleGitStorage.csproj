@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
@@ -7,7 +7,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Authors>Steven Kuhn</Authors>
     <Company>Steven Kuhn</Company>
-    <Copyright>Copyright © Steven Kuhn 2019</Copyright>
+    <Copyright>Copyright © Steven Kuhn 2021</Copyright>
     <Description>Sknet.InRuleGitStorage is a library for storing and managing InRule® business rules in a Git repository.</Description>
     <Product>Sknet.InRuleGitStorage</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -15,7 +15,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
-    <NoWarn>1701;1702;NU5105</NoWarn>
+    <NoWarn>1701;1702;NU5104;NU5105</NoWarn>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://inrulegitstorage.stevenkuhn.net/icon.png</PackageIconUrl>
     <PackageTags>inrule git</PackageTags>
@@ -33,5 +33,5 @@
     <PackageReference Include="InRule.Repository" Version="5.2.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0096" />
   </ItemGroup>
-
+  
 </Project>
