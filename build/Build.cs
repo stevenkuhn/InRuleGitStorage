@@ -85,13 +85,11 @@ class Build : NukeBuild
             Logger.Normal("Restoring SDK project NuGet packages...");
             DotNetRestore(s => s
                 .SetProjectFile(SdkProject)
-                .SetConfiguration(Configuration)
                 .SetSources(NuGetSources));
 
             Logger.Normal("Restoring SDK test project NuGet packages...");
             DotNetRestore(s => s
                 .SetProjectFile(SdkTestProject)
-                .SetConfiguration(Configuration)
                 .SetSources(NuGetSources));
 
             Logger.Normal($"Updating NuGet package InRule.Repository v{InRuleVersion} for SDK project.");
@@ -102,7 +100,6 @@ class Build : NukeBuild
                 Logger.Normal("Restoring Authoring project NuGet packages...");
                 NuGetRestore(s => s
                     .SetTargetPath(AuthoringProject)
-                    .SetConfiguration(Configuration)
                     .SetProcessWorkingDirectory(AuthoringProject.Directory)
                     .SetPackagesDirectory(RootDirectory / "packages")
                     .SetSource(NuGetSources));
@@ -239,6 +236,7 @@ class Build : NukeBuild
         .DependsOn(DeployToIrAuthor);
 
     Target CI => _ => _
+        .DependsOn(Clean)
         .DependsOn(Test)
         .DependsOn(PublishArtifacts);
 
