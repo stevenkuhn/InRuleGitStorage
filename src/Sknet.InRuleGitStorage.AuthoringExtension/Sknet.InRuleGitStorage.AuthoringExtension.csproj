@@ -221,6 +221,32 @@ IF EXIST "%LocalAppData%\InRule\irAuthor\" (
   XCOPY /Q /Y /I /S /E "$(TargetDir)\lib\win32" "%LocalAppData%\InRule\irAuthor\ExtensionExchange\Sknet.InRuleGitStorage\lib\win32\"
 ))</PostBuildEvent>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.0.1.0</AssemblyVersion>
+    <FileVersion Condition="'$(FileVersion)' == ''">0.0.1.0</FileVersion>
+    <InformationalVersion Condition="'$(InformationalVersion)' == ''">0.0.1-local</InformationalVersion>
+  </PropertyGroup>
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <AssemblyAttributes Include="AssemblyVersion">
+        <_Parameter1>$(AssemblyVersion)</_Parameter1>
+      </AssemblyAttributes>
+      <AssemblyAttributes Include="AssemblyFileVersion">
+        <_Parameter1>$(FileVersion)</_Parameter1>
+      </AssemblyAttributes>
+      <AssemblyAttributes Include="AssemblyInformationalVersion">
+        <_Parameter1>$(InformationalVersion)</_Parameter1>
+      </AssemblyAttributes>
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteCodeFragment Language="C#"
+                       OutputFile="$(IntermediateOutputPath)Version.cs"
+                       AssemblyAttributes="@(AssemblyAttributes)" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)Version.cs" />
+    </ItemGroup>
+  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

@@ -52,6 +52,9 @@
         "NuGetApiKey": {
           "type": "string"
         },
+        "NuGetSource": {
+          "type": "string"
+        },
         "Plan": {
           "type": "boolean",
           "description": "Shows the execution plan (HTML)"
@@ -83,7 +86,6 @@
               "PublishArtifacts",
               "PublishToGitHub",
               "PublishToNuGetFeed",
-              "Release",
               "Restore",
               "Test"
             ]
@@ -109,7 +111,6 @@
               "PublishArtifacts",
               "PublishToGitHub",
               "PublishToNuGetFeed",
-              "Release",
               "Restore",
               "Test"
             ]
