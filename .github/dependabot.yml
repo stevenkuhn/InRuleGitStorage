@@ -1,0 +1,33 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "07:00"
+    timezone: "America/Chicago"
+  open-pull-requests-limit: 10
+  assignees:
+  - stevenkuhn
+  ignore:
+  - dependency-name: InRule.Authoring.Core
+    versions:
+    - "> 5.2.0"
+  - dependency-name: InRule.Authoring.SDK
+    versions:
+    - "> 5.2.0"
+  - dependency-name: InRule.Common
+    versions:
+    - "> 5.2.0"
+  - dependency-name: InRule.Repository
+    versions:
+    - "> 5.2.0"
+  - dependency-name: InRule.Runtime
+    versions:
+    - "> 5.2.0"
+  - dependency-name: Microsoft.AspNet.WebApi.Client
+    versions:
+    - "> 5.2.3"
+  - dependency-name: Newtonsoft.Json
+    versions:
+    - "> 10.0.3"
