@@ -4,7 +4,8 @@ updates:
   directory: "/"
   schedule:
     interval: daily
-    time: "11:00"
+    time: "07:00"
+    timezone: "America/Chicago"
   open-pull-requests-limit: 10
   assignees:
   - stevenkuhn
@@ -30,12 +31,3 @@ updates:
   - dependency-name: Newtonsoft.Json
     versions:
     - "> 10.0.3"
-  - dependency-name: Moq
-    versions:
-    - 4.16.0
-  - dependency-name: Microsoft.NET.Test.Sdk
-    versions:
-    - 16.8.3
-  - dependency-name: LibGit2Sharp
-    versions:
-    - 0.27.0-preview-0096
