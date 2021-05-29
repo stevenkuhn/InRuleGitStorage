@@ -343,9 +343,4 @@ class Build : NukeBuild
         .DependsOn(TestSdk)
         .DependsOn(PublishSdkArtifacts)
         .DependsOn(DeployToIrAuthor);
-
-    // Target CI => _ => _
-    //     .DependsOn(Clean)
-    //     .DependsOn(Test)
-    //     .DependsOn(PublishArtifacts);
 }
