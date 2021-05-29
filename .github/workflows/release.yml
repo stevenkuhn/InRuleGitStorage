@@ -18,13 +18,13 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        ref: ${{ github.event.tag_name }}
+        ref: ${{ github.event.release.target_commitish }}
 
     - name: Download release assets
-      uses: Itsblue/download-release-assets-action@v1
+      uses: Itsblue/download-release-assets-action@master
       with:
         repo: "stevenkuhn/InRuleGitStorage"
-        version: ${{ github.event.id }}
+        version: ${{ github.event.release.id }}
         file: "Sknet.InRuleGitStorage.*"
         path: ./artifacts
         token: ${{ secrets.GITHUB_TOKEN }}
