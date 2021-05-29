@@ -76,18 +76,18 @@
           "items": {
             "type": "string",
             "enum": [
-              "CI",
               "Clean",
-              "CleanArtifacts",
-              "CleanTestResults",
-              "Compile",
+              "CompileAuthoring",
+              "CompileSdk",
               "Default",
               "DeployToIrAuthor",
-              "PublishArtifacts",
+              "PublishAuthoringArtifacts",
+              "PublishSdkArtifacts",
               "PublishToGitHub",
               "PublishToNuGetFeed",
-              "Restore",
-              "Test"
+              "RestoreAuthoring",
+              "RestoreSdk",
+              "TestSdk"
             ]
           }
         },
@@ -101,18 +101,18 @@
           "items": {
             "type": "string",
             "enum": [
-              "CI",
               "Clean",
-              "CleanArtifacts",
-              "CleanTestResults",
-              "Compile",
+              "CompileAuthoring",
+              "CompileSdk",
               "Default",
               "DeployToIrAuthor",
-              "PublishArtifacts",
+              "PublishAuthoringArtifacts",
+              "PublishSdkArtifacts",
               "PublishToGitHub",
               "PublishToNuGetFeed",
-              "Restore",
-              "Test"
+              "RestoreAuthoring",
+              "RestoreSdk",
+              "TestSdk"
             ]
           }
         },

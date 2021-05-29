@@ -20,16 +20,16 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-      
-    - name: Install .NET Core 5.0 SDK
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x'
 
-    - name: Run Build
+    - name: Run SDK Build & Test
       env:
         InRule_Version: ${{ matrix.inrule }}
-      run: ./build.ps1 --target CI
+      run: ./build.ps1 --target TestSdk PublishSdkArtifacts
+
+    - name: Run Authoring Build
+      env:
+        InRule_Version: ${{ matrix.inrule }}
+      run: ./build.ps1 --target PublishAuthoringArtifacts --skip Clean
 
     - name: Upload artifacts
       if: matrix.inrule == '5.2.0'
@@ -53,15 +53,10 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Install .NET Core 5.0 SDK
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x'
-
-    - name: Run Build
+    - name: Run SDK Build & Tests
       env:
         InRule_Version: ${{ matrix.inrule }}
-      run: ./build.sh --target CI
+      run: ./build.sh --target TestSdk
 
   create_release:
     name: Create GitHub release
@@ -80,17 +75,10 @@ jobs:
         name: artifacts
         path: artifacts
 
-    - name: Install .NET Core 5.0 SDK
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x'
-
     - name: Create release
       env:
         GitHub_Access_Token: ${{ secrets.GITHUB_TOKEN }}
-        InRule_Version: '5.2.0'
-        Publish_Only: 'True'
-      run: ./build.sh --target PublishToGitHub --skip PublishArtifacts
+      run: ./build.sh --target PublishToGitHub --skip PublishSdkArtifacts PublishAuthoringArtifacts
 
 
   # release:

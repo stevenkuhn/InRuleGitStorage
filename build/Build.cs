@@ -21,6 +21,7 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 using static Nuke.Common.Tools.NuGet.NuGetTasks;
+using static Nuke.Common.Tools.GitHub.GitHubTasks;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
@@ -69,33 +70,24 @@ class Build : NukeBuild
     }
 
     Target Clean => _ => _
-        .Before(Restore)
+        .Before(RestoreSdk)
+        .Before(RestoreAuthoring)
         .Executes(() =>
         {
             Logger.Normal("Deleting all bin/obj directories...");
             SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
             TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-        });
 
-    Target CleanArtifacts => _ => _
-        .Before(Restore)
-        .TriggeredBy(Clean)
-        .Executes(() =>
-        {
             Logger.Normal("Cleaning artifacts directory...");
             EnsureCleanDirectory(ArtifactsDirectory);
-        });
 
-    Target CleanTestResults => _ => _
-        .Before(Restore)
-        .TriggeredBy(Clean)
-        .Executes(() => 
-        {
             Logger.Normal("Deleting test results directories...");
             TestsDirectory.GlobDirectories("**/TestResults").ForEach(DeleteDirectory);
         });
 
-    Target Restore => _ => _
+    Target RestoreSdk => _ => _
+        .DependsOn(Clean)
+        .Requires(() => InRuleVersion)
         .Executes(() =>
         {
             Logger.Normal("Restoring SDK project NuGet packages...");
@@ -110,25 +102,29 @@ class Build : NukeBuild
 
             Logger.Normal($"Updating NuGet package InRule.Repository v{InRuleVersion} for SDK project.");
             DotNet($"add {SdkProject} package InRule.Repository --no-restore --version {InRuleVersion}");
-
-            if (IsWin)
-            {
-                Logger.Normal("Restoring Authoring project NuGet packages...");
+        });
+    
+    Target RestoreAuthoring => _ => _
+        .DependsOn(Clean)
+        .Requires(() => InRuleVersion)
+        .OnlyWhenStatic(() => IsWin)   
+        .Executes(() =>
+        {
+            Logger.Normal("Restoring Authoring project NuGet packages...");
                 NuGetRestore(s => s
                     .SetTargetPath(AuthoringProject)
                     .SetProcessWorkingDirectory(AuthoringProject.Directory)
                     .SetPackagesDirectory(RootDirectory / "packages")
                     .SetSource(NuGetRestoreSources));
 
-                Logger.Normal($"Update NuGet package InRule.Authoring.SDK v{InRuleVersion} for Authoring project.");
-                NuGetTasks.NuGet(
-                    $"update {AuthoringProject} -Id InRule.Authoring.SDK -RepositoryPath {RootDirectory / "packages"} -Source {string.Join(';', NuGetRestoreSources)} -Version {InRuleVersion}",
-                    workingDirectory: AuthoringProject.Directory);
-            }
+            Logger.Normal($"Update NuGet package InRule.Authoring.SDK v{InRuleVersion} for Authoring project.");
+            NuGetTasks.NuGet(
+                $"update {AuthoringProject} -Id InRule.Authoring.SDK -RepositoryPath {RootDirectory / "packages"} -Source {string.Join(';', NuGetRestoreSources)} -Version {InRuleVersion}",
+                workingDirectory: AuthoringProject.Directory);
         });
 
-    Target Compile => _ => _
-        .DependsOn(Restore)
+    Target CompileSdk => _ => _
+        .DependsOn(RestoreSdk)
         .Executes(() =>
         {
             Logger.Normal("Compiling SDK project...");
@@ -152,23 +148,27 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
                 .SetFramework(IsWin ? null : "net5.0"));
-
-            if (IsWin)
-            {
-                Logger.Normal("Compiling Authoring project...");
-                MSBuild(s => s
-                    .SetTargetPath(AuthoringProject)
-                    .SetConfiguration(Configuration)
-                    .SetAssemblyVersion(GitVersion.AssemblySemVer)
-                    .SetFileVersion(GitVersion.AssemblySemFileVer)
-                    .SetInformationalVersion(GitVersion.InformationalVersion)
-                    .DisableRestore());
-            }
         });
 
-    Target Test => _ => _
-        .DependsOn(CleanTestResults)
-        .DependsOn(Compile)
+    Target CompileAuthoring => _ => _
+        .DependsOn(RestoreAuthoring)
+        .OnlyWhenStatic(() => IsWin)
+        .After(CompileSdk)
+        .Before(TestSdk)
+        .Executes(() => 
+        {
+            Logger.Normal("Compiling Authoring project...");
+            MSBuild(s => s
+                .SetTargetPath(AuthoringProject)
+                .SetConfiguration(Configuration)
+                .SetAssemblyVersion(GitVersion.AssemblySemVer)
+                .SetFileVersion(GitVersion.AssemblySemFileVer)
+                .SetInformationalVersion(GitVersion.InformationalVersion)
+                .DisableRestore());
+        });
+
+    Target TestSdk => _ => _
+        .DependsOn(CompileSdk)
         .Executes(() =>
         {
             Logger.Normal("Running SDK tests under .NET 5.0 runtime...");
@@ -202,33 +202,38 @@ class Build : NukeBuild
             }
         });
 
-    Target PublishArtifacts => _ => _
-        .DependsOn(CleanArtifacts)
-        .DependsOn(Compile)
-        .After(Test)
+    Target PublishSdkArtifacts => _ => _
+        .DependsOn(CompileSdk)
+        .After(TestSdk)
         .Executes(() =>
         {
             Logger.Normal("Publishing SDK artifacts to the artifacts folder...");
             SourceDirectory.GlobFiles($"**/{Configuration}/**/Sknet.InRuleGitStorage.{GitVersion.SemVer}.*nupkg").ForEach(file => CopyFileToDirectory(file, ArtifactsDirectory));
+        });
 
-            if (IsWin)
-            {
-                Logger.Normal("Publishing Authoring artifacts to the artifacts folder...");
-                var authoringExtensionDirectory = ArtifactsDirectory / "Sknet.InRuleGitStorage.AuthoringExtension";
+    Target PublishAuthoringArtifacts => _ => _
+        .DependsOn(CompileAuthoring)
+        .OnlyWhenStatic(() => IsWin)
+        .After(TestSdk)
+        .Executes(() =>
+        {
+            Logger.Normal("Publishing Authoring artifacts to the artifacts folder...");
+            var authoringExtensionDirectory = ArtifactsDirectory / "Sknet.InRuleGitStorage.AuthoringExtension";
 
-                AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/Sknet.InRuleGitStorage.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
-                AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/LibGit2Sharp.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
-                AuthoringProject.Directory.GlobDirectories($"bin/{Configuration}/lib/win32").ForEach(directory => CopyDirectoryRecursively(directory, authoringExtensionDirectory / "lib" / "win32"));
-                authoringExtensionDirectory.GlobFiles("**/*.xml").ForEach(DeleteFile);
+            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/Sknet.InRuleGitStorage.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
+            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/LibGit2Sharp.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
+            AuthoringProject.Directory.GlobDirectories($"bin/{Configuration}/lib/win32").ForEach(directory => CopyDirectoryRecursively(directory, authoringExtensionDirectory / "lib" / "win32"));
+            authoringExtensionDirectory.GlobFiles("**/*.xml").ForEach(DeleteFile);
 
-                CompressZip(authoringExtensionDirectory, ArtifactsDirectory / $"Sknet.InRuleGitStorage.AuthoringExtension.{GitVersion.SemVer}.zip");
+            CompressZip(authoringExtensionDirectory, ArtifactsDirectory / $"Sknet.InRuleGitStorage.AuthoringExtension.{GitVersion.SemVer}.zip");
 
-                DeleteDirectory(authoringExtensionDirectory);
-            }
+            DeleteDirectory(authoringExtensionDirectory);
         });
     
     Target DeployToIrAuthor => _ => _
-        .DependsOn(PublishArtifacts)
+        .DependsOn(PublishAuthoringArtifacts)
+        .OnlyWhenStatic(() => IsWin)
+        .OnlyWhenStatic(() => IsLocalBuild)
         .Executes(() =>
         {
             Logger.Normal("Deploying Authoring extension to local irAuthor Extension Exchange folder (if exists)...");
@@ -244,7 +249,8 @@ class Build : NukeBuild
         });
 
     Target PublishToGitHub => _ => _
-        .DependsOn(PublishArtifacts)
+        .DependsOn(PublishSdkArtifacts)
+        .DependsOn(PublishAuthoringArtifacts)
         .Requires(() => GitHubAccessToken)
         .Executes(async () =>
         {
@@ -319,7 +325,7 @@ class Build : NukeBuild
         });
 
     Target PublishToNuGetFeed => _ => _
-        .DependsOn(PublishArtifacts)
+        .DependsOn(PublishSdkArtifacts)
         .Requires(() => NuGetSource)
         .Requires(() => NuGetApiKey)
         .After(PublishToGitHub)
@@ -334,17 +340,12 @@ class Build : NukeBuild
         });
 
     Target Default => _ => _
-        .DependsOn(Test)
+        .DependsOn(TestSdk)
+        .DependsOn(PublishSdkArtifacts)
         .DependsOn(DeployToIrAuthor);
 
-    Target CI => _ => _
-        .DependsOn(Clean)
-        .DependsOn(Test)
-        .DependsOn(PublishArtifacts);
-
-    //Target Release => _ => _
-    //    .DependsOn(Clean)
-    //    .DependsOn(Test)
-    //    .DependsOn(PublishToGitHub)
-    //    .DependsOn(PublishToNuGetFeed);
+    // Target CI => _ => _
+    //     .DependsOn(Clean)
+    //     .DependsOn(Test)
+    //     .DependsOn(PublishArtifacts);
 }
