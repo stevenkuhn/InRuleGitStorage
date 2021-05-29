@@ -314,7 +314,9 @@ namespace Sknet.InRuleGitStorage
                 var type = typeof(RuleApplicationDef);
                 var def = (RuleApplicationDef)RuleRepositoryDefBase.LoadFromXml(xml, type);
 
-                var logEntry = _repository.Commits.QueryBy(treeEntry.Path, new CommitFilter() { SortBy = CommitSortStrategies.Time, FirstParentOnly = false }).First();
+                var logEntry = _repository.Commits.QueryBy(treeEntry.Path, new CommitFilter() { SortBy = CommitSortStrategies.Topological, FirstParentOnly = false })
+                    .OrderBy(entry => entry.Commit.Author.When)
+                    .First();
 
                 var info = new RuleApplicationGitInfo(def, logEntry.Commit);
                 ruleApplications.Add(info);
