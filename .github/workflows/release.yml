@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        ref: $${{ github.event.target_commitish }}
+        ref: ${{ github.event.tag_name }}
 
     - name: Download release assets
       uses: Itsblue/download-release-assets-action@v1
