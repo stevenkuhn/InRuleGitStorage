@@ -221,7 +221,6 @@ IF EXIST "%LocalAppData%\InRule\irAuthor\" (
   XCOPY /Q /Y /I /S /E "$(TargetDir)\lib\win32" "%LocalAppData%\InRule\irAuthor\ExtensionExchange\Sknet.InRuleGitStorage\lib\win32\"
 ))</PostBuildEvent>
   </PropertyGroup>
-
   <PropertyGroup>
     <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.0.1.0</AssemblyVersion>
     <FileVersion Condition="'$(FileVersion)' == ''">0.0.1.0</FileVersion>
@@ -240,9 +239,7 @@ IF EXIST "%LocalAppData%\InRule\irAuthor\" (
       </AssemblyAttributes>
     </ItemGroup>
     <MakeDir Directories="$(IntermediateOutputPath)" />
-    <WriteCodeFragment Language="C#"
-                       OutputFile="$(IntermediateOutputPath)Version.cs"
-                       AssemblyAttributes="@(AssemblyAttributes)" />
+    <WriteCodeFragment Language="C#" OutputFile="$(IntermediateOutputPath)Version.cs" AssemblyAttributes="@(AssemblyAttributes)" />
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)Version.cs" />
     </ItemGroup>
