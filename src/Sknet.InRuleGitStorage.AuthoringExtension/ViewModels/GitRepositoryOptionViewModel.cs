@@ -64,34 +64,6 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension.ViewModels
             }
         }
 
-        /*public string Username
-        {
-            get { return Model.Username; }
-
-            set
-            {
-                if (Model.Username != value)
-                {
-                    Model.Username = value;
-                    OnPropertyChanged(nameof(Username));
-                }
-            }
-        }
-
-        public string Password
-        {
-            get { return Model.Password; }
-
-            set
-            {
-                if (Model.Password != value)
-                {
-                    Model.Password = value;
-                    OnPropertyChanged(nameof(Password));
-                }
-            }
-        }*/
-
         public GitRepositoryOptionViewModel(GitRepositoryOptionControlViewModel parent, GitRepositoryOption model)
         {
             Parent = parent;

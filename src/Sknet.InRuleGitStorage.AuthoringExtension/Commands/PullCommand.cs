@@ -56,7 +56,6 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension.Commands
 
         public override void Execute()
         {
-
             // HACK
             RuleApplicationService.CheckOut(RuleAppCheckOutMode.CompleteRuleApplication);
 

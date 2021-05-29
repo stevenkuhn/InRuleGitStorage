@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  push_to_nuget:
+    name: Push to NuGet Feed
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: $${{ github.event.target_commitish }}
+
+    - name: Download release assets
+      uses: Itsblue/download-release-assets-action@v1
+      with:
+        repo: "stevenkuhn/InRuleGitStorage"
+        version: ${{ github.event.id }}
+        file: "Sknet.InRuleGitStorage.*"
+        path: ./artifacts
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push assets to NuGet
+      env:
+        NuGet_Source: ${{ secrets.NUGET_SOURCE }}
+        NuGet_ApiKey: ${{ secrets.NUGET_APIKEY }}
+      run: ./build.sh --target PublishToNuGetFeed --skip PublishSdkArtifacts
