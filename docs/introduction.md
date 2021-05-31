@@ -82,4 +82,4 @@ using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
 
 ## Support
 
-- Create a [GitHub issue](https://github.com/stevenkuhn/InRuleGitStorage-Issues/issues) for bug reports, feature requests, or questions with this library, the documentation, or the [samples](https://github.com/stevenkuhn/InRuleGitStorage-Samples) repository.
+Create a [GitHub issue](https://github.com/stevenkuhn/InRuleGitStorage/issues) for bug reports, feature requests, or questions with this library, the documentation, or the [samples](https://github.com/stevenkuhn/InRuleGitStorage-Samples) repository.

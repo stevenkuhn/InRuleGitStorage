@@ -7,7 +7,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Authors>Steven Kuhn</Authors>
     <Company>Steven Kuhn</Company>
-    <Copyright>Copyright © Steven Kuhn 2021</Copyright>
+    <Copyright>Copyright (c) 2021 Steven Kuhn and contributors</Copyright>
     <Description>Sknet.InRuleGitStorage is a library for storing and managing InRule® business rules in a Git repository.</Description>
     <Product>Sknet.InRuleGitStorage</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -18,7 +18,10 @@
     <NoWarn>1701;1702;NU5104;NU5105</NoWarn>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://inrulegitstorage.stevenkuhn.net/icon.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>inrule git</PackageTags>
+    <RepositoryUrl>https://github.com/stevenkuhn/InRuleGitStorage.git</RepositoryUrl> 
+    <RepositoryType>git</RepositoryType> 
   </PropertyGroup>
 
   <ItemGroup>

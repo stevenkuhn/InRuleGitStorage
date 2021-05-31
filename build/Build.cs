@@ -28,19 +28,19 @@ class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.Default);
 
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    [Parameter("Configuration to build. Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Parameter(Name = "inrule-version")]
+    [Parameter("Version of the InRule Repository SDK use. Default is 5.2.0.", Name = "inrule-version")]
     readonly string InRuleVersion = "5.2.0";
 
-    [Parameter]
+    [Parameter("GitHub access token used for creating a new or updating an existing release.")]
     readonly string GitHubAccessToken;
 
-    [Parameter]
-    readonly string NuGetSource = "https://www.myget.org/F/stevenkuhn/api/v2/package";
+    [Parameter("NuGet source used for pushing the Sdk NuGet package. Default is NuGet.org.")]
+    readonly string NuGetSource = "https://api.nuget.org/v3/index.json";
 
-    [Parameter]
+    [Parameter("NuGet API key used to pushing the Sdk NuGet package.")]
     readonly string NuGetApiKey;
 
     [Solution] readonly Solution Solution;
@@ -55,12 +55,11 @@ class Build : NukeBuild
     Project SdkProject => Solution.GetProject("Sknet.InRuleGitStorage");
     Project SdkTestProject => Solution.GetProject("Sknet.InRuleGitStorage.Tests");
 
-    string GitHubRepositoryName = "InRuleGitStorage";
-    string GitHubRepositoryOwner = "stevenkuhn";
+    const string GitHubRepositoryName = "InRuleGitStorage";
+    const string GitHubRepositoryOwner = "stevenkuhn";
 
-    string[] NuGetRestoreSources = new[] {
-        "https://api.nuget.org/v3/index.json",
-        "https://www.myget.org/F/stevenkuhn/api/v3/index.json"
+    readonly string[] NuGetRestoreSources = new[] {
+        "https://api.nuget.org/v3/index.json"
     };
 
     protected override void OnBuildInitialized()
@@ -133,9 +132,11 @@ class Build : NukeBuild
                 .SetAssemblyVersion(GitVersion.AssemblySemVer)
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion)
+                .SetProperty("RepositoryBranch", GitVersion.BranchName)
+                .SetProperty("RepositoryCommit", GitVersion.Sha)
                 .SetConfiguration(Configuration)
-                .EnableNoRestore()
-                .SetFramework(IsWin ? null : "netstandard2.0"));
+                .SetFramework(IsWin ? null : "netstandard2.0")
+                .EnableNoRestore());
 
             Logger.Normal("Compiling SDK test project...");
             DotNetBuild(s => s
@@ -145,8 +146,8 @@ class Build : NukeBuild
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion)
                 .SetConfiguration(Configuration)
-                .EnableNoRestore()
-                .SetFramework(IsWin ? null : "net5.0"));
+                .SetFramework(IsWin ? null : "net5.0")
+                .EnableNoRestore());
         });
 
     Target CompileAuthoring => _ => _

@@ -12,7 +12,7 @@ This project allows you to store and manage your [InRule](https://www.inrule.com
 - Clone, pull from, and push to a remote InRule git repository
 - Create, remove, and checkout a branch
 - Commit (serialize a `RuleApplicationDef` into a git commit)
-- Merge branches (_merge conflict support is a work in progress_)
+- Merge branches (_merge conflict support is not yet supported_)
 - Get rule application (deserialize the current branch into a `RuleApplicationDef`)
 - Get a list of rule applications
 
@@ -86,3 +86,43 @@ using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
     repo.RemoveBranch("invoice-date-field");
 }
 ```
+
+# Documentation
+
+[Additional documentation](https://inrulegitstorage.stevenkuhn.net/) is available for the InRuleGitStorage SDK.
+
+# Building
+
+To build this project locally, you will need the [.NET 5.0 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) and, if you are building in Windows, the [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472) and [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework/net461) developer packs.
+
+## Windows
+
+By default the build process in Windows will build both the SDK and _experimental_ authoring extension, run tests for the SDK, publish both projects artifacts to the `.\artifacts` folder, and deploy the authoring extension to your local irAuthor®'s extension folder (if irAuthor is installed).
+
+_You may provide the `--help` command-line parameter below for details on available targets and other command-line parameters._
+
+### Powershell
+
+```
+PS> .\build.ps1
+```
+
+### Command Prompt
+
+```
+> build.cmd
+```
+
+## Linux
+
+By default the build process in Linux will only build the SDK, run tests for the SDK, and publish its artifacts to the `.\artifacts` folder.
+
+_You may provide the `--help` command-line parameter below for details on available targets and other command-line parameters._
+
+```
+$ ./build.sh
+```
+
+# License
+
+InRuleGitStorage is licensed under the MIT license. See [LICENSE](LICENSE) for full license information.

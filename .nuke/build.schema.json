@@ -8,7 +8,7 @@
       "properties": {
         "Configuration": {
           "type": "string",
-          "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
+          "description": "Configuration to build. Default is 'Debug' (local) or 'Release' (server)",
           "enum": [
             "Debug",
             "Release"
@@ -19,7 +19,8 @@
           "description": "Indicates to continue a previously failed build attempt"
         },
         "GitHubAccessToken": {
-          "type": "string"
+          "type": "string",
+          "description": "GitHub access token used for creating a new or updating an existing release"
         },
         "Help": {
           "type": "boolean",
@@ -43,17 +44,20 @@
           ]
         },
         "inrule-version": {
-          "type": "string"
+          "type": "string",
+          "description": "Version of the InRule Repository SDK use. Default is 5.2.0"
         },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
         "NuGetApiKey": {
-          "type": "string"
+          "type": "string",
+          "description": "NuGet API key used to pushing the Sdk NuGet package"
         },
         "NuGetSource": {
-          "type": "string"
+          "type": "string",
+          "description": "NuGet source used for pushing the Sdk NuGet package. Default is NuGet.org"
         },
         "Plan": {
           "type": "boolean",
