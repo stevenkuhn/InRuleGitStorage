@@ -62,9 +62,10 @@ jobs:
     name: Create GitHub release
     runs-on: ubuntu-latest
     needs: [ build_windows, build_ubuntu ]
+    concurrency: build_${{ github.ref }}
 
-    # only run this for a push to the master branch
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # only run this for a push to the main branch
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
     - name: Checkout Source
