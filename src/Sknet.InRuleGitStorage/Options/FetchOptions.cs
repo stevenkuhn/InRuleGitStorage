@@ -1,5 +1,4 @@
 ﻿using LibGit2Sharp.Handlers;
-using System.Runtime.CompilerServices;
 
 namespace Sknet.InRuleGitStorage
 {

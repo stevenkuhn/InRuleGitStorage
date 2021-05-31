@@ -143,16 +143,6 @@ namespace Sknet.InRuleGitStorage
 
             _repository.Notes.Add(commit.Id, sb.ToString(), author, committer, "inrule/git/refs");
 
-            /*var notes = new StringBuilder();
-            foreach (var treeEntry in commit.Tree)
-            {
-                //_repository.Lookup<Commit>(ObjectId.TryParse())
-                var logEntry = _repository.Commits.QueryBy(treeEntry.Name, new CommitFilter() { FirstParentOnly = true }).First();
-                notes.AppendFormat("{0},{1}\n", treeEntry.Name, logEntry.Commit.Committer.When.ToUniversalTime());
-            }
-            notes.Remove(notes.Length - 1, 1);
-            _repository.Notes.Add(commit.Id, notes.ToString(), author, committer, "inrule/git");*/
-
             return commit;
         }
 
@@ -324,59 +314,6 @@ namespace Sknet.InRuleGitStorage
 
             return ruleApplications.ToArray();
         }
-
-        /*var notes = new StringBuilder();
-            foreach (var treeEntry in commit.Tree)
-            {
-                //_repository.Lookup<Commit>(ObjectId.TryParse())
-                var logEntry = _repository.Commits.QueryBy(treeEntry.Name, new CommitFilter() { FirstParentOnly = true }).First();
-                notes.AppendFormat("{0},{1}\n", treeEntry.Name, logEntry.Commit.Committer.When.ToUniversalTime());
-            }
-            notes.Remove(notes.Length - 1, 1);
-            _repository.Notes.Add(commit.Id, notes.ToString(), author, committer, "inrule/git");*/
-
-        /*/// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<RuleApplicationSummary> GetRuleApplicationSummaries()
-        {
-            var headTarget = _repository.Refs.Head.ResolveToDirectReference();
-
-            if (headTarget == null)
-            {
-                throw new NotImplementedException();
-            }
-
-            var commit = _repository.Lookup<Commit>(headTarget.TargetIdentifier);
-            var note = commit.Notes.FirstOrDefault(n => n.Namespace == "inrule/git");
-
-            if (note == null)
-            {
-                return Enumerable.Empty<RuleApplicationSummary>();
-            }
-
-            var reader = new StringReader(note.Message);
-
-            var summaries = new List<RuleApplicationSummary>();
-
-            while (true)
-            {
-                var line = reader.ReadLine();
-                if (line == null)
-                {
-                    break;
-                }
-
-                var values = line.Split(',');
-                var name = values[0];
-                var lastModifiedOn = DateTimeOffset.Parse(values[1]);
-
-                summaries.Add(new RuleApplicationSummary { Name = name, LastModifiedOn = lastModifiedOn });
-            }
-
-            return summaries;
-        }*/
 
         /// <summary>
         /// Perform a merge of the current branch and the specified branch, and
@@ -895,7 +832,7 @@ IconResource = .\logo.ico,0");
 #if NETSTANDARD
             return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 #elif NETFRAMEWORK
-            return Environment.OSVersion.Platform == PlatformID.Win32NT; 
+            return Environment.OSVersion.Platform == PlatformID.Win32NT;
 #else
             throw new NotSupportedException("IsWindowsOSPlayform() is only supported with NETSTANDARD and NETFRAMEWORK directives.");
 #endif

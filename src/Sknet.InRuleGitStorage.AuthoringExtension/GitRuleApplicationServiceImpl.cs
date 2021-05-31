@@ -4,18 +4,15 @@ using InRule.Authoring.Services;
 using InRule.Authoring.Windows;
 using InRule.Common.Utilities;
 using InRule.Repository;
+using InRule.Repository.Client;
 using InRule.Repository.SchemaOperations;
 using Sknet.InRuleGitStorage.AuthoringExtension.Controls;
 using Sknet.InRuleGitStorage.AuthoringExtension.ViewModels;
-using LibGit2Sharp.Handlers;
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Security;
-using System.Threading.Tasks;
 using System.Windows;
-using InRule.Repository.Client;
 
 namespace Sknet.InRuleGitStorage.AuthoringExtension
 {

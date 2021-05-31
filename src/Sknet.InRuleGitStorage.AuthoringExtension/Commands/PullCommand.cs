@@ -1,11 +1,9 @@
 ﻿using InRule.Authoring.Commanding;
 using InRule.Authoring.Media;
-using InRule.Authoring.Windows;
 using InRule.Common.Utilities;
 using InRule.Repository;
 using InRule.Repository.Client;
 using System;
-using System.ComponentModel;
 using System.Windows;
 
 namespace Sknet.InRuleGitStorage.AuthoringExtension.Commands

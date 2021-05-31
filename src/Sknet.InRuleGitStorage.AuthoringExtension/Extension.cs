@@ -7,10 +7,7 @@ using InRule.Common.Utilities;
 using InRule.Repository;
 using Sknet.InRuleGitStorage.AuthoringExtension.Commands;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -30,9 +27,9 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
             name: "Sknet.InRuleGitStorage",
             description: "Stores rule applications in a git repository",
             guid: new Guid("{2D6E8F02-B55D-44FD-95C5-609B074FA7BE}"),
-            isSystemExtension : false)
+            isSystemExtension: false)
         {
-            
+
         }
 
         public override void Enable()

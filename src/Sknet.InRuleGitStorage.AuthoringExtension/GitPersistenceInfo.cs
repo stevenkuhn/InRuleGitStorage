@@ -1,9 +1,4 @@
 ﻿using InRule.Authoring.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sknet.InRuleGitStorage.AuthoringExtension
 {
@@ -11,7 +6,7 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension
     {
         public GitRepositoryOption RepositoryOption { get; set; }
 
-        public GitPersistenceInfo(string ruleApplicationName, string path, GitRepositoryOption repositoryOption)  
+        public GitPersistenceInfo(string ruleApplicationName, string path, GitRepositoryOption repositoryOption)
             : base(ruleApplicationName, path)
         {
             RepositoryOption = repositoryOption;

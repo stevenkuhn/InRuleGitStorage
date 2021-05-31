@@ -1,10 +1,6 @@
 ﻿using InRule.Repository;
-using InRule.Repository.Classifications;
-using InRule.Repository.Templates;
 using LibGit2Sharp;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sknet.InRuleGitStorage.Extensions
 {

@@ -1,7 +1,6 @@
 ﻿using InRule.Repository;
 using LibGit2Sharp;
 using System;
-using System.Runtime.CompilerServices;
 
 namespace Sknet.InRuleGitStorage
 {
@@ -33,7 +32,7 @@ namespace Sknet.InRuleGitStorage
         /// <summary>
         /// Get the related commit information of the rule application.
         /// </summary>
-        public RuleApplicationGitCommitInfo Commit { get; } 
+        public RuleApplicationGitCommitInfo Commit { get; }
 
         internal RuleApplicationGitInfo(RuleApplicationDef ruleApplication, Commit commit)
         {

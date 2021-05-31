@@ -2,9 +2,7 @@
 using LibGit2Sharp;
 using Sknet.InRuleGitStorage.Tests.Fixtures;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using Xunit;
 
 namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests

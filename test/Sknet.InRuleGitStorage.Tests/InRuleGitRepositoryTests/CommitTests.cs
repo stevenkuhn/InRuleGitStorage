@@ -1,13 +1,9 @@
 ﻿using InRule.Repository;
 using LibGit2Sharp;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using Xunit;
 using Sknet.InRuleGitStorage.Tests.Fixtures;
+using System;
+using System.Linq;
+using Xunit;
 
 namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
 {
@@ -145,7 +141,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
             // Act 
             repository.Commit(ruleApplication, "This is the test commit", commitSignature, commitSignature);
 
-             // Assert
+            // Assert
             Assert.Equal(2, _fixture.Repository.Commits.Count());
             var commit = _fixture.Repository.Lookup<Commit>(_fixture.Repository.Refs.Head.TargetIdentifier);
             Assert.Equal(parentCommit, commit.Parents.ElementAt(0));

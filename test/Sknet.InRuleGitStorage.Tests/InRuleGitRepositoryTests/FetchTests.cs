@@ -77,7 +77,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
             localRepository.Remotes.Add("origin", _remoteFixture.Repository.Info.Path);
 
             var ruleAppDef = new RuleApplicationDef("InvoiceSample");
-            
+
             var message = "This is a test commit";
             var identity = new Identity("Peter Quill", "starlord@gotg.org");
             var signature = new Signature(identity, DateTimeOffset.UtcNow);

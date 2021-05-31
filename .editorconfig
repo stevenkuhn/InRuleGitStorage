@@ -22,6 +22,10 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
+[*.md]
+indent_style = space
+indent_size = 4
+
 [*.xaml]
 indent_style = space
 indent_size = 4

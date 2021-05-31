@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
 using Newtonsoft.Json;
 using Nuke.Common;
 using Nuke.Common.CI;
@@ -14,6 +11,9 @@ using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
 using Nuke.Common.Tools.NuGet;
 using Nuke.Common.Utilities.Collections;
+using System;
+using System.IO;
+using System.Linq;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.CompressionTasks;
 using static Nuke.Common.IO.FileSystemTasks;
@@ -21,13 +21,12 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 using static Nuke.Common.Tools.NuGet.NuGetTasks;
-using static Nuke.Common.Tools.GitHub.GitHubTasks;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
-    public static int Main () => Execute<Build>(x => x.Default);
+    public static int Main() => Execute<Build>(x => x.Default);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
@@ -52,7 +51,7 @@ class Build : NukeBuild
     AbsolutePath TestsDirectory => RootDirectory / "test";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
 
-    Project AuthoringProject  => Solution.GetProject("Sknet.InRuleGitStorage.AuthoringExtension");
+    Project AuthoringProject => Solution.GetProject("Sknet.InRuleGitStorage.AuthoringExtension");
     Project SdkProject => Solution.GetProject("Sknet.InRuleGitStorage");
     Project SdkTestProject => Solution.GetProject("Sknet.InRuleGitStorage.Tests");
 
@@ -103,19 +102,19 @@ class Build : NukeBuild
             Logger.Normal($"Updating NuGet package InRule.Repository v{InRuleVersion} for SDK project.");
             DotNet($"add {SdkProject} package InRule.Repository --no-restore --version {InRuleVersion}");
         });
-    
+
     Target RestoreAuthoring => _ => _
         .DependsOn(Clean)
         .Requires(() => InRuleVersion)
-        .OnlyWhenStatic(() => IsWin)   
+        .OnlyWhenStatic(() => IsWin)
         .Executes(() =>
         {
             Logger.Normal("Restoring Authoring project NuGet packages...");
-                NuGetRestore(s => s
-                    .SetTargetPath(AuthoringProject)
-                    .SetProcessWorkingDirectory(AuthoringProject.Directory)
-                    .SetPackagesDirectory(RootDirectory / "packages")
-                    .SetSource(NuGetRestoreSources));
+            NuGetRestore(s => s
+                .SetTargetPath(AuthoringProject)
+                .SetProcessWorkingDirectory(AuthoringProject.Directory)
+                .SetPackagesDirectory(RootDirectory / "packages")
+                .SetSource(NuGetRestoreSources));
 
             Logger.Normal($"Update NuGet package InRule.Authoring.SDK v{InRuleVersion} for Authoring project.");
             NuGetTasks.NuGet(
@@ -155,7 +154,7 @@ class Build : NukeBuild
         .OnlyWhenStatic(() => IsWin)
         .After(CompileSdk)
         .Before(TestSdk)
-        .Executes(() => 
+        .Executes(() =>
         {
             Logger.Normal("Compiling Authoring project...");
             MSBuild(s => s
@@ -229,7 +228,7 @@ class Build : NukeBuild
 
             DeleteDirectory(authoringExtensionDirectory);
         });
-    
+
     Target DeployToIrAuthor => _ => _
         .DependsOn(PublishAuthoringArtifacts)
         .OnlyWhenStatic(() => IsWin)
@@ -237,7 +236,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             Logger.Normal("Deploying Authoring extension to local irAuthor Extension Exchange folder (if exists)...");
-            var irAuthorLocalDirectory = (AbsolutePath) $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/InRule/irAuthor";
+            var irAuthorLocalDirectory = (AbsolutePath)$"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/InRule/irAuthor";
 
             if (DirectoryExists(irAuthorLocalDirectory))
             {
@@ -266,7 +265,7 @@ class Build : NukeBuild
                 Logger.Info($"Retrieving exisiting release tagged as 'v{GitVersion.SemVer}'...");
                 release = await github.Repository.Release.Get(GitHubRepositoryOwner, GitHubRepositoryName, $"v{GitVersion.SemVer}");
             }
-            catch(Octokit.NotFoundException)
+            catch (Octokit.NotFoundException)
             {
                 Logger.Info("Release not found. Retrieving existing draft release...");
                 var releases = await github.Repository.Release.GetAll(GitHubRepositoryOwner, GitHubRepositoryName);
@@ -336,7 +335,7 @@ class Build : NukeBuild
             NuGetPush(s => s
                 .SetApiKey(NuGetApiKey)
                 .SetSource(NuGetSource)
-                .SetTargetPath(ArtifactsDirectory / $"Sknet.InRuleGitStorage.{GitVersion.SemVer}.nupkg")); 
+                .SetTargetPath(ArtifactsDirectory / $"Sknet.InRuleGitStorage.{GitVersion.SemVer}.nupkg"));
         });
 
     Target Default => _ => _

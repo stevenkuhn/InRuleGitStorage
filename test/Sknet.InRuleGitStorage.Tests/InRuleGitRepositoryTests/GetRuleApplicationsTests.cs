@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-
-namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
+﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
 {
     public class GetRuleApplicationsTests
     {

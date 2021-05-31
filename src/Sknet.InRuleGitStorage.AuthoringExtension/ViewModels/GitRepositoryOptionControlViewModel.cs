@@ -3,12 +3,7 @@ using InRule.Authoring.ViewModels;
 using InRule.Common.Utilities;
 using Sknet.InRuleGitStorage.AuthoringExtension.Controls;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Sknet.InRuleGitStorage.AuthoringExtension.ViewModels
@@ -26,7 +21,7 @@ namespace Sknet.InRuleGitStorage.AuthoringExtension.ViewModels
         public GitRepositoryOptionControlViewModel()
         {
             GitRepositoryOptions = new ObservableCollection<GitRepositoryOptionViewModel>();
-                 
+
             AddGitRepositoryOptionCommand = new DelegateCommand(AddGitRepositoryOption);
         }
 

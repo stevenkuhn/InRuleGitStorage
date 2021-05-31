@@ -1,10 +1,7 @@
 ﻿using InRule.Repository;
 using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 [assembly: InternalsVisibleTo("Sknet.InRuleGitStorage.Tests")]
 

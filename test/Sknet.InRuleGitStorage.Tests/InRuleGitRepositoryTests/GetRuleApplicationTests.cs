@@ -2,8 +2,6 @@
 using LibGit2Sharp;
 using Sknet.InRuleGitStorage.Tests.Fixtures;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
@@ -49,7 +47,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
         {
             // Arrange
             var repository = new InRuleGitRepository(_fixture.Repository);
-            
+
             // Act
             var result = repository.GetRuleApplication("myRuleApp");
 
@@ -60,7 +58,7 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
         [Fact]
         public void WithNoRuleApplications_ShouldReturnNull()
         {
-             // Arrange
+            // Arrange
             var repository = new InRuleGitRepository(_fixture.Repository);
            
             var identity = new Identity("Peter Quill", "starlord@gotg.org");
@@ -77,13 +75,13 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
         [Fact]
         public void WithUnknownRuleApplication_ShouldReturnNull()
         {
-             // Arrange
+            // Arrange
             var repository = new InRuleGitRepository(_fixture.Repository);
-           
+
             var identity = new Identity("Peter Quill", "starlord@gotg.org");
             var signature = new Signature(identity, DateTimeOffset.UtcNow);
             repository.Commit(new RuleApplicationDef("AnotherRuleApp"), "This is an example commit", signature, signature);
-            
+
             // Act
             var result = repository.GetRuleApplication("myRuleApp");
 
@@ -94,13 +92,13 @@ namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
         [Fact]
         public void WithExistingRuleApplication_ShouldReturnRuleApplication()
         {
-             // Arrange
+            // Arrange
             var repository = new InRuleGitRepository(_fixture.Repository);
-           
+
             var identity = new Identity("Peter Quill", "starlord@gotg.org");
             var signature = new Signature(identity, DateTimeOffset.UtcNow);
             repository.Commit(new RuleApplicationDef("myRuleApp"), "This is an example commit", signature, signature);
-            
+
             // Act
             var result = repository.GetRuleApplication("myRuleApp");
 

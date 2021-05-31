@@ -3,10 +3,6 @@ using InRule.Authoring.Media;
 using InRule.Common.Utilities;
 using InRule.Repository;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sknet.InRuleGitStorage.AuthoringExtension.Commands
 {

@@ -7,7 +7,6 @@ using InRule.Repository;
 using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Sknet.InRuleGitStorage.AuthoringExtension.Commands
 {

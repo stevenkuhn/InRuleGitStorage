@@ -1,9 +1,7 @@
 ﻿using InRule.Common.Utilities;
 using InRule.Repository;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Sknet.InRuleGitStorage.Extensions
 {
