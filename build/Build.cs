@@ -178,7 +178,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .EnableNoBuild()
                 .EnableNoRestore()
-                .SetLogger("trx;LogFileName=./net5.0/TestResult.trx"));
+                .AddLoggers("trx;LogFileName=./net5.0/TestResult.trx"));
 
             if (IsWin)
             {
@@ -189,7 +189,7 @@ class Build : NukeBuild
                     .SetConfiguration(Configuration)
                     .EnableNoBuild()
                     .EnableNoRestore()
-                    .SetLogger("trx;LogFileName=./net461/TestResult.trx"));
+                    .AddLoggers("trx;LogFileName=./net461/TestResult.trx"));
 
                 Logger.Normal("Running SDK tests under .NET Framework 4.7.2 runtime...");
                 DotNetTest(s => s
@@ -198,7 +198,7 @@ class Build : NukeBuild
                     .SetConfiguration(Configuration)
                     .EnableNoBuild()
                     .EnableNoRestore()
-                    .SetLogger("trx;LogFileName=./net472/TestResult.trx"));
+                    .AddLoggers("trx;LogFileName=./net472/TestResult.trx"));
             }
         });
 

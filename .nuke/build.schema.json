@@ -37,10 +37,13 @@
             "GitHubActions",
             "GitLab",
             "Jenkins",
+            "Rider",
             "SpaceAutomation",
             "TeamCity",
             "Terminal",
-            "TravisCI"
+            "TravisCI",
+            "VisualStudio",
+            "VSCode"
           ]
         },
         "inrule-version": {
@@ -58,6 +61,10 @@
         "NuGetSource": {
           "type": "string",
           "description": "NuGet source used for pushing the Sdk NuGet package. Default is NuGet.org"
+        },
+        "Partition": {
+          "type": "string",
+          "description": "Partition to use on CI"
         },
         "Plan": {
           "type": "boolean",
