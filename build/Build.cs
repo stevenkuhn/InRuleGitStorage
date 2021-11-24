@@ -1,27 +1,3 @@
-using Newtonsoft.Json;
-using Nuke.Common;
-using Nuke.Common.CI;
-using Nuke.Common.Execution;
-using Nuke.Common.Git;
-using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
-using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.GitVersion;
-using Nuke.Common.Tools.MSBuild;
-using Nuke.Common.Tools.NuGet;
-using Nuke.Common.Utilities.Collections;
-using System;
-using System.IO;
-using System.Linq;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.CompressionTasks;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
-using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
-using static Nuke.Common.Tools.NuGet.NuGetTasks;
-
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
@@ -45,11 +21,11 @@ class Build : NukeBuild
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
-    [GitVersion(Framework = "net5.0", NoFetch = true)] readonly GitVersion GitVersion;
+    [GitVersion(Framework = "net6.0", NoFetch = true)] readonly GitVersion GitVersion;
 
-    AbsolutePath SourceDirectory => RootDirectory / "src";
-    AbsolutePath TestsDirectory => RootDirectory / "test";
-    AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
+    static AbsolutePath SourceDirectory => RootDirectory / "src";
+    static AbsolutePath TestsDirectory => RootDirectory / "test";
+    static AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
 
     Project AuthoringProject => Solution.GetProject("Sknet.InRuleGitStorage.AuthoringExtension");
     Project SdkProject => Solution.GetProject("Sknet.InRuleGitStorage");
@@ -88,6 +64,9 @@ class Build : NukeBuild
         .Requires(() => InRuleVersion)
         .Executes(() =>
         {
+            Logger.Normal($"Updating NuGet package InRule.Repository v{InRuleVersion} for SDK project.");
+            DotNet($"add {SdkProject} package InRule.Repository --no-restore --version {InRuleVersion}");
+
             Logger.Normal("Restoring SDK project NuGet packages...");
             DotNetRestore(s => s
                 .SetProjectFile(SdkProject)
@@ -97,9 +76,6 @@ class Build : NukeBuild
             DotNetRestore(s => s
                 .SetProjectFile(SdkTestProject)
                 .SetSources(NuGetRestoreSources));
-
-            Logger.Normal($"Updating NuGet package InRule.Repository v{InRuleVersion} for SDK project.");
-            DotNet($"add {SdkProject} package InRule.Repository --no-restore --version {InRuleVersion}");
         });
 
     Target RestoreAuthoring => _ => _
@@ -108,17 +84,13 @@ class Build : NukeBuild
         .OnlyWhenStatic(() => IsWin)
         .Executes(() =>
         {
-            Logger.Normal("Restoring Authoring project NuGet packages...");
-            NuGetRestore(s => s
-                .SetTargetPath(AuthoringProject)
-                .SetProcessWorkingDirectory(AuthoringProject.Directory)
-                .SetPackagesDirectory(RootDirectory / "packages")
-                .SetSource(NuGetRestoreSources));
-
             Logger.Normal($"Update NuGet package InRule.Authoring.SDK v{InRuleVersion} for Authoring project.");
-            NuGetTasks.NuGet(
-                $"update {AuthoringProject} -Id InRule.Authoring.SDK -RepositoryPath {RootDirectory / "packages"} -Source {string.Join(';', NuGetRestoreSources)} -Version {InRuleVersion}",
-                workingDirectory: AuthoringProject.Directory);
+            DotNet($"add {AuthoringProject} package InRule.Authoring.SDK --no-restore --version {InRuleVersion}");
+
+            Logger.Normal("Restoring Authoring project NuGet packages...");
+            DotNetRestore(s => s
+                .SetProjectFile(AuthoringProject)
+                .SetSources(NuGetRestoreSources));
         });
 
     Target CompileSdk => _ => _
@@ -146,7 +118,7 @@ class Build : NukeBuild
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion)
                 .SetConfiguration(Configuration)
-                .SetFramework(IsWin ? null : "net5.0")
+                .SetFramework(IsWin ? null : "net6.0")
                 .EnableNoRestore());
         });
 
@@ -158,27 +130,28 @@ class Build : NukeBuild
         .Executes(() =>
         {
             Logger.Normal("Compiling Authoring project...");
-            MSBuild(s => s
-                .SetTargetPath(AuthoringProject)
-                .SetConfiguration(Configuration)
+            DotNetBuild(s => s
+                .SetProjectFile(AuthoringProject)
+                .SetVersion(GitVersion.FullSemVer)
                 .SetAssemblyVersion(GitVersion.AssemblySemVer)
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion)
-                .DisableRestore());
+                .SetConfiguration(Configuration)
+                .EnableNoRestore());
         });
 
     Target TestSdk => _ => _
         .DependsOn(CompileSdk)
         .Executes(() =>
         {
-            Logger.Normal("Running SDK tests under .NET 5.0 runtime...");
+            Logger.Normal("Running SDK tests under .NET 6.0 runtime...");
             DotNetTest(s => s
                 .SetProjectFile(SdkTestProject)
-                .SetFramework("net5.0")
+                .SetFramework("net6.0")
                 .SetConfiguration(Configuration)
                 .EnableNoBuild()
                 .EnableNoRestore()
-                .AddLoggers("trx;LogFileName=./net5.0/TestResult.trx"));
+                .AddLoggers("trx;LogFileName=./net6.0/TestResult.trx"));
 
             if (IsWin)
             {
@@ -220,9 +193,9 @@ class Build : NukeBuild
             Logger.Normal("Publishing Authoring artifacts to the artifacts folder...");
             var authoringExtensionDirectory = ArtifactsDirectory / "Sknet.InRuleGitStorage.AuthoringExtension";
 
-            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/Sknet.InRuleGitStorage.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
-            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/LibGit2Sharp.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
-            AuthoringProject.Directory.GlobDirectories($"bin/{Configuration}/lib/win32").ForEach(directory => CopyDirectoryRecursively(directory, authoringExtensionDirectory / "lib" / "win32"));
+            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/net472/Sknet.InRuleGitStorage.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
+            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/net472/LibGit2Sharp.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
+            AuthoringProject.Directory.GlobDirectories($"bin/{Configuration}/net472/lib/win32/x64").ForEach(directory => CopyDirectoryRecursively(directory, authoringExtensionDirectory / "lib" / "win32" / "x64"));
             authoringExtensionDirectory.GlobFiles("**/*.xml").ForEach(DeleteFile);
 
             CompressZip(authoringExtensionDirectory, ArtifactsDirectory / $"Sknet.InRuleGitStorage.AuthoringExtension.{GitVersion.SemVer}.zip");

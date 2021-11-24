@@ -1,88 +1,83 @@
-﻿using LibGit2Sharp;
-using System;
-using System.IO;
+﻿namespace Sknet.InRuleGitStorage.Tests.Fixtures;
 
-namespace Sknet.InRuleGitStorage.Tests.Fixtures
+public class TemporaryDirectoryFixture : IDisposable
 {
-    public class TemporaryDirectoryFixture : IDisposable
+    public string DirectoryPath { get; }
+
+    public TemporaryDirectoryFixture()
     {
-        public string DirectoryPath { get; }
+        DirectoryPath = Path.Combine(Environment.CurrentDirectory, "Data", $"repo-{Guid.NewGuid().ToString("N")}");
+        Directory.CreateDirectory(DirectoryPath);
+    }
 
-        public TemporaryDirectoryFixture()
-        {
-            DirectoryPath = Path.Combine(Environment.CurrentDirectory, "Data", $"repo-{Guid.NewGuid().ToString("N")}");
-            Directory.CreateDirectory(DirectoryPath);
-        }
+    public void Dispose()
+    {
+        DeleteDirectoryPath();
+    }
 
-        public void Dispose()
+    private void DeleteDirectoryPath()
+    {
+        if (!string.IsNullOrWhiteSpace(DirectoryPath) && Directory.Exists(DirectoryPath))
         {
-            DeleteDirectoryPath();
-        }
-
-        private void DeleteDirectoryPath()
-        {
-            if (!string.IsNullOrWhiteSpace(DirectoryPath) && Directory.Exists(DirectoryPath))
+            var directoryInfo = new DirectoryInfo(DirectoryPath);
+            foreach (var file in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
             {
-                var directoryInfo = new DirectoryInfo(DirectoryPath);
-                foreach (var file in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
-                {
-                    file.Attributes &= ~FileAttributes.ReadOnly;
-                }
-
-                directoryInfo.Attributes &= ~FileAttributes.ReadOnly;
-
-                Directory.Delete(DirectoryPath, true);
+                file.Attributes &= ~FileAttributes.ReadOnly;
             }
+
+            directoryInfo.Attributes &= ~FileAttributes.ReadOnly;
+
+            Directory.Delete(DirectoryPath, true);
+        }
+    }
+}
+
+public class GitRepositoryFixture : IDisposable
+{
+    private readonly string _repositoryPath;
+    public IRepository Repository { get; }
+
+    public GitRepositoryFixture() : this(true)
+    {
+
+    }
+
+    public GitRepositoryFixture(bool isBare)
+    {
+        try
+        {
+            _repositoryPath = Path.Combine(Environment.CurrentDirectory, "Data", $"repo-{Guid.NewGuid().ToString("N")}");
+            Directory.CreateDirectory(_repositoryPath);
+            LibGit2Sharp.Repository.Init(_repositoryPath, isBare);
+            Repository = new LibGit2Sharp.Repository(_repositoryPath);
+        }
+        catch
+        {
+            DeleteRepositoryPath();
+
+            throw;
         }
     }
 
-    public class GitRepositoryFixture : IDisposable
+    public void Dispose()
     {
-        private readonly string _repositoryPath;
-        public IRepository Repository { get; }
+        Repository.Dispose();
+        DeleteRepositoryPath();
+    }
 
-        public GitRepositoryFixture() : this(true)
+    private void DeleteRepositoryPath()
+    {
+        if (!string.IsNullOrWhiteSpace(_repositoryPath) && Directory.Exists(_repositoryPath))
         {
-
-        }
-
-        public GitRepositoryFixture(bool isBare)
-        {
-            try
+            var directoryInfo = new DirectoryInfo(_repositoryPath);
+            foreach (var file in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
             {
-                _repositoryPath = Path.Combine(Environment.CurrentDirectory, "Data", $"repo-{Guid.NewGuid().ToString("N")}");
-                Directory.CreateDirectory(_repositoryPath);
-                LibGit2Sharp.Repository.Init(_repositoryPath, isBare);
-                Repository = new LibGit2Sharp.Repository(_repositoryPath);
+                file.Attributes &= ~FileAttributes.ReadOnly;
             }
-            catch
-            {
-                DeleteRepositoryPath();
 
-                throw;
-            }
-        }
+            directoryInfo.Attributes &= ~FileAttributes.ReadOnly;
 
-        public void Dispose()
-        {
-            Repository.Dispose();
-            DeleteRepositoryPath();
-        }
-
-        private void DeleteRepositoryPath()
-        {
-            if (!string.IsNullOrWhiteSpace(_repositoryPath) && Directory.Exists(_repositoryPath))
-            {
-                var directoryInfo = new DirectoryInfo(_repositoryPath);
-                foreach (var file in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
-                {
-                    file.Attributes &= ~FileAttributes.ReadOnly;
-                }
-
-                directoryInfo.Attributes &= ~FileAttributes.ReadOnly;
-
-                Directory.Delete(_repositoryPath, true);
-            }
+            Directory.Delete(_repositoryPath, true);
         }
     }
 }

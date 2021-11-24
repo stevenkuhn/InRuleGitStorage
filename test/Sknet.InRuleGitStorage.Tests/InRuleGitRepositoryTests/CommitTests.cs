@@ -1,150 +1,142 @@
-﻿using InRule.Repository;
-using LibGit2Sharp;
-using Sknet.InRuleGitStorage.Tests.Fixtures;
-using System;
-using System.Linq;
-using Xunit;
+﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests;
 
-namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
+public class CommitTests : IDisposable
 {
-    public class CommitTests : IDisposable
+    private readonly GitRepositoryFixture _fixture;
+
+    public CommitTests()
     {
-        private readonly GitRepositoryFixture _fixture;
+        _fixture = new GitRepositoryFixture(isBare: false);
+    }
 
-        public CommitTests()
-        {
-            _fixture = new GitRepositoryFixture(isBare: false);
-        }
+    public void Dispose()
+    {
+        _fixture.Dispose();
+    }
 
-        public void Dispose()
-        {
-            _fixture.Dispose();
-        }
+    [Fact]
+    public void WithNullRuleApplication_ShouldThrowException()
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var message = "This is a test commit";
 
-        [Fact]
-        public void WithNullRuleApplication_ShouldThrowException()
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var message = "This is a test commit";
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var signature = new Signature(identity, DateTimeOffset.UtcNow);
 
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+        // Act/Assert
+        Assert.Throws<ArgumentNullException>(() => repository.Commit(null!, message, signature, signature));
+    }
 
-            // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => repository.Commit(null, message, signature, signature));
-        }
+    [Fact]
+    public void WithNullMessage_ShouldThrowException()
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var ruleApplication = new RuleApplicationDef();
 
-        [Fact]
-        public void WithNullMessage_ShouldThrowException()
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var ruleApplication = new RuleApplicationDef();
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var signature = new Signature(identity, DateTimeOffset.UtcNow);
 
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+        // Act/Assert
+        Assert.Throws<ArgumentNullException>(() => repository.Commit(ruleApplication, null!, signature, signature));
+    }
 
-            // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => repository.Commit(ruleApplication, null, signature, signature));
-        }
+    [Fact]
+    public void WithNullAuthor_ShouldThrowException()
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var ruleApplication = new RuleApplicationDef();
+        var message = "This is a test commit";
 
-        [Fact]
-        public void WithNullAuthor_ShouldThrowException()
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var ruleApplication = new RuleApplicationDef();
-            var message = "This is a test commit";
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var signature = new Signature(identity, DateTimeOffset.UtcNow);
 
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+        // Act/Assert
+        Assert.Throws<ArgumentNullException>(() => repository.Commit(ruleApplication, message, null!, signature));
+    }
 
-            // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => repository.Commit(ruleApplication, message, null, signature));
-        }
+    [Fact]
+    public void WithNullCommitter_ShouldThrowException()
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var ruleApplication = new RuleApplicationDef();
+        var message = "This is a test commit";
 
-        [Fact]
-        public void WithNullCommitter_ShouldThrowException()
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var ruleApplication = new RuleApplicationDef();
-            var message = "This is a test commit";
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var signature = new Signature(identity, DateTimeOffset.UtcNow);
 
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+        // Act/Assert
+        Assert.Throws<ArgumentNullException>(() => repository.Commit(ruleApplication, message, signature, null!));
+    }
 
-            // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => repository.Commit(ruleApplication, message, signature, null));
-        }
+    [Fact]
+    public void WithNoOtherCommits_ShouldAddCommit()
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var ruleApplication = new RuleApplicationDef();
+        var message = "This is a test commit";
 
-        [Fact]
-        public void WithNoOtherCommits_ShouldAddCommit()
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var ruleApplication = new RuleApplicationDef();
-            var message = "This is a test commit";
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var signature = new Signature(identity, DateTimeOffset.UtcNow);
 
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+        Assert.False(_fixture.Repository.Commits.Any());
 
-            Assert.False(_fixture.Repository.Commits.Any());
+        // Act
+        repository.Commit(ruleApplication, message, signature, signature);
 
-            // Act
-            repository.Commit(ruleApplication, message, signature, signature);
+        // Assert
+        Assert.Single(_fixture.Repository.Commits);
+        Assert.NotNull(_fixture.Repository.Refs.Head.ResolveToDirectReference());
+    }
 
-            // Assert
-            Assert.Single(_fixture.Repository.Commits);
-            Assert.NotNull(_fixture.Repository.Refs.Head.ResolveToDirectReference());
-        }
+    [Fact]
+    public void WithOneCommit_ShouldAddCommitWithParent()
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var ruleApplication = new RuleApplicationDef();
+        var message = "This is a test commit";
 
-        [Fact]
-        public void WithOneCommit_ShouldAddCommitWithParent()
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var ruleApplication = new RuleApplicationDef();
-            var message = "This is a test commit";
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var signature = new Signature(identity, DateTimeOffset.UtcNow);
 
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+        var parentCommit = _fixture.Repository.Commit("", signature, signature);
+        Assert.Single(_fixture.Repository.Commits);
 
-            var parentCommit = _fixture.Repository.Commit("", signature, signature);
-            Assert.Single(_fixture.Repository.Commits);
+        // Act
+        repository.Commit(ruleApplication, message, signature, signature);
 
-            // Act
-            repository.Commit(ruleApplication, message, signature, signature);
+        // Assert
+        Assert.Equal(2, _fixture.Repository.Commits.Count());
+        var commit = _fixture.Repository.Lookup<Commit>(_fixture.Repository.Refs.Head.TargetIdentifier);
+        Assert.Equal(parentCommit, commit.Parents.ElementAt(0));
+    }
 
-            // Assert
-            Assert.Equal(2, _fixture.Repository.Commits.Count());
-            var commit = _fixture.Repository.Lookup<Commit>(_fixture.Repository.Refs.Head.TargetIdentifier);
-            Assert.Equal(parentCommit, commit.Parents.ElementAt(0));
-        }
+    [Fact(Skip = "Not sure what to do here...")]
+    public void WithParentThatIsYoungerThanCommit_ShouldDoWhat()
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var ruleApplication = new RuleApplicationDef();
 
-        [Fact(Skip = "Not sure what to do here...")]
-        public void WithParentThatIsYoungerThanCommit_ShouldDoWhat()
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var ruleApplication = new RuleApplicationDef();
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var parentSignature = new Signature(identity, DateTimeOffset.UtcNow);
 
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var parentSignature = new Signature(identity, DateTimeOffset.UtcNow);
+        var parentCommit = _fixture.Repository.Commit("This is the parent commit", parentSignature, parentSignature);
+        Assert.Single(_fixture.Repository.Commits);
 
-            var parentCommit = _fixture.Repository.Commit("This is the parent commit", parentSignature, parentSignature);
-            Assert.Single(_fixture.Repository.Commits);
+        var commitSignature = new Signature(identity, DateTimeOffset.UtcNow.AddYears(-1));
 
-            var commitSignature = new Signature(identity, DateTimeOffset.UtcNow.AddYears(-1));
+        // Act 
+        repository.Commit(ruleApplication, "This is the test commit", commitSignature, commitSignature);
 
-            // Act 
-            repository.Commit(ruleApplication, "This is the test commit", commitSignature, commitSignature);
-
-            // Assert
-            Assert.Equal(2, _fixture.Repository.Commits.Count());
-            var commit = _fixture.Repository.Lookup<Commit>(_fixture.Repository.Refs.Head.TargetIdentifier);
-            Assert.Equal(parentCommit, commit.Parents.ElementAt(0));
-        }
+        // Assert
+        Assert.Equal(2, _fixture.Repository.Commits.Count());
+        var commit = _fixture.Repository.Lookup<Commit>(_fixture.Repository.Refs.Head.TargetIdentifier);
+        Assert.Equal(parentCommit, commit.Parents.ElementAt(0));
     }
 }

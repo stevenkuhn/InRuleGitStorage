@@ -1,60 +1,55 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
+﻿namespace Sknet.InRuleGitStorage.AuthoringExtension;
 
-namespace Sknet.InRuleGitStorage.AuthoringExtension
+public class GitRepositoryOption
 {
-    public class GitRepositoryOption
+    private string _workingDirectory;
+
+    public Guid Guid { get; set; }
+    public string Name { get; set; }
+    public string SourceUrl { get; set; }
+
+    public string WorkingDirectory
     {
-        private string _workingDirectory;
-
-        public Guid Guid { get; set; }
-        public string Name { get; set; }
-        public string SourceUrl { get; set; }
-
-        public string WorkingDirectory
+        get
         {
-            get
+            if (!string.IsNullOrWhiteSpace(_workingDirectory))
             {
-                if (!string.IsNullOrWhiteSpace(_workingDirectory))
-                {
-                    return _workingDirectory;
-                }
-
-                if (string.IsNullOrWhiteSpace(SourceUrl))
-                {
-                    return null;
-                }
-
-                var hash = MD5Hash(SourceUrl);
-
-                var appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                return Path.Combine(appDataDirectory, "InRule", "irAuthor", "InRuleGitStorage", hash);
+                return _workingDirectory;
             }
-            set
+
+            if (string.IsNullOrWhiteSpace(SourceUrl))
             {
-                _workingDirectory = value;
+                return null;
             }
+
+            var hash = MD5Hash(SourceUrl);
+
+            var appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            return Path.Combine(appDataDirectory, "InRule", "irAuthor", "InRuleGitStorage", hash);
         }
-
-        public GitRepositoryOption()
+        set
         {
-            Name = "";
-            Guid = Guid.NewGuid();
-        }
-
-        private static string MD5Hash(string input)
-        {
-            StringBuilder hash = new StringBuilder();
-            MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
-            byte[] bytes = md5provider.ComputeHash(new UTF8Encoding().GetBytes(input));
-
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                hash.Append(bytes[i].ToString("x2"));
-            }
-            return hash.ToString();
+            _workingDirectory = value;
         }
     }
+
+    public GitRepositoryOption()
+    {
+        Name = "";
+        Guid = Guid.NewGuid();
+    }
+
+    private static string MD5Hash(string input)
+    {
+        StringBuilder hash = new StringBuilder();
+        MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
+        byte[] bytes = md5provider.ComputeHash(new UTF8Encoding().GetBytes(input));
+
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            hash.Append(bytes[i].ToString("x2"));
+        }
+        return hash.ToString();
+    }
 }
+

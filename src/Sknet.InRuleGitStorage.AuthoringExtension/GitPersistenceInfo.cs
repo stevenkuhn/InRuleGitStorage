@@ -1,33 +1,31 @@
-﻿using InRule.Authoring.Services;
+﻿namespace Sknet.InRuleGitStorage.AuthoringExtension;
 
-namespace Sknet.InRuleGitStorage.AuthoringExtension
+public class GitPersistenceInfo : PersistenceInfo
 {
-    public class GitPersistenceInfo : PersistenceInfo
+    public GitRepositoryOption RepositoryOption { get; set; }
+
+    public GitPersistenceInfo(string ruleApplicationName, string path, GitRepositoryOption repositoryOption)
+        : base(ruleApplicationName, path)
     {
-        public GitRepositoryOption RepositoryOption { get; set; }
-
-        public GitPersistenceInfo(string ruleApplicationName, string path, GitRepositoryOption repositoryOption)
-            : base(ruleApplicationName, path)
-        {
-            RepositoryOption = repositoryOption;
-        }
-
-        public override string ToString()
-        {
-            return $"Name: {RuleApplicationName}\nGit: {Filename}";
-        }
+        RepositoryOption = repositoryOption;
     }
 
-    public static class PersistenceInfoExtensions
+    public override string ToString()
     {
-        public static bool IsGitRepository(this PersistenceInfo persistenceInfo)
-        {
-            if (persistenceInfo == null)
-            {
-                return false;
-            }
-
-            return persistenceInfo is GitPersistenceInfo;
-        }
+        return $"Name: {RuleApplicationName}\nGit: {Filename}";
     }
 }
+
+public static class PersistenceInfoExtensions
+{
+    public static bool IsGitRepository(this PersistenceInfo persistenceInfo)
+    {
+        if (persistenceInfo == null)
+        {
+            return false;
+        }
+
+        return persistenceInfo is GitPersistenceInfo;
+    }
+}
+

@@ -1,6 +1,5 @@
-﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
+﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests;
+
+public class MergeTests
 {
-    public class MergeTests
-    {
-    }
 }

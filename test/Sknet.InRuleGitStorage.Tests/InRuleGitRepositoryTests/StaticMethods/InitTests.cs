@@ -1,104 +1,99 @@
-﻿using System;
-using System.IO;
-using Xunit;
+﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryFactoryTests;
 
-namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryFactoryTests
+public class InitTests
 {
-    public class InitTests
+    [Fact]
+    public void WithNullPath_ShouldThrowException()
     {
-        [Fact]
-        public void WithNullPath_ShouldThrowException()
-        {
-            // Act/Assert
-            Assert.Throws<ArgumentNullException>(() => InRuleGitRepository.Init(null));
-        }
+        // Act/Assert
+        Assert.Throws<ArgumentNullException>(() => InRuleGitRepository.Init(null!));
+    }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData("  ")]
-        public void WithWhiteSpacePath_ShouldThrowException(string path)
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void WithWhiteSpacePath_ShouldThrowException(string path)
+    {
+        // Act/Assert
+        Assert.Throws<ArgumentException>(() => InRuleGitRepository.Init(path));
+    }
+
+    [Fact]
+    public void WithFilePath_ShouldThrowException()
+    {
+        var path = Path.GetTempFileName();
+
+        try
         {
             // Act/Assert
             Assert.Throws<ArgumentException>(() => InRuleGitRepository.Init(path));
         }
-
-        [Fact]
-        public void WithFilePath_ShouldThrowException()
+        finally
         {
-            var path = Path.GetTempFileName();
-
-            try
-            {
-                // Act/Assert
-                Assert.Throws<ArgumentException>(() => InRuleGitRepository.Init(path));
-            }
-            finally
-            {
-                File.Delete(path);
-            }
+            File.Delete(path);
         }
+    }
 
-        [Fact]
-        public void WithEmptyDirectory_ShouldInitAndReturnRepository()
+    [Fact]
+    public void WithEmptyDirectory_ShouldInitAndReturnRepository()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(path);
+        Assert.True(Directory.Exists(path));
+
+        try
         {
-            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(path);
-            Assert.True(Directory.Exists(path));
+            // Act
+            var repository = InRuleGitRepository.Init(path);
 
-            try
-            {
-                // Act
-                var repository = InRuleGitRepository.Init(path);
-
-                // Assert
-                Assert.NotNull(repository);
-                Assert.True(new LibGit2Sharp.Repository(path).Info.IsBare);
-            }
-            finally
-            {
-                new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
-                Directory.Delete(path, true);
-            }
+            // Assert
+            Assert.NotNull(repository);
+            Assert.True(new LibGit2Sharp.Repository(path).Info.IsBare);
         }
-
-        [Fact]
-        public void WithDirectoryWithFiles_ShouldThrowException()
+        finally
         {
-            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(path);
-            var tempFilePath = Path.GetTempFileName();
-            File.Move(tempFilePath, Path.Combine(path, Path.GetFileName(tempFilePath)));
-
-            try
-            {
-                // Act/Assert
-                Assert.Throws<ArgumentException>(() => InRuleGitRepository.Init(path));
-            }
-            finally
-            {
-                new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
-                Directory.Delete(path, true);
-            }
+            new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
+            Directory.Delete(path, true);
         }
+    }
 
-        [Fact]
-        public void WithExistingGitRepository_ShouldThrowException()
+    [Fact]
+    public void WithDirectoryWithFiles_ShouldThrowException()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(path);
+        var tempFilePath = Path.GetTempFileName();
+        File.Move(tempFilePath, Path.Combine(path, Path.GetFileName(tempFilePath)));
+
+        try
         {
-            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            // Act/Assert
+            Assert.Throws<ArgumentException>(() => InRuleGitRepository.Init(path));
+        }
+        finally
+        {
+            new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
+            Directory.Delete(path, true);
+        }
+    }
 
-            try
-            {
-                // Arrange
-                LibGit2Sharp.Repository.Init(path);
+    [Fact]
+    public void WithExistingGitRepository_ShouldThrowException()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
-                // Act
-                Assert.Throws<ArgumentException>(() => InRuleGitRepository.Init(path));
-            }
-            finally
-            {
-                new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
-                Directory.Delete(path, true);
-            }
+        try
+        {
+            // Arrange
+            LibGit2Sharp.Repository.Init(path);
+
+            // Act
+            Assert.Throws<ArgumentException>(() => InRuleGitRepository.Init(path));
+        }
+        finally
+        {
+            new DirectoryInfo(path).Attributes &= ~FileAttributes.ReadOnly;
+            Directory.Delete(path, true);
         }
     }
 }

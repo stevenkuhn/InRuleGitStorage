@@ -1,79 +1,70 @@
-﻿using InRule.Authoring.Commanding;
-using InRule.Authoring.ViewModels;
-using InRule.Common.Utilities;
-using Sknet.InRuleGitStorage.AuthoringExtension.Controls;
-using System;
-using System.Collections.ObjectModel;
-using System.Windows;
+﻿namespace Sknet.InRuleGitStorage.AuthoringExtension.ViewModels;
 
-namespace Sknet.InRuleGitStorage.AuthoringExtension.ViewModels
+public class GitRepositoryOptionControlViewModel : ViewModelBase
 {
-    public class GitRepositoryOptionControlViewModel : ViewModelBase
+    public event EventHandler UseThisClicked;
+
+    public DelegateCommand AddGitRepositoryOptionCommand { get; }
+    public ObservableCollection<GitRepositoryOptionViewModel> GitRepositoryOptions { get; }
+    public GitRepositoryOptionControl View { get; set; }
+    public Window OwningWindow { get; set; }
+    public GitRepositorySettings Settings { get; private set; }
+
+    public GitRepositoryOptionControlViewModel()
     {
-        public event EventHandler UseThisClicked;
+        GitRepositoryOptions = new ObservableCollection<GitRepositoryOptionViewModel>();
 
-        public DelegateCommand AddGitRepositoryOptionCommand { get; }
-        public ObservableCollection<GitRepositoryOptionViewModel> GitRepositoryOptions { get; }
-        public GitRepositoryOptionControl View { get; set; }
-        public Window OwningWindow { get; set; }
-        public GitRepositorySettings Settings { get; private set; }
+        AddGitRepositoryOptionCommand = new DelegateCommand(AddGitRepositoryOption);
+    }
 
-        public GitRepositoryOptionControlViewModel()
+    protected void AddGitRepositoryOption(object obj)
+    {
+        GitRepositoryOptions.Insert(0, new GitRepositoryOptionViewModel(this, new GitRepositoryOption()) { IsExpanded = true });
+    }
+
+    protected void RaiseUseThisClicked(EventArgs<GitRepositoryOptionViewModel> eventArgs)
+    {
+        UseThisClicked?.Invoke(this, eventArgs);
+    }
+
+    public void LoadSettings()
+    {
+        Settings = GitRepositorySettings.Load(SettingsStorageService);
+
+        GitRepositoryOptions.Clear();
+
+        foreach (var option in Settings.Options)
         {
-            GitRepositoryOptions = new ObservableCollection<GitRepositoryOptionViewModel>();
-
-            AddGitRepositoryOptionCommand = new DelegateCommand(AddGitRepositoryOption);
+            GitRepositoryOptions.Add(new GitRepositoryOptionViewModel(this, option));
         }
 
-        protected void AddGitRepositoryOption(object obj)
+        if (GitRepositoryOptions.Count == 0)
         {
-            GitRepositoryOptions.Insert(0, new GitRepositoryOptionViewModel(this, new GitRepositoryOption()) { IsExpanded = true });
+            var viewModel = new GitRepositoryOptionViewModel(this, new GitRepositoryOption());
+            GitRepositoryOptions.Add(viewModel);
         }
 
-        protected void RaiseUseThisClicked(EventArgs<GitRepositoryOptionViewModel> eventArgs)
+        if (GitRepositoryOptions.Count == 1)
         {
-            UseThisClicked?.Invoke(this, eventArgs);
+            GitRepositoryOptions[0].IsExpanded = true;
+        }
+    }
+
+    public void SaveSettings()
+    {
+        Settings.Options.Clear();
+
+        foreach (var viewModel in GitRepositoryOptions)
+        {
+            Settings.Options.Add(viewModel.Model);
         }
 
-        public void LoadSettings()
-        {
-            Settings = GitRepositorySettings.Load(SettingsStorageService);
+        Settings.Save(SettingsStorageService);
+    }
 
-            GitRepositoryOptions.Clear();
-
-            foreach (var option in Settings.Options)
-            {
-                GitRepositoryOptions.Add(new GitRepositoryOptionViewModel(this, option));
-            }
-
-            if (GitRepositoryOptions.Count == 0)
-            {
-                var viewModel = new GitRepositoryOptionViewModel(this, new GitRepositoryOption());
-                GitRepositoryOptions.Add(viewModel);
-            }
-
-            if (GitRepositoryOptions.Count == 1)
-            {
-                GitRepositoryOptions[0].IsExpanded = true;
-            }
-        }
-
-        public void SaveSettings()
-        {
-            Settings.Options.Clear();
-
-            foreach (var viewModel in GitRepositoryOptions)
-            {
-                Settings.Options.Add(viewModel.Model);
-            }
-
-            Settings.Save(SettingsStorageService);
-        }
-
-        public void UseThisGitRepository(GitRepositoryOptionViewModel viewModel)
-        {
-            SaveSettings();
-            RaiseUseThisClicked(new EventArgs<GitRepositoryOptionViewModel>(viewModel));
-        }
+    public void UseThisGitRepository(GitRepositoryOptionViewModel viewModel)
+    {
+        SaveSettings();
+        RaiseUseThisClicked(new EventArgs<GitRepositoryOptionViewModel>(viewModel));
     }
 }

@@ -1,8 +1,5 @@
-﻿using System;
+﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests;
 
-namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests
+internal class TestAttribute : Attribute
 {
-    internal class TestAttribute : Attribute
-    {
-    }
 }

@@ -2,39 +2,50 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <PackageProjectUrl>https://inrulegitstorage.stevenkuhn.net/</PackageProjectUrl>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <NoWarn>NU5104</NoWarn>
+
     <Authors>Steven Kuhn</Authors>
-    <Company>Steven Kuhn</Company>
-    <Copyright>Copyright (c) 2021 Steven Kuhn and contributors</Copyright>
     <Description>Sknet.InRuleGitStorage is a library for storing and managing InRule® business rules in a Git repository.</Description>
-    <Product>Sknet.InRuleGitStorage</Product>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Copyright (c) 2021 Steven Kuhn and contributors</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
-    <NoWarn>1701;1702;NU5104;NU5105</NoWarn>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl>https://inrulegitstorage.stevenkuhn.net/icon.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>inrule git</PackageTags>
-    <RepositoryUrl>https://github.com/stevenkuhn/InRuleGitStorage.git</RepositoryUrl> 
-    <RepositoryType>git</RepositoryType> 
+    <PackageProjectUrl>https://inrulegitstorage.stevenkuhn.net/</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>inrule;git</PackageTags>
+    <RepositoryUrl>https://github.com/stevenkuhn/InRuleGitStorage.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="icon.png" Pack="true" PackagePath="" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="InRule.Repository" Version="5.2.0" />
-    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0116" />
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <None Include="icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="InRule.Repository" Version="5.2.0" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0158" />
+  </ItemGroup>
+
 </Project>

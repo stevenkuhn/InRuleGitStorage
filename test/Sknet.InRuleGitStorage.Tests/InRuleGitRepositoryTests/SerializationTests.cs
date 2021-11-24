@@ -1,56 +1,50 @@
-﻿using InRule.Repository;
-using LibGit2Sharp;
-using Sknet.InRuleGitStorage.Tests.Fixtures;
-using System;
-using System.Reflection;
-using Xunit;
+﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests;
 
-namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
+public class SerializationTests : IDisposable
 {
-    public class SerializationTests : IDisposable
+    private readonly GitRepositoryFixture _fixture;
+
+    public SerializationTests()
     {
-        private readonly GitRepositoryFixture _fixture;
+        _fixture = new GitRepositoryFixture();
+    }
 
-        public SerializationTests()
-        {
-            _fixture = new GitRepositoryFixture();
-        }
+    public void Dispose()
+    {
+        _fixture.Dispose();
+    }
 
-        public void Dispose()
-        {
-            _fixture.Dispose();
-        }
+    [Theory]
+    [InlineData("Chicago Food Tax Generator.ruleappx")]
+    [InlineData("InvoiceSample.ruleappx")]
+    [InlineData("UDF Examples.ruleappx")]
+    [InlineData("Vocabulary Examples.ruleappx")]
+    public void CommitAndGet_ShouldMatchXmlOfRuleApplication(string ruleAppFileName)
+    {
+        // Arrange
+        var repository = new InRuleGitRepository(_fixture.Repository);
+        var identity = new Identity("Peter Quill", "starlord@gotg.org");
+        var signature = new Signature(identity, DateTimeOffset.UtcNow);
 
-        [Theory]
-        [InlineData("Chicago Food Tax Generator.ruleappx")]
-        [InlineData("InvoiceSample.ruleappx")]
-        [InlineData("UDF Examples.ruleappx")]
-        [InlineData("Vocabulary Examples.ruleappx")]
-        public void CommitAndGet_ShouldMatchXmlOfRuleApplication(string ruleAppFileName)
-        {
-            // Arrange
-            var repository = new InRuleGitRepository(_fixture.Repository);
-            var identity = new Identity("Peter Quill", "starlord@gotg.org");
-            var signature = new Signature(identity, DateTimeOffset.UtcNow);
+        var assembly = Assembly.GetExecutingAssembly();
+        var resourceName = $"Sknet.InRuleGitStorage.Tests.RuleApps.{ruleAppFileName}";
+        var stream = assembly.GetManifestResourceStream(resourceName);
 
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = $"Sknet.InRuleGitStorage.Tests.RuleApps.{ruleAppFileName}";
-            var stream = assembly.GetManifestResourceStream(resourceName);
+        Assert.NotNull(stream);
 
-            var ruleApp = RuleApplicationDef.Load(stream);
-            var ruleAppName = ruleApp.Name;
+        var ruleApp = RuleApplicationDef.Load(stream);
+        var ruleAppName = ruleApp.Name;
 
-            stream.Dispose();
+        stream!.Dispose();
 
-            // Act
-            repository.Commit(ruleApp, "This is a test commit", signature, signature);
-            var result = repository.GetRuleApplication(ruleAppName);
+        // Act
+        repository.Commit(ruleApp, "This is a test commit", signature, signature);
+        var result = repository.GetRuleApplication(ruleAppName);
 
-            // Assert
-            var expectedXml = RuleRepositoryDefBase.GetXml(ruleApp);
-            var resultXml = RuleRepositoryDefBase.GetXml(result);
+        // Assert
+        var expectedXml = RuleRepositoryDefBase.GetXml(ruleApp);
+        var resultXml = RuleRepositoryDefBase.GetXml(result);
 
-            Assert.Equal(expectedXml, resultXml);
-        }
+        Assert.Equal(expectedXml, resultXml);
     }
 }
