@@ -25,7 +25,7 @@ Install-Package Sknet.InRuleGitStorage -IncludePrerelease
 ```
 
 ```batch
-dotnet add package Sknet.InRuleGitStorage --version 0.3.0
+dotnet add package Sknet.InRuleGitStorage --version 0.4.0
 ```
 
 ## Basic example
@@ -57,13 +57,13 @@ InRuleGitRepository.Clone(
 // Get a new instance of your local InRule Git repository
 using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
 {
-    // Create a local branch that is tracked to the remote "v0.3.0" branch
-    repo.CreateTrackedBranch("v0.3.0", "origin");
+    // Create a local branch that is tracked to the remote "v0.4.0" branch
+    repo.CreateTrackedBranch("v0.4.0", "origin");
     
     // Switch the current branch to the newly created tracked branch
-    repo.Checkout("v0.3.0");
+    repo.Checkout("v0.4.0");
 
-    // Create a local branch from the "v0.3.0" branch
+    // Create a local branch from the "v0.4.0" branch
     repo.CreateBranch("invoice-date-field");
     
     // Switch the current branch to the newly created local branch
@@ -76,13 +76,13 @@ using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
     repo.Commit(ruleApp, "Add invoice date field");
 
     // Switch back to the previous branch that does not have the field change
-    repo.Checkout("v0.3.0");
+    repo.Checkout("v0.4.0");
     
     // Merge the invoice date field change into the current branch
     repo.Merge("invoice-date-field");
     
     // Delete the original branch containing the invoice date field change since the
-    // change now exists in the "v0.3.0" branch
+    // change now exists in the "v0.4.0" branch
     repo.RemoveBranch("invoice-date-field");
 }
 ```
@@ -93,7 +93,7 @@ using (var repo = InRuleGitRepository.Open("/path/to/local/repo"))
 
 # Building
 
-To build this project locally, you will need the [.NET 5.0 SDK](https://dotnet.microsoft.com/download/dotnet/5.0) and, if you are building in Windows, the [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472) and [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework/net461) developer packs.
+To build this project locally, you will need the [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) and, if you are building in Windows, the [.NET Framework 4.7.2](https://dotnet.microsoft.com/download/dotnet-framework/net472) and [.NET Framework 4.6.1](https://dotnet.microsoft.com/download/dotnet-framework/net461) developer packs.
 
 ## Windows
 
