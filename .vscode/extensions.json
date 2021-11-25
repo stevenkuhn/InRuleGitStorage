@@ -4,9 +4,10 @@
 
 	// List of extensions which should be recommended for users of this workspace.
 	"recommendations": [
-		"ms-dotnettools.csharp",
-		"visualstudioexptteam.vscodeintellicode",
 		"editorconfig.editorconfig",
+		"ms-dotnettools.csharp",
+		"nuke.support",
+		"visualstudioexptteam.vscodeintellicode"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": [

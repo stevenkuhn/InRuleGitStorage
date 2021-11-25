@@ -1,14 +1,13 @@
-﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests
+﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests;
+
+public class GetRuleApplicationsTests
 {
-    public class GetRuleApplicationsTests
+    /*[Fact]
+    public void PlaygroundTests()
     {
-        /*[Fact]
-        public void PlaygroundTests()
+        using (var repo = InRuleGitRepository.Open("C:/Users/email/Desktop/InRuleGitDbClone"))
         {
-            using (var repo = InRuleGitRepository.Open("C:/Users/email/Desktop/InRuleGitDbClone"))
-            {
-                var ruleApps = repo.GetRuleApplications();
-            }
-        }*/
-    }
+            var ruleApps = repo.GetRuleApplications();
+        }
+    }*/
 }

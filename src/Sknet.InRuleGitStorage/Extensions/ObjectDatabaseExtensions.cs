@@ -1,45 +1,40 @@
-﻿using InRule.Repository;
-using LibGit2Sharp;
-using System;
+﻿namespace Sknet.InRuleGitStorage.Extensions;
 
-namespace Sknet.InRuleGitStorage.Extensions
+internal static class ObjectDatabaseExtensions
 {
-    internal static class ObjectDatabaseExtensions
+    internal static Blob CreateBlob(this ObjectDatabase objectDatabase, RuleRepositoryDefBase def)
     {
-        internal static Blob CreateBlob(this ObjectDatabase objectDatabase, RuleRepositoryDefBase def)
+        if (objectDatabase == null)
         {
-            if (objectDatabase == null)
-            {
-                throw new ArgumentNullException(nameof(objectDatabase));
-            }
-
-            if (def == null)
-            {
-                throw new ArgumentNullException(nameof(def));
-            }
-
-            using (var stream = def.GetXmlStream())
-            {
-                return objectDatabase.CreateBlob(stream);
-            }
+            throw new ArgumentNullException(nameof(objectDatabase));
         }
 
-        internal static Blob CreateBlob(this ObjectDatabase objectDatabase, RuleRepositoryDefCollection defCollection)
+        if (def == null)
         {
-            if (objectDatabase == null)
-            {
-                throw new ArgumentNullException(nameof(objectDatabase));
-            }
+            throw new ArgumentNullException(nameof(def));
+        }
 
-            if (defCollection == null)
-            {
-                throw new ArgumentNullException(nameof(defCollection));
-            }
+        using (var stream = def.GetXmlStream())
+        {
+            return objectDatabase.CreateBlob(stream);
+        }
+    }
 
-            using (var stream = defCollection.GetXmlStream())
-            {
-                return objectDatabase.CreateBlob(stream);
-            }
+    internal static Blob CreateBlob(this ObjectDatabase objectDatabase, RuleRepositoryDefCollection defCollection)
+    {
+        if (objectDatabase == null)
+        {
+            throw new ArgumentNullException(nameof(objectDatabase));
+        }
+
+        if (defCollection == null)
+        {
+            throw new ArgumentNullException(nameof(defCollection));
+        }
+
+        using (var stream = defCollection.GetXmlStream())
+        {
+            return objectDatabase.CreateBlob(stream);
         }
     }
 }

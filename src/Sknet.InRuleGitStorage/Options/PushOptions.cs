@@ -1,28 +1,25 @@
-﻿using LibGit2Sharp.Handlers;
+﻿namespace Sknet.InRuleGitStorage;
 
-namespace Sknet.InRuleGitStorage
+/// <summary>
+/// Collection of parameters controlling Push behavior
+/// </summary>
+public class PushOptions
 {
     /// <summary>
-    /// Collection of parameters controlling Push behavior
+    /// Handler to generate LibGit2Sharp.Credentials for authentication.
     /// </summary>
-    public class PushOptions
+    public CredentialsHandler? CredentialsProvider
     {
-        /// <summary>
-        /// Handler to generate LibGit2Sharp.Credentials for authentication.
-        /// </summary>
-        public CredentialsHandler CredentialsProvider
-        {
-            get;
-            set;
-        }
+        get;
+        set;
+    }
 
-        /// <summary>
-        /// This handler will be called to let the user make a decision on whether to allow the connection to proceed based on the certificate presented by the server.
-        /// </summary>
-        public CertificateCheckHandler CertificateCheck
-        {
-            get;
-            set;
-        }
+    /// <summary>
+    /// This handler will be called to let the user make a decision on whether to allow the connection to proceed based on the certificate presented by the server.
+    /// </summary>
+    public CertificateCheckHandler? CertificateCheck
+    {
+        get;
+        set;
     }
 }
