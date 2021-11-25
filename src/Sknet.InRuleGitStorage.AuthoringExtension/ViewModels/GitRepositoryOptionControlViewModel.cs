@@ -2,13 +2,13 @@
 
 public class GitRepositoryOptionControlViewModel : ViewModelBase
 {
-    public event EventHandler UseThisClicked;
+    public event EventHandler? UseThisClicked;
 
     public DelegateCommand AddGitRepositoryOptionCommand { get; }
     public ObservableCollection<GitRepositoryOptionViewModel> GitRepositoryOptions { get; }
-    public GitRepositoryOptionControl View { get; set; }
-    public Window OwningWindow { get; set; }
-    public GitRepositorySettings Settings { get; private set; }
+    public GitRepositoryOptionControl? View { get; set; }
+    public Window? OwningWindow { get; set; }
+    public GitRepositorySettings? Settings { get; private set; }
 
     public GitRepositoryOptionControlViewModel()
     {
@@ -52,14 +52,14 @@ public class GitRepositoryOptionControlViewModel : ViewModelBase
 
     public void SaveSettings()
     {
-        Settings.Options.Clear();
+        Settings?.Options.Clear();
 
         foreach (var viewModel in GitRepositoryOptions)
         {
-            Settings.Options.Add(viewModel.Model);
+            Settings?.Options.Add(viewModel.Model);
         }
 
-        Settings.Save(SettingsStorageService);
+        Settings?.Save(SettingsStorageService);
     }
 
     public void UseThisGitRepository(GitRepositoryOptionViewModel viewModel)

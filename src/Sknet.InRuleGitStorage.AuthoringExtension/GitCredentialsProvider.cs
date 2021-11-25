@@ -2,7 +2,9 @@
 
 public static class GitCredentialsProvider
 {
+#pragma warning disable IDE0060 // Remove unused parameter
     public static LibGit2Sharp.Credentials CredentialsHandler(string url, string usernameFromUrl, LibGit2Sharp.SupportedCredentialTypes types)
+#pragma warning restore IDE0060 // Remove unused parameter
     {
         var startInfo = new ProcessStartInfo
         {
@@ -16,8 +18,8 @@ public static class GitCredentialsProvider
             RedirectStandardOutput = true
         };
 
-        string username = null;
-        string password = null;
+        string? username = null;
+        string? password = null;
 
         using (var process = new Process { StartInfo = startInfo })
         {
@@ -31,6 +33,11 @@ public static class GitCredentialsProvider
             string error;
             while ((line = process.StandardOutput.ReadLine()) != null || (error = process.StandardError.ReadLine()) != null)
             {
+                if (line == null)
+                {
+                    break;
+                }
+
                 var details = line.Split('=');
                 if (details[0] == "username")
                 {

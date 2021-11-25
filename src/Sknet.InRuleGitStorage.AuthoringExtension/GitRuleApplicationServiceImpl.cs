@@ -7,7 +7,7 @@ public class GitRuleApplicationServiceImpl : RuleApplicationServiceWrapper, IDis
     private readonly RuleApplicationService _ruleApplicationService;
     private readonly ServiceManager _serviceManager;
 
-    private GitRepositoryOption _selectedGitRepositoryOption;
+    private GitRepositoryOption? _selectedGitRepositoryOption;
 
     public GitRuleApplicationServiceImpl(ServiceManager serviceManager, IRuleApplicationServiceImplementation innerRuleApplicationServiceImpl)
         : base(innerRuleApplicationServiceImpl)
@@ -37,16 +37,16 @@ public class GitRuleApplicationServiceImpl : RuleApplicationServiceWrapper, IDis
         _ruleApplicationService.ValidationFailed -= RuleApplicationService_ValidationFailed;
     }
 
-    public event EventHandler RuleApplicationCommitted;
+    public event EventHandler? RuleApplicationCommitted;
 
-    private GitRepositoryOption GetSelectedGitRepositoryOption()
+    private GitRepositoryOption? GetSelectedGitRepositoryOption()
     {
         if (_selectedGitRepositoryOption != null)
         {
             return _selectedGitRepositoryOption;
         }
 
-        GitRepositoryOption selectedOption = null;
+        GitRepositoryOption? selectedOption = null;
 
         var control = new GitRepositoryOptionControl();
         var viewModel = _serviceManager.Compose<GitRepositoryOptionControlViewModel>();
@@ -64,7 +64,7 @@ public class GitRuleApplicationServiceImpl : RuleApplicationServiceWrapper, IDis
         {
             selectedOption = ((EventArgs<GitRepositoryOptionViewModel>)e).Item.Model;
 
-            BackgroundWorkerWaitWindow waitWindow = null;
+            BackgroundWorkerWaitWindow? waitWindow = null;
 
             if (InRuleGitRepository.IsValid(selectedOption.WorkingDirectory))
             {
@@ -142,7 +142,7 @@ public class GitRuleApplicationServiceImpl : RuleApplicationServiceWrapper, IDis
             return false;
         }
 
-        RuleApplicationGitInfo[] ruleApplications = null;
+        RuleApplicationGitInfo[]? ruleApplications = null;
 
         var waitWindow = new BackgroundWorkerWaitWindow("Open from Git Repository", "Retrieving rule applications...");
         waitWindow.DoWork += delegate
@@ -166,7 +166,7 @@ public class GitRuleApplicationServiceImpl : RuleApplicationServiceWrapper, IDis
             throw new NotImplementedException();
         }
 
-        RuleApplicationGitInfo selectedRuleAppInfo = null;
+        RuleApplicationGitInfo? selectedRuleAppInfo = null;
 
         var control = _serviceManager.Compose<OpenFromGitRepositoryControl>(selectedOption, ruleApplications);
         var window = WindowFactory.CreateWindow("Open from Git Repository", control, 800, 350, true);
@@ -184,13 +184,19 @@ public class GitRuleApplicationServiceImpl : RuleApplicationServiceWrapper, IDis
 
         if (selectedRuleAppInfo != null)
         {
-            RuleApplicationDef ruleAppDef = null;
+            RuleApplicationDef? ruleAppDef = null;
             var backgroundWindow = new BackgroundWorkerWaitWindow(Strings.Open_Rule_Application, "Loading from Git repository...");
 
             backgroundWindow.DoWork += delegate
             {
                 using var repository = InRuleGitRepository.Open(selectedOption.WorkingDirectory);
                 ruleAppDef = repository.GetRuleApplication(selectedRuleAppInfo.Name);
+
+                if (ruleAppDef == null)
+                {
+                    throw new NotImplementedException();
+                }
+
                 ruleAppDef.SetOriginalContentCode();
             };
 
@@ -245,6 +251,12 @@ public class GitRuleApplicationServiceImpl : RuleApplicationServiceWrapper, IDis
             });
 
             var ruleAppDef = repo.GetRuleApplication(_ruleApplicationService.RuleApplicationDef.Name);
+
+            if (ruleAppDef == null)
+            {
+                throw new NotImplementedException();
+            }
+
             ruleAppDef.SetOriginalContentCode();
 
             Application.Current.Dispatcher.Invoke(() =>

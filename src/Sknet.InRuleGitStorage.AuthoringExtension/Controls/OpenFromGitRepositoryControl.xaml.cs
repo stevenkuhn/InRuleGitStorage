@@ -5,6 +5,8 @@
 /// </summary>
 public partial class OpenFromGitRepositoryControl : WindowContent
 {
+    private RuleApplicationGitInfo? _selectedRuleApplicationGitInfo;
+
     public string ConnectionDisplayName { get; private set; }
     public IEnumerable<RuleApplicationGitInfo> RuleAppInfos { get; private set; }
     public ICommand SelectRuleAppCommand { get; private set; }
@@ -32,8 +34,7 @@ public partial class OpenFromGitRepositoryControl : WindowContent
         OnPerformButtonClick(Strings.Open);
     }
 
-    private RuleApplicationGitInfo _selectedRuleApplicationGitInfo;
-    public RuleApplicationGitInfo SelectedRuleApplicationGitInfo
+    public RuleApplicationGitInfo? SelectedRuleApplicationGitInfo
     {
         get { return _selectedRuleApplicationGitInfo; }
         set

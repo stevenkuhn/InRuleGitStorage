@@ -2,12 +2,12 @@
 
 public class Extension : ExtensionBase
 {
-    private IRibbonTab _tab;
-    private IRibbonMenuButton _fileOpenMenu;
-    private IRibbonMenuButton _fileSaveAsMenu;
-    private IRibbonButton _openFromGitRepoButton;
-    private IRibbonButton _saveToGitRepoButton;
-    private StatusBarItem _gitRepositoryStatusBarItem;
+    private IRibbonTab? _tab;
+    private IRibbonMenuButton? _fileOpenMenu;
+    private IRibbonMenuButton? _fileSaveAsMenu;
+    private IRibbonButton? _openFromGitRepoButton;
+    private IRibbonButton? _saveToGitRepoButton;
+    private StatusBarItem? _gitRepositoryStatusBarItem;
 
     public Extension() : base(
         name: "Sknet.InRuleGitStorage",
@@ -117,11 +117,11 @@ public class Extension : ExtensionBase
         IrAuthorShell.Ribbon.RemoveTab(_tab);
         _tab = null;
 
-        _fileOpenMenu.RemoveMenuItem(_openFromGitRepoButton);
+        _fileOpenMenu?.RemoveMenuItem(_openFromGitRepoButton);
         _fileOpenMenu = null;
         _openFromGitRepoButton = null;
 
-        _fileSaveAsMenu.RemoveMenuItem(_saveToGitRepoButton);
+        _fileSaveAsMenu?.RemoveMenuItem(_saveToGitRepoButton);
         _fileSaveAsMenu = null;
         _saveToGitRepoButton = null;
 

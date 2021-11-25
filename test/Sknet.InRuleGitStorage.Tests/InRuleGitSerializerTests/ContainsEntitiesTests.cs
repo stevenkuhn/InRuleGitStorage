@@ -1,6 +1,6 @@
 ﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitSerializerTests;
 
-public class ContainsEntitiesTests : IDisposable
+public sealed class ContainsEntitiesTests : IDisposable
 {
     private readonly GitRepositoryFixture _fixture;
 
@@ -51,7 +51,7 @@ public class ContainsEntitiesTests : IDisposable
     }
 }
 
-public class ContainsFieldsTests : IDisposable
+public sealed class ContainsFieldsTests : IDisposable
 {
     private readonly GitRepositoryFixture _fixture;
 
@@ -142,7 +142,7 @@ public class ContainsFieldsTests : IDisposable
     }
 }
 
-public class ContainsDataElementsTests : IDisposable
+public sealed class ContainsDataElementsTests : IDisposable
 {
     private readonly GitRepositoryFixture _fixture;
 
@@ -187,7 +187,7 @@ public class ContainsDataElementsTests : IDisposable
     }
 }
 
-public class ContainsEndPointsTests : IDisposable
+public sealed class ContainsEndPointsTests : IDisposable
 {
     private readonly GitRepositoryFixture _fixture;
 
@@ -232,7 +232,7 @@ public class ContainsEndPointsTests : IDisposable
     }
 }
 
-public class ContainsVocabularyTests : IDisposable
+public sealed class ContainsVocabularyTests : IDisposable
 {
     private readonly GitRepositoryFixture _fixture;
 

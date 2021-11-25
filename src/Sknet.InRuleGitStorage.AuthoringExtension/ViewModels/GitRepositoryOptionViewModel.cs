@@ -109,10 +109,8 @@ public class GitRepositoryOptionViewModel : ViewModelBase
 
     private new bool Validate()
     {
-        string errorText = null;
-        Uri uri;
-
-        if (!Uri.TryCreate(SourceUrl, UriKind.Absolute, out uri))
+        string? errorText = null;
+        if (!Uri.TryCreate(SourceUrl, UriKind.Absolute, out _))
         {
             errorText = "Please enter a valid URL.";
         }

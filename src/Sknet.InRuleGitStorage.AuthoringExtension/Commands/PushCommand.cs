@@ -75,13 +75,11 @@ public class PushCommand : VisualCommandBase
         waitWindow.DoWork += delegate
         {
             var path = ((GitPersistenceInfo)RuleApplicationService.PersistenceInfo).Filename;
-            using (var repo = InRuleGitRepository.Open(path))
+            using var repo = InRuleGitRepository.Open(path);
+            repo.Push(new PushOptions
             {
-                repo.Push(new PushOptions
-                {
-                    CredentialsProvider = GitCredentialsProvider.CredentialsHandler
-                });
-            }
+                CredentialsProvider = GitCredentialsProvider.CredentialsHandler
+            });
         };
 
         waitWindow.RunWorkerCompleted += delegate (object sender1, RunWorkerCompletedEventArgs e1)
