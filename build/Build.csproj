@@ -9,6 +9,9 @@
     <NukeScriptDirectory>..</NukeScriptDirectory>
     <NukeTelemetryVersion>1</NukeTelemetryVersion>
     <NUKE_TELEMETRY_OPTOUT>1</NUKE_TELEMETRY_OPTOUT>
+
+    <Authors>Steven Kuhn</Authors>
+    <Copyright>Copyright (c) 2021 Steven Kuhn and contributors</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

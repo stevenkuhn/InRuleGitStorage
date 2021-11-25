@@ -7,6 +7,9 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+    
+    <Authors>Steven Kuhn</Authors>
+    <Copyright>Copyright (c) 2021 Steven Kuhn and contributors</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

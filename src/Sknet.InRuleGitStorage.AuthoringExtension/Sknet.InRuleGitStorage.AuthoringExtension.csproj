@@ -5,6 +5,10 @@
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+
+    <Authors>Steven Kuhn</Authors>
+    <Description>Sknet.InRuleGitStorage.AuthoringExtension is an irAuthor® extension that allow for storing and managing InRule® business rules in a Git repository.</Description>
+    <Copyright>Copyright (c) 2021 Steven Kuhn and contributors</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
