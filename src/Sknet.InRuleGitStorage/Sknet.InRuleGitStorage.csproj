@@ -22,7 +22,6 @@
     <RepositoryUrl>https://github.com/stevenkuhn/InRuleGitStorage.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>
