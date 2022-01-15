@@ -40,7 +40,7 @@ class Build : NukeBuild
 
     protected override void OnBuildInitialized()
     {
-        Logger.Info($"GitVersion settings:\n{JsonConvert.SerializeObject(GitVersion, Formatting.Indented)}");
+        Log.Information($"GitVersion settings:\n{JsonConvert.SerializeObject(GitVersion, Formatting.Indented)}");
     }
 
     Target Clean => _ => _
@@ -48,14 +48,14 @@ class Build : NukeBuild
         .Before(RestoreAuthoring)
         .Executes(() =>
         {
-            Logger.Normal("Deleting all bin/obj directories...");
+            Log.Debug("Deleting all bin/obj directories...");
             SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
             TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
 
-            Logger.Normal("Cleaning artifacts directory...");
+            Log.Debug("Cleaning artifacts directory...");
             EnsureCleanDirectory(ArtifactsDirectory);
 
-            Logger.Normal("Deleting test results directories...");
+            Log.Debug("Deleting test results directories...");
             TestsDirectory.GlobDirectories("**/TestResults").ForEach(DeleteDirectory);
         });
 
@@ -64,15 +64,15 @@ class Build : NukeBuild
         .Requires(() => InRuleVersion)
         .Executes(() =>
         {
-            Logger.Normal($"Updating NuGet package InRule.Repository v{InRuleVersion} for SDK project.");
+            Log.Debug($"Updating NuGet package InRule.Repository v{InRuleVersion} for SDK project.");
             DotNet($"add {SdkProject} package InRule.Repository --no-restore --version {InRuleVersion}");
 
-            Logger.Normal("Restoring SDK project NuGet packages...");
+            Log.Debug("Restoring SDK project NuGet packages...");
             DotNetRestore(s => s
                 .SetProjectFile(SdkProject)
                 .SetSources(NuGetRestoreSources));
 
-            Logger.Normal("Restoring SDK test project NuGet packages...");
+            Log.Debug("Restoring SDK test project NuGet packages...");
             DotNetRestore(s => s
                 .SetProjectFile(SdkTestProject)
                 .SetSources(NuGetRestoreSources));
@@ -84,10 +84,10 @@ class Build : NukeBuild
         .OnlyWhenStatic(() => IsWin)
         .Executes(() =>
         {
-            Logger.Normal($"Update NuGet package InRule.Authoring.SDK v{InRuleVersion} for Authoring project.");
+            Log.Debug($"Update NuGet package InRule.Authoring.SDK v{InRuleVersion} for Authoring project.");
             DotNet($"add {AuthoringProject} package InRule.Authoring.SDK --no-restore --version {InRuleVersion}");
 
-            Logger.Normal("Restoring Authoring project NuGet packages...");
+            Log.Debug("Restoring Authoring project NuGet packages...");
             DotNetRestore(s => s
                 .SetProjectFile(AuthoringProject)
                 .SetSources(NuGetRestoreSources));
@@ -97,7 +97,7 @@ class Build : NukeBuild
         .DependsOn(RestoreSdk)
         .Executes(() =>
         {
-            Logger.Normal("Compiling SDK project...");
+            Log.Debug("Compiling SDK project...");
             DotNetBuild(s => s
                 .SetProjectFile(SdkProject)
                 .SetVersion(GitVersion.FullSemVer)
@@ -110,7 +110,7 @@ class Build : NukeBuild
                 .SetFramework(IsWin ? null : "netstandard2.0")
                 .EnableNoRestore());
 
-            Logger.Normal("Compiling SDK test project...");
+            Log.Debug("Compiling SDK test project...");
             DotNetBuild(s => s
                 .SetProjectFile(SdkTestProject)
                 .SetVersion(GitVersion.FullSemVer)
@@ -129,7 +129,7 @@ class Build : NukeBuild
         .Before(TestSdk)
         .Executes(() =>
         {
-            Logger.Normal("Compiling Authoring project...");
+            Log.Debug("Compiling Authoring project...");
             DotNetBuild(s => s
                 .SetProjectFile(AuthoringProject)
                 .SetVersion(GitVersion.FullSemVer)
@@ -144,7 +144,7 @@ class Build : NukeBuild
         .DependsOn(CompileSdk)
         .Executes(() =>
         {
-            Logger.Normal("Running SDK tests under .NET 6.0 runtime...");
+            Log.Debug("Running SDK tests under .NET 6.0 runtime...");
             DotNetTest(s => s
                 .SetProjectFile(SdkTestProject)
                 .SetFramework("net6.0")
@@ -155,7 +155,7 @@ class Build : NukeBuild
 
             if (IsWin)
             {
-                Logger.Normal("Running SDK tests under .NET Framework 4.6.1 runtime...");
+                Log.Debug("Running SDK tests under .NET Framework 4.6.1 runtime...");
                 DotNetTest(s => s
                     .SetProjectFile(SdkTestProject)
                     .SetFramework("net461")
@@ -164,7 +164,7 @@ class Build : NukeBuild
                     .EnableNoRestore()
                     .AddLoggers("trx;LogFileName=./net461/TestResult.trx"));
 
-                Logger.Normal("Running SDK tests under .NET Framework 4.7.2 runtime...");
+                Log.Debug("Running SDK tests under .NET Framework 4.7.2 runtime...");
                 DotNetTest(s => s
                     .SetProjectFile(SdkTestProject)
                     .SetFramework("net472")
@@ -180,7 +180,7 @@ class Build : NukeBuild
         .After(TestSdk)
         .Executes(() =>
         {
-            Logger.Normal("Publishing SDK artifacts to the artifacts folder...");
+            Log.Debug("Publishing SDK artifacts to the artifacts folder...");
             SourceDirectory.GlobFiles($"**/{Configuration}/**/Sknet.InRuleGitStorage.{GitVersion.SemVer}.*nupkg").ForEach(file => CopyFileToDirectory(file, ArtifactsDirectory));
         });
 
@@ -190,7 +190,7 @@ class Build : NukeBuild
         .After(TestSdk)
         .Executes(() =>
         {
-            Logger.Normal("Publishing Authoring artifacts to the artifacts folder...");
+            Log.Debug("Publishing Authoring artifacts to the artifacts folder...");
             var authoringExtensionDirectory = ArtifactsDirectory / "Sknet.InRuleGitStorage.AuthoringExtension";
 
             AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/net472/Sknet.InRuleGitStorage.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
@@ -209,10 +209,10 @@ class Build : NukeBuild
         .OnlyWhenStatic(() => IsLocalBuild)
         .Executes(() =>
         {
-            Logger.Normal("Deploying Authoring extension to local irAuthor Extension Exchange folder (if exists)...");
+            Log.Debug("Deploying Authoring extension to local irAuthor Extension Exchange folder (if exists)...");
             var irAuthorLocalDirectory = (AbsolutePath)$"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/InRule/irAuthor";
 
-            if (DirectoryExists(irAuthorLocalDirectory))
+            if (irAuthorLocalDirectory.DirectoryExists())
             {
                 var extensionDirectory = irAuthorLocalDirectory / "ExtensionExchange" / "Sknet.InRuleGitStorage";
                 EnsureCleanDirectory(extensionDirectory);
@@ -227,7 +227,7 @@ class Build : NukeBuild
         .Requires(() => GitHubAccessToken)
         .Executes(async () =>
         {
-            Logger.Normal($"Creating 'v{GitVersion.SemVer}' release in GitHub...");
+            Log.Debug($"Creating 'v{GitVersion.SemVer}' release in GitHub...");
             var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("sknet.inrulegitstorage.build"))
             {
                 Credentials = new Octokit.Credentials(GitHubAccessToken)
@@ -236,19 +236,19 @@ class Build : NukeBuild
             Octokit.Release release = null;
             try
             {
-                Logger.Info($"Retrieving exisiting release tagged as 'v{GitVersion.SemVer}'...");
+                Log.Information($"Retrieving exisiting release tagged as 'v{GitVersion.SemVer}'...");
                 release = await github.Repository.Release.Get(GitHubRepositoryOwner, GitHubRepositoryName, $"v{GitVersion.SemVer}");
             }
             catch (Octokit.NotFoundException)
             {
-                Logger.Info("Release not found. Retrieving existing draft release...");
+                Log.Information("Release not found. Retrieving existing draft release...");
                 var releases = await github.Repository.Release.GetAll(GitHubRepositoryOwner, GitHubRepositoryName);
                 release = releases.SingleOrDefault(r => r.Draft && (r.TagName == $"v{GitVersion.SemVer}" || r.TagName.StartsWith($"v{GitVersion.MajorMinorPatch}-{GitVersion.PreReleaseLabel}")));
             }
 
             if (release != null)
             {
-                Logger.Info($"Release '{release.Name}' found. Updating release...");
+                Log.Information($"Release '{release.Name}' found. Updating release...");
                 release = await github.Repository.Release.Edit(GitHubRepositoryOwner, GitHubRepositoryName, release.Id, new Octokit.ReleaseUpdate
                 {
                     Name = $"v{GitVersion.SemVer}",
@@ -263,7 +263,7 @@ class Build : NukeBuild
             }
             else
             {
-                Logger.Info($"Release not found. Creating a new draft release...");
+                Log.Information($"Release not found. Creating a new draft release...");
                 release = await github.Repository.Release.Create(GitHubRepositoryOwner, GitHubRepositoryName, new Octokit.NewRelease($"v{GitVersion.SemVer}")
                 {
                     Name = $"v{GitVersion.SemVer}",
@@ -274,7 +274,7 @@ class Build : NukeBuild
                 });
             }
 
-            Logger.Info("Removing existing assets (if any)...");
+            Log.Information("Removing existing assets (if any)...");
             var assets = await github.Repository.Release.GetAllAssets(GitHubRepositoryOwner, GitHubRepositoryName, release.Id);
             foreach (var asset in assets)
             {
@@ -287,7 +287,7 @@ class Build : NukeBuild
                 var file = new FileInfo(artifact);
                 using var stream = File.OpenRead(artifact);
 
-                Logger.Info($"Uploading asset '{file.Name}'...");
+                Log.Information($"Uploading asset '{file.Name}'...");
                 var asset = await github.Repository.Release.UploadAsset(release, new Octokit.ReleaseAssetUpload()
                 {
                     ContentType = "application/zip",
@@ -297,14 +297,16 @@ class Build : NukeBuild
             }
         });
 
+#pragma warning disable IDE0051 // Remove unused private members
     Target PublishToNuGetFeed => _ => _
+#pragma warning restore IDE0051 // Remove unused private members
         .DependsOn(PublishSdkArtifacts)
         .Requires(() => NuGetSource)
         .Requires(() => NuGetApiKey)
         .After(PublishToGitHub)
         .Executes(() =>
         {
-            Logger.Normal($"Uploading NuGet package(s) to '{NuGetSource}'...");
+            Log.Debug($"Uploading NuGet package(s) to '{NuGetSource}'...");
 
             NuGetPush(s => s
                 .SetApiKey(NuGetApiKey)

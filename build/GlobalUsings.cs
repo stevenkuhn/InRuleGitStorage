@@ -4,6 +4,7 @@ global using System.IO;
 global using System.Linq;
 
 global using Newtonsoft.Json;
+global using Serilog;
 global using Nuke.Common;
 global using Nuke.Common.CI;
 global using Nuke.Common.Execution;
@@ -22,5 +23,4 @@ global using static Nuke.Common.IO.CompressionTasks;
 global using static Nuke.Common.IO.FileSystemTasks;
 global using static Nuke.Common.IO.PathConstruction;
 global using static Nuke.Common.Tools.DotNet.DotNetTasks;
-global using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
 global using static Nuke.Common.Tools.NuGet.NuGetTasks;
