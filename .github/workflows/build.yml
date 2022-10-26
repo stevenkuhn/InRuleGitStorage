@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -33,7 +33,7 @@ jobs:
 
     - name: Upload artifacts
       if: matrix.inrule == '5.2.0'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: artifacts
         path: artifacts
@@ -49,7 +49,7 @@ jobs:
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
     
@@ -69,17 +69,20 @@ jobs:
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: artifacts
         path: artifacts
 
     - name: Create release
-      env:
-        GitHub_Access_Token: ${{ secrets.GITHUB_TOKEN }}
-      run: ./build.sh --target PublishToGitHub --skip PublishSdkArtifacts PublishAuthoringArtifacts
+      run: >
+        ./build.sh 
+        --target PublishToGitHub 
+        --skip PublishSdkArtifacts PublishAuthoringArtifacts
+        --github-access-token ${{ secrets.GITHUB_TOKEN }}
+        --github-repository ${{ github.repository }}

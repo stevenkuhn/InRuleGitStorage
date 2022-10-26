@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
         ref: ${{ github.event.release.target_commitish }}
@@ -23,14 +23,16 @@ jobs:
     - name: Download release assets
       uses: Itsblue/download-release-assets-action@master
       with:
-        repo: "stevenkuhn/InRuleGitStorage"
+        repo: ${{ github.repository }}
         version: ${{ github.event.release.id }}
-        file: "Sknet.InRuleGitStorage.*"
+        file: "Sknet.*"
         path: ./artifacts
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push assets to NuGet
-      env:
-        NuGet_Source: ${{ secrets.NUGET_SOURCE }}
-        NuGet_ApiKey: ${{ secrets.NUGET_APIKEY }}
-      run: ./build.sh --target PublishToNuGetFeed --skip PublishSdkArtifacts
+      run: >
+        ./build.sh 
+        --target PublishToNuGetFeed 
+        --skip PublishSdkArtifacts
+        --nuget-api-key ${{ secrets.NUGET_APIKEY }}
+        --nuget-source ${{ secrets.NUGET_SOURCE }}

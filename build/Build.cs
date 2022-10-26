@@ -1,4 +1,3 @@
-[CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
@@ -11,12 +10,17 @@ class Build : NukeBuild
     readonly string InRuleVersion = "5.2.0";
 
     [Parameter("GitHub access token used for creating a new or updating an existing release.")]
+    [Secret]
     readonly string GitHubAccessToken;
+
+    [Parameter("GitHub repository owner and name used for creating a new or updating an existing release. For example: 'stevenkuhn/InRuleGitStorage'.")]
+    readonly string GitHubRepository = "stevenkuhn/InRuleGitStorage";
 
     [Parameter("NuGet source used for pushing the Sdk NuGet package. Default is NuGet.org.")]
     readonly string NuGetSource = "https://api.nuget.org/v3/index.json";
 
     [Parameter("NuGet API key used to pushing the Sdk NuGet package.")]
+    [Secret]
     readonly string NuGetApiKey;
 
     [Solution] readonly Solution Solution;
@@ -30,9 +34,6 @@ class Build : NukeBuild
     Project AuthoringProject => Solution.GetProject("Sknet.InRuleGitStorage.AuthoringExtension");
     Project SdkProject => Solution.GetProject("Sknet.InRuleGitStorage");
     Project SdkTestProject => Solution.GetProject("Sknet.InRuleGitStorage.Tests");
-
-    const string GitHubRepositoryName = "InRuleGitStorage";
-    const string GitHubRepositoryOwner = "stevenkuhn";
 
     readonly string[] NuGetRestoreSources = new[] {
         "https://api.nuget.org/v3/index.json"
@@ -181,7 +182,9 @@ class Build : NukeBuild
         .Executes(() =>
         {
             Log.Debug("Publishing SDK artifacts to the artifacts folder...");
-            SourceDirectory.GlobFiles($"**/{Configuration}/**/Sknet.InRuleGitStorage.{GitVersion.SemVer}.*nupkg").ForEach(file => CopyFileToDirectory(file, ArtifactsDirectory));
+            SourceDirectory
+                .GlobFiles($"**/{Configuration}/**/Sknet.*.{GitVersion.SemVer}.*nupkg")
+                .ForEach(file => CopyFileToDirectory(file, ArtifactsDirectory));
         });
 
     Target PublishAuthoringArtifacts => _ => _
@@ -228,6 +231,8 @@ class Build : NukeBuild
         .Executes(async () =>
         {
             Log.Debug($"Creating 'v{GitVersion.SemVer}' release in GitHub...");
+            (string repositoryOwner, string repositoryName) = GitHubRepository.Split('/');
+
             var github = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("sknet.inrulegitstorage.build"))
             {
                 Credentials = new Octokit.Credentials(GitHubAccessToken)
@@ -237,19 +242,19 @@ class Build : NukeBuild
             try
             {
                 Log.Information($"Retrieving exisiting release tagged as 'v{GitVersion.SemVer}'...");
-                release = await github.Repository.Release.Get(GitHubRepositoryOwner, GitHubRepositoryName, $"v{GitVersion.SemVer}");
+                release = await github.Repository.Release.Get(repositoryOwner, repositoryName, $"v{GitVersion.SemVer}");
             }
             catch (Octokit.NotFoundException)
             {
                 Log.Information("Release not found. Retrieving existing draft release...");
-                var releases = await github.Repository.Release.GetAll(GitHubRepositoryOwner, GitHubRepositoryName);
+                var releases = await github.Repository.Release.GetAll(repositoryOwner, repositoryName);
                 release = releases.SingleOrDefault(r => r.Draft && (r.TagName == $"v{GitVersion.SemVer}" || r.TagName.StartsWith($"v{GitVersion.MajorMinorPatch}-{GitVersion.PreReleaseLabel}")));
             }
 
             if (release != null)
             {
                 Log.Information($"Release '{release.Name}' found. Updating release...");
-                release = await github.Repository.Release.Edit(GitHubRepositoryOwner, GitHubRepositoryName, release.Id, new Octokit.ReleaseUpdate
+                release = await github.Repository.Release.Edit(repositoryOwner, repositoryName, release.Id, new Octokit.ReleaseUpdate
                 {
                     Name = $"v{GitVersion.SemVer}",
                     TagName = $"v{GitVersion.SemVer}",
@@ -264,7 +269,7 @@ class Build : NukeBuild
             else
             {
                 Log.Information($"Release not found. Creating a new draft release...");
-                release = await github.Repository.Release.Create(GitHubRepositoryOwner, GitHubRepositoryName, new Octokit.NewRelease($"v{GitVersion.SemVer}")
+                release = await github.Repository.Release.Create(repositoryOwner, repositoryName, new Octokit.NewRelease($"v{GitVersion.SemVer}")
                 {
                     Name = $"v{GitVersion.SemVer}",
                     Body = $"Release notes for `v{GitVersion.SemVer}` are not available at this time.",
@@ -275,13 +280,13 @@ class Build : NukeBuild
             }
 
             Log.Information("Removing existing assets (if any)...");
-            var assets = await github.Repository.Release.GetAllAssets(GitHubRepositoryOwner, GitHubRepositoryName, release.Id);
+            var assets = await github.Repository.Release.GetAllAssets(repositoryOwner, repositoryName, release.Id);
             foreach (var asset in assets)
             {
-                await github.Repository.Release.DeleteAsset(GitHubRepositoryOwner, GitHubRepositoryName, asset.Id);
+                await github.Repository.Release.DeleteAsset(repositoryOwner, repositoryName, asset.Id);
             }
 
-            var artifacts = ArtifactsDirectory.GlobFiles($"Sknet.InRuleGitStorage*.{GitVersion.SemVer}.*");
+            var artifacts = ArtifactsDirectory.GlobFiles($"Sknet.*.{GitVersion.SemVer}.*");
             foreach (var artifact in artifacts)
             {
                 var file = new FileInfo(artifact);
@@ -297,9 +302,7 @@ class Build : NukeBuild
             }
         });
 
-#pragma warning disable IDE0051 // Remove unused private members
     Target PublishToNuGetFeed => _ => _
-#pragma warning restore IDE0051 // Remove unused private members
         .DependsOn(PublishSdkArtifacts)
         .Requires(() => NuGetSource)
         .Requires(() => NuGetApiKey)
@@ -308,10 +311,11 @@ class Build : NukeBuild
         {
             Log.Debug($"Uploading NuGet package(s) to '{NuGetSource}'...");
 
-            NuGetPush(s => s
+            DotNetNuGetPush(s => s
                 .SetApiKey(NuGetApiKey)
+                .SetSkipDuplicate(true)
                 .SetSource(NuGetSource)
-                .SetTargetPath(ArtifactsDirectory / $"Sknet.InRuleGitStorage.{GitVersion.SemVer}.nupkg"));
+                .SetTargetPath(ArtifactsDirectory / $"Sknet.*.{GitVersion.SemVer}.nupkg"));
         });
 
     Target Default => _ => _

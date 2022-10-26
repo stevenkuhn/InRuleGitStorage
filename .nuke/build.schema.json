@@ -20,7 +20,12 @@
         },
         "GitHubAccessToken": {
           "type": "string",
-          "description": "GitHub access token used for creating a new or updating an existing release"
+          "description": "GitHub access token used for creating a new or updating an existing release",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
+        "GitHubRepository": {
+          "type": "string",
+          "description": "GitHub repository owner and name used for creating a new or updating an existing release. For example: 'stevenkuhn/InRuleGitStorage'"
         },
         "Help": {
           "type": "boolean",
@@ -33,6 +38,7 @@
             "AppVeyor",
             "AzurePipelines",
             "Bamboo",
+            "Bitbucket",
             "Bitrise",
             "GitHubActions",
             "GitLab",
@@ -56,7 +62,8 @@
         },
         "NuGetApiKey": {
           "type": "string",
-          "description": "NuGet API key used to pushing the Sdk NuGet package"
+          "description": "NuGet API key used to pushing the Sdk NuGet package",
+          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
         },
         "NuGetSource": {
           "type": "string",
