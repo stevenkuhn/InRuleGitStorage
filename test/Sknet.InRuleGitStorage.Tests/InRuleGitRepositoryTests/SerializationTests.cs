@@ -1,4 +1,6 @@
-﻿namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests;
+﻿using System.Text.RegularExpressions;
+
+namespace Sknet.InRuleGitStorage.Tests.InRuleGitRepositoryTests;
 
 public class SerializationTests : IDisposable
 {
@@ -44,6 +46,11 @@ public class SerializationTests : IDisposable
         // Assert
         var expectedXml = RuleRepositoryDefBase.GetXml(ruleApp);
         var resultXml = RuleRepositoryDefBase.GetXml(result);
+
+        // HACK: Replace the Guid in <DefaultSubRulesRoot /> with an Empty guid because it changes on every call to GetXml()
+        string pattern = @"(<DefaultSubRulesRoot\s+[^>]*Guid="")[^""]*("")";
+        expectedXml = Regex.Replace(expectedXml, pattern, $"$1{Guid.Empty}$2");
+        resultXml = Regex.Replace(resultXml, pattern, $"$1{Guid.Empty}$2");
 
         Assert.Equal(expectedXml, resultXml);
     }

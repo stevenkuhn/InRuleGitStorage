@@ -625,10 +625,10 @@ public class InRuleGitRepository : IInRuleGitRepository
 
         options ??= new CloneOptions();
 
-        var result = LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new LibGit2Sharp.CloneOptions
+        var fetchOptions = new LibGit2Sharp.FetchOptions { CertificateCheck = options.CertificateCheck, CredentialsProvider = options.CredentialsProvider };
+
+        var result = LibGit2Sharp.Repository.Clone(sourceUrl, destinationPath, new LibGit2Sharp.CloneOptions(fetchOptions)
         {
-            CertificateCheck = options.CertificateCheck,
-            CredentialsProvider = options.CredentialsProvider,
             IsBare = true
         });
 
@@ -640,16 +640,16 @@ public class InRuleGitRepository : IInRuleGitRepository
 
             foreach (var directory in directories)
             {
-                directory.MoveTo(Path.Combine(directoryInfo.Parent.FullName, directory.Name));
+                directory.MoveTo(Path.Combine(directoryInfo.Parent?.FullName ?? string.Empty, directory.Name));
             }
 
             foreach (var file in files)
             {
-                file.MoveTo(Path.Combine(directoryInfo.Parent.FullName, file.Name));
+                file.MoveTo(Path.Combine(directoryInfo.Parent?.FullName ?? string.Empty, file.Name));
             }
 
             directoryInfo.Delete();
-            destinationPath = directoryInfo.Parent.FullName;
+            destinationPath = directoryInfo.Parent?.FullName ?? string.Empty;
         }
 
         using (var repo = new Repository(destinationPath))
@@ -797,11 +797,15 @@ public class InRuleGitRepository : IInRuleGitRepository
         File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.ReadOnly);
 
         var logoPath = Path.Combine(path, "logo.ico");
-        using (Stream input = typeof(InRuleGitRepository).Assembly.GetManifestResourceStream("Sknet.InRuleGitStorage.logo.ico"))
+
+        using (Stream? input = typeof(InRuleGitRepository).Assembly.GetManifestResourceStream("Sknet.InRuleGitStorage.logo.ico"))
         using (Stream output = File.Create(logoPath))
         {
-            input.Seek(0, SeekOrigin.Begin);
-            input.CopyTo(output);
+            if (input != null)
+            {
+                input.Seek(0, SeekOrigin.Begin);
+                input.CopyTo(output);
+            }
         }
 
         var desktopIniPath = Path.Combine(path, "desktop.ini");
@@ -814,7 +818,9 @@ IconResource = .\logo.ico,0");
 
     private static bool IsWindowsOSPlatform()
     {
-#if NETSTANDARD
+#if NET8_0_OR_GREATER
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+#elif NETSTANDARD
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 #elif NETFRAMEWORK
         return Environment.OSVersion.Platform == PlatformID.Win32NT;
