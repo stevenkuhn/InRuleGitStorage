@@ -19,8 +19,6 @@ global using Nuke.Common.Tools.NuGet;
 global using Nuke.Common.Utilities.Collections;
 
 global using static Nuke.Common.EnvironmentInfo;
-global using static Nuke.Common.IO.CompressionTasks;
-global using static Nuke.Common.IO.FileSystemTasks;
 global using static Nuke.Common.IO.PathConstruction;
 global using static Nuke.Common.Tools.DotNet.DotNetTasks;
 global using static Nuke.Common.Tools.NuGet.NuGetTasks;

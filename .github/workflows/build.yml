@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0, 5.7.3]
+        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0, 5.7.3, 5.8.1]
 
     steps:
     - name: Checkout Source
@@ -32,7 +32,7 @@ jobs:
       run: ./build.ps1 --target PublishAuthoringArtifacts --skip Clean
 
     - name: Upload artifacts
-      if: matrix.inrule == '5.2.0'
+      if: matrix.inrule == '5.6.0'
       uses: actions/upload-artifact@v3
       with:
         name: artifacts
@@ -45,7 +45,7 @@ jobs:
 
     strategy:
       matrix:
-        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0, 5.7.3]
+        inrule: [5.2.0, 5.3.1, 5.4.3, 5.5.1, 5.6.0, 5.7.3, 5.8.1]
 
     steps:
     - name: Checkout Source
