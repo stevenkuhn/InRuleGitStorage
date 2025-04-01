@@ -6,8 +6,8 @@ class Build : NukeBuild
     [Parameter("Configuration to build. Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Parameter("Version of the InRule Repository SDK use. Default is 5.2.0.", Name = "inrule-version")]
-    readonly string InRuleVersion = "5.2.0";
+    [Parameter("Version of the InRule Repository SDK use. Default is 5.6.0.", Name = "inrule-version")]
+    readonly string InRuleVersion = "5.6.0";
 
     [Parameter("GitHub access token used for creating a new or updating an existing release.")]
     [Secret]
@@ -25,15 +25,18 @@ class Build : NukeBuild
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
-    [GitVersion(Framework = "net6.0", NoFetch = true)] readonly GitVersion GitVersion;
+    [GitVersion(Framework = "net8.0", NoFetch = true)] readonly GitVersion GitVersion;
 
     static AbsolutePath SourceDirectory => RootDirectory / "src";
     static AbsolutePath TestsDirectory => RootDirectory / "test";
     static AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
 
-    Project AuthoringProject => Solution.GetProject("Sknet.InRuleGitStorage.AuthoringExtension");
-    Project SdkProject => Solution.GetProject("Sknet.InRuleGitStorage");
-    Project SdkTestProject => Solution.GetProject("Sknet.InRuleGitStorage.Tests");
+    SolutionFolder SourceFolder => Solution.GetSolutionFolder("src");
+    SolutionFolder TestFolder => Solution.GetSolutionFolder("test");
+
+    Project AuthoringProject => SourceFolder.GetProject("Sknet.InRuleGitStorage.AuthoringExtension");
+    Project SdkProject => SourceFolder.GetProject("Sknet.InRuleGitStorage");
+    Project SdkTestProject => TestFolder.GetProject("Sknet.InRuleGitStorage.Tests");
 
     readonly string[] NuGetRestoreSources = new[] {
         "https://api.nuget.org/v3/index.json"
@@ -50,14 +53,14 @@ class Build : NukeBuild
         .Executes(() =>
         {
             Log.Debug("Deleting all bin/obj directories...");
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").DeleteDirectories();
+            TestsDirectory.GlobDirectories("**/bin", "**/obj").DeleteDirectories();
 
             Log.Debug("Cleaning artifacts directory...");
-            EnsureCleanDirectory(ArtifactsDirectory);
+            ArtifactsDirectory.CreateOrCleanDirectory();
 
             Log.Debug("Deleting test results directories...");
-            TestsDirectory.GlobDirectories("**/TestResults").ForEach(DeleteDirectory);
+            TestsDirectory.GlobDirectories("**/TestResults").DeleteDirectories();
         });
 
     Target RestoreSdk => _ => _
@@ -108,7 +111,7 @@ class Build : NukeBuild
                 .SetProperty("RepositoryBranch", GitVersion.BranchName)
                 .SetProperty("RepositoryCommit", GitVersion.Sha)
                 .SetConfiguration(Configuration)
-                .SetFramework(IsWin ? null : "netstandard2.0")
+                .SetFramework(IsWin ? null : "net8.0")
                 .EnableNoRestore());
 
             Log.Debug("Compiling SDK test project...");
@@ -119,7 +122,7 @@ class Build : NukeBuild
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion)
                 .SetConfiguration(Configuration)
-                .SetFramework(IsWin ? null : "net6.0")
+                .SetFramework(IsWin ? null : "net8.0")
                 .EnableNoRestore());
         });
 
@@ -145,26 +148,17 @@ class Build : NukeBuild
         .DependsOn(CompileSdk)
         .Executes(() =>
         {
-            Log.Debug("Running SDK tests under .NET 6.0 runtime...");
+            Log.Debug("Running SDK tests under .NET 8.0 runtime...");
             DotNetTest(s => s
                 .SetProjectFile(SdkTestProject)
-                .SetFramework("net6.0")
+                .SetFramework("net8.0")
                 .SetConfiguration(Configuration)
                 .EnableNoBuild()
                 .EnableNoRestore()
                 .AddLoggers("trx;LogFileName=./net6.0/TestResult.trx"));
 
             if (IsWin)
-            {
-                Log.Debug("Running SDK tests under .NET Framework 4.6.1 runtime...");
-                DotNetTest(s => s
-                    .SetProjectFile(SdkTestProject)
-                    .SetFramework("net461")
-                    .SetConfiguration(Configuration)
-                    .EnableNoBuild()
-                    .EnableNoRestore()
-                    .AddLoggers("trx;LogFileName=./net461/TestResult.trx"));
-
+            { 
                 Log.Debug("Running SDK tests under .NET Framework 4.7.2 runtime...");
                 DotNetTest(s => s
                     .SetProjectFile(SdkTestProject)
@@ -184,7 +178,7 @@ class Build : NukeBuild
             Log.Debug("Publishing SDK artifacts to the artifacts folder...");
             SourceDirectory
                 .GlobFiles($"**/{Configuration}/**/Sknet.*.{GitVersion.SemVer}.*nupkg")
-                .ForEach(file => CopyFileToDirectory(file, ArtifactsDirectory));
+                .ForEach(file => file.CopyToDirectory(ArtifactsDirectory));
         });
 
     Target PublishAuthoringArtifacts => _ => _
@@ -196,14 +190,14 @@ class Build : NukeBuild
             Log.Debug("Publishing Authoring artifacts to the artifacts folder...");
             var authoringExtensionDirectory = ArtifactsDirectory / "Sknet.InRuleGitStorage.AuthoringExtension";
 
-            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/net472/Sknet.InRuleGitStorage.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
-            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/net472/LibGit2Sharp.*").ForEach(file => CopyFileToDirectory(file, authoringExtensionDirectory));
-            AuthoringProject.Directory.GlobDirectories($"bin/{Configuration}/net472/lib/win32/x64").ForEach(directory => CopyDirectoryRecursively(directory, authoringExtensionDirectory / "lib" / "win32" / "x64"));
-            authoringExtensionDirectory.GlobFiles("**/*.xml").ForEach(DeleteFile);
+            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/net472/Sknet.InRuleGitStorage.*").ForEach(file => file.CopyToDirectory(authoringExtensionDirectory));
+            AuthoringProject.Directory.GlobFiles($"bin/{Configuration}/net472/LibGit2Sharp.*").ForEach(file => file.CopyToDirectory(authoringExtensionDirectory));
+            AuthoringProject.Directory.GlobDirectories($"bin/{Configuration}/net472/lib/win32/x64").ForEach(directory => directory.Copy(authoringExtensionDirectory / "lib" / "win32" / "x64"));
+            authoringExtensionDirectory.GlobFiles("**/*.xml").DeleteFiles();
 
-            CompressZip(authoringExtensionDirectory, ArtifactsDirectory / $"Sknet.InRuleGitStorage.AuthoringExtension.{GitVersion.SemVer}.zip");
+            authoringExtensionDirectory.ZipTo(ArtifactsDirectory / $"Sknet.InRuleGitStorage.AuthoringExtension.{GitVersion.SemVer}.zip");
 
-            DeleteDirectory(authoringExtensionDirectory);
+            authoringExtensionDirectory.DeleteDirectory();
         });
 
     Target DeployToIrAuthor => _ => _
@@ -218,9 +212,9 @@ class Build : NukeBuild
             if (irAuthorLocalDirectory.DirectoryExists())
             {
                 var extensionDirectory = irAuthorLocalDirectory / "ExtensionExchange" / "Sknet.InRuleGitStorage";
-                EnsureCleanDirectory(extensionDirectory);
+                extensionDirectory.CreateOrCleanDirectory();
 
-                UncompressZip(ArtifactsDirectory / $"Sknet.InRuleGitStorage.AuthoringExtension.{GitVersion.SemVer}.zip", extensionDirectory);
+                (ArtifactsDirectory / $"Sknet.InRuleGitStorage.AuthoringExtension.{GitVersion.SemVer}.zip").UnZipTo(extensionDirectory);
             }
         });
 

@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="InRule.Authoring.SDK" Version="5.2.0" />
+    <PackageReference Include="InRule.Authoring.SDK" Version="5.6.0" />
   </ItemGroup>
 
   <ItemGroup>

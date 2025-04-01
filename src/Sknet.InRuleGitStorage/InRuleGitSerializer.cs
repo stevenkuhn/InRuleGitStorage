@@ -274,8 +274,8 @@ internal class InRuleGitSerializer : IInRuleGitSerializer
             var blob = _repository.ObjectDatabase.CreateBlob(def);
             treeDefinition.Add($"{def.Name}.xml", blob, Mode.NonExecutableFile);
 
-            var defPointer = (RuleRepositoryDefBase)Activator.CreateInstance(def.GetType());
-            defPointer.Guid = def.Guid;
+            var defPointer = (RuleRepositoryDefBase)Activator.CreateInstance(def.GetType())!;
+            defPointer!.Guid = def.Guid;
             defPointer.Name = def.Guid.ToString();
             defs[i] = defPointer;
         }
@@ -301,8 +301,8 @@ internal class InRuleGitSerializer : IInRuleGitSerializer
             var tree = SerializeDefToTree(def);
             treeDefinition.Add($"{def.Name}", tree);
 
-            var defPointer = (RuleRepositoryDefBase)Activator.CreateInstance(def.GetType());
-            defPointer.Guid = def.Guid;
+            var defPointer = (RuleRepositoryDefBase)Activator.CreateInstance(def.GetType())!;
+            defPointer!.Guid = def.Guid;
             defPointer.Name = def.Guid.ToString();
             defs[i] = defPointer;
         }
@@ -441,13 +441,13 @@ internal class InRuleGitSerializer : IInRuleGitSerializer
         {
             xmlStream = def.GetXmlStream();
 
-            using (SHA1Managed sha1 = new SHA1Managed())
+            using (SHA1 sha1 = SHA1.Create())
             {
                 sha1Hash = new ObjectId(sha1.ComputeHash(xmlStream)).Sha;
                 xmlStream.Position = 0;
             }
 
-            if (DefHashToTreeShaLookup.TryGetValue(sha1Hash, out string treeSha))
+            if (DefHashToTreeShaLookup.TryGetValue(sha1Hash, out var treeSha))
             {
                 var tree = _repository.Lookup<Tree>(treeSha);
                 return tree;

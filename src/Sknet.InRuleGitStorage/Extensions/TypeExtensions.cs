@@ -2,11 +2,11 @@
 
 internal static class TypeExtensions
 {
-    public static T GetCustomAttribute<T>(this Type type, bool inherit)
+    public static T? GetCustomAttribute<T>(this Type type, bool inherit)
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
 
-        return (T)type.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();
+        return (T?)type.GetCustomAttributes(typeof(T), inherit).SingleOrDefault();
     }
 
     public static string GetXmlTypeName(this Type type)
