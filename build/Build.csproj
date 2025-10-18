@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.11.48" />
     <PackageDownload Include="GitVersion.Tool" Version="[5.8.1]" />
     <PackageReference Include="Nuke.Common" Version="9.0.4" />
   </ItemGroup>
