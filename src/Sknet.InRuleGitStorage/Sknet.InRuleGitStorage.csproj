@@ -45,6 +45,10 @@
   <ItemGroup>
     <PackageReference Include="InRule.Repository" Version="5.2.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
+  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+  <PackageReference Include="System.Private.ServiceModel" Version="4.5.3" />
+  <PackageReference Include="System.Security.Cryptography.Xml" Version="4.7.1" />
   </ItemGroup>
 
 </Project>
